@@ -32,7 +32,7 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
 
    - **Bash:**
      ```bash
-     source venv/bin/activate
+     source venv/Scripts/activate
      ```
 
 5. **Cài đặt thư viện:**
@@ -69,7 +69,7 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
 9. **Tạo các bảng cho CSDL:**
 
    ```bash
-   flask db init && flask db migrate && flask db upgrade
+   flask db upgrade
    ```
 
 10. **Chạy ứng dụng:**
