@@ -41,7 +41,13 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    pip install -r requirements.txt
    ```
 
-6. **Tạo CSDL MYSQL:**
+6. **Gắn pre-commit hook:**
+
+   ```bash
+   pre-commit install --install-hooks
+   ```
+
+7. **Tạo CSDL MYSQL:**
 
    **_NOTE:_** Có thể dùng MySQL Workbench
 
@@ -49,7 +55,7 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    CREATE DATABASE db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
    ```
 
-7. **Tạo file .env và thêm vào các biến môi trường:**
+8. **Tạo file .env và thêm vào các biến môi trường:**
 
    ```
    SECRET_KEY=secrect_key_to_encrypt_data_in_session
@@ -60,13 +66,13 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    DATABASE_PASSWORD=db_password
    ```
 
-8. **Tạo các bảng cho CSDL:**
+9. **Tạo các bảng cho CSDL:**
 
    ```bash
    flask db init && flask db migrate && flask db upgrade
    ```
 
-9. **Chạy ứng dụng:**
+10. **Chạy ứng dụng:**
 
    - **Windows:**
 
