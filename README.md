@@ -5,22 +5,27 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
 ## Hướng dẫn Chạy Dự Án Flask
 
 1. **Clone Repository:**
+
    ```bash
    git clone https://github.com/tranlequocthong313/private_clinic.git
    ```
 
 2. **Di chuyển vào thư mục Dự án:**
+
    ```bash
    cd private_clinic
    ```
 
 3. **Tạo Môi Trường Ảo (Optional, nhưng được khuyến khích):**
+
    ```bash
    python -m venv venv
    ```
 
 4. **Truy Cập vào Môi Trường Ảo:**
+
    - **Windows:**
+
      ```bash
      .\venv\Scripts\activate
      ```
@@ -31,18 +36,21 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
      ```
 
 5. **Cài đặt thư viện:**
+
    ```bash
    pip install -r requirements.txt
    ```
 
 6. **Tạo CSDL MYSQL:**
 
-   **_NOTE:_**  Có thể dùng MySQL Workbench
+   **_NOTE:_** Có thể dùng MySQL Workbench
+
    ```bash
    CREATE DATABASE db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
    ```
 
 7. **Tạo file .env và thêm vào các biến môi trường:**
+
    ```
    SECRET_KEY=secrect_key_to_encrypt_data_in_session
    DATABASE_HOST=db_host
@@ -53,18 +61,21 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    ```
 
 8. **Tạo các bảng cho CSDL:**
+
    ```bash
    flask db init && flask db migrate && flask db upgrade
    ```
 
 9. **Chạy ứng dụng:**
+
    - **Windows:**
+
    ```bash
    set FLASK_APP=app && flask run --debug
    ```
 
    - **Bash:**
+
    ```bash
    export FLASK_APP='app' && flask run --debug
    ```
-
