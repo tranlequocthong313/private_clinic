@@ -1,0 +1,176 @@
+div.content {
+    margin-top: 2%
+}
+
+div.doctor {
+    text-align: center;
+    border: solid;
+}
+
+div.doctor-left {
+    padding: 2%;
+    border-right: solid;
+}
+
+div.doctor-left img {
+    margin-top: 10%;
+    border-radius: 50%;
+    width: 60%;
+}
+
+div.doctor-left-infor {
+    margin: 2%;
+    padding: 1%;
+    background-color: #e6e6e6;
+    border-radius: 5%;
+
+}
+
+div.doctor-left-infor > h4 {
+   margin: 5%;
+}
+
+div.doctor-left-infor > h4:first-child {
+   font-size: 30px;
+   font-weight: bold;
+}
+
+div.doctor-right {
+    padding: 2%;
+}
+
+div.doctor-right > canvas{
+    display: block;
+    margin: 0 10%;
+}
+
+div.m-date {
+    display: flex;
+    align-items: center;
+}
+
+div.m-date > label {
+    width: 100%;
+    text-align: left;
+}
+
+div.m-date > div {
+    width: 280%;
+}
+
+div.m-diagnostic {
+    display: flex;
+    align-items: flex-end;
+}
+
+div.m-diagnostic > label {
+    width: 100%;
+    text-align: left;
+}
+
+div.m-diagnostic > select {
+    width: 250%;
+}
+
+div.m-name {
+    display: flex;
+    align-items: center;
+    height: 74px;
+}
+
+div.m-name > label {
+    width: 100%;
+    text-align: left;
+}
+
+div.m-name > div {
+    width: 280%;
+    background-color: white;
+    padding: 2%
+}
+
+div.m-symptom {
+    display: flex;
+    align-items: center;
+}
+
+div.m-symptom > label {
+    width: 100%;
+    text-align: left;
+}
+
+div.m-symptom > input {
+    width: 255%;
+}
+
+div.noti-info {
+    position: absolute;
+    top: 88%;
+    right: 10%;
+}
+
+.noti-info {
+    display: none;
+}
+
+div.medicine-form {
+    overflow: auto;
+    height: 310px;
+}
+
+div.m-medicine {
+    display: flex;
+    align-items: center;
+}
+
+div.m-medicine > label {
+    width: 100%;
+    text-align: left;
+}
+
+div.m-medicine > input {
+    width: 255%;
+}
+
+div.m-user {
+    display: flex;
+    align-items: flex-end;
+}
+
+div.m-user > label {
+    width: 115%;
+    text-align: left;
+}
+
+div.m-user > input {
+    width: 245%;
+}
+
+div.m-quantity {
+    display: flex;
+    align-items: flex-end;
+}
+
+div.m-quantity > label {
+    width: 125%;
+    text-align: left;
+}
+
+div.m-quantity > input {
+    width: 320%;
+}
+
+div.m-phieukham-id {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+div.m-phieukham-id > label {
+    width: 40%;
+    text-align: center;
+}
+
+div.m-phieukham-id > input {
+    width: 40%;
+}

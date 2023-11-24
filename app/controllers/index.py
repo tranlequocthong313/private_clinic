@@ -22,3 +22,8 @@ def contact():
 @blueprint.route("/about")
 def about():
     return render_template("about.html")
+
+
+@blueprint.route("/doctor")
+def doctor():
+    return render_template("doctor.html")

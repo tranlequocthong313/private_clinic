@@ -7,6 +7,8 @@ from app.config import Config
 from app.controllers.index import blueprint as index_blueprint
 from app.models import db
 
+import cloudinary
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -16,6 +18,12 @@ db.init_app(app)
 migrate = Migrate(app, db, compare_type=True)
 
 admin.init_admin(app, db)
+
+cloudinary.config(
+    cloud_name=app.get("CLOUDINARY_NAME"),
+    api_key=app.get("CLOUDINARY_API_KEY"),
+    api_secret=app.get("CLOUDINARY_API_SECRET"),
+)
 
 app.register_blueprint(index_blueprint)
 
