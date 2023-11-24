@@ -20,9 +20,9 @@ migrate = Migrate(app, db, compare_type=True)
 admin.init_admin(app, db)
 
 cloudinary.config(
-    cloud_name="dgsii3nt1",
-    api_key="425612975925165",
-    api_secret="zkHVDLTNnq76pCRMqFQTo_MdokY",
+    cloud_name=app.get("CLOUDINARY_NAME"),
+    api_key=app.get("CLOUDINARY_API_KEY"),
+    api_secret=app.get("CLOUDINARY_API_SECRET"),
 )
 
 app.register_blueprint(index_blueprint)
