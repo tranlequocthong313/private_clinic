@@ -9,10 +9,6 @@ class Config:
     db_port = os.getenv("DATABASE_PORT")
     db_username = os.getenv("DATABASE_USERNAME")
     db_password = os.getenv("DATABASE_PASSWORD")
-    SQLALCHEMY_DATABASE_URI = (
-        f"mysql+pymysql://{quote(db_username)}:{quote(db_password)}"
-    )
-    SQLALCHEMY_DATABASE_URI += (
-        f"@{quote(db_host)}:{quote(db_port)}/{quote(db_name)}?charset=utf8mb4"
-    )
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{quote(db_username)}:{quote(db_password)}@{quote(db_host)}:{quote(db_port)}/{quote(db_name)}?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True

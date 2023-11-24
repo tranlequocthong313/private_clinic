@@ -11,6 +11,8 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    Unicode,
+    UnicodeText,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -77,16 +79,22 @@ class User(db.Model):
     def __str__(self):
         return self.name
 
+    def __repr__(self):
+        return f"<User {self.name}>"
+
 
 class Policy(db.Model):
     __tablename__ = "policies"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
+    name = Column(UnicodeText, nullable=False)
     value = Column(Integer, nullable=False)
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f"<Policy {self.name}>"
 
 
 class AppointmentSchedule(db.Model):
@@ -112,7 +120,7 @@ medical_examination_detail = db.Table(
     ),
     db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
     db.Column("quantity", db.Integer, nullable=False),
-    db.Column("dosage", db.String(200), nullable=False),
+    db.Column("dosage", UnicodeText, nullable=False),
 )
 
 
@@ -121,8 +129,8 @@ class MedicalExamination(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
-    symptom = Column(String(100), nullable=False)
-    diagnosis = Column(String(100), nullable=False)
+    symptom = Column(UnicodeText, nullable=False)
+    diagnosis = Column(UnicodeText, nullable=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     medicines = relationship(
@@ -165,7 +173,7 @@ class MedicalRegistration(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
-    symptom = Column(String(100))
+    symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
     time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.UNKNOWN)
     fulfilled = Column(Boolean, default=False)
@@ -190,21 +198,27 @@ class MedicineUnit(db.Model):
     __tablename__ = "medicine_units"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False, unique=True)
+    name = Column(Unicode(50), nullable=False, unique=True)
     medicines = relationship("Medicine", backref="medicine_unit", lazy=True)
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f"<MedicineUnit {self.name}>"
 
 
 class MedicineType(db.Model):
     __tablename__ = "medicine_types"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50), nullable=False, unique=True)
+    name = Column(Unicode(50), nullable=False, unique=True)
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f"<MedicineType {self.name}>"
 
 
 class Medicine(db.Model):
@@ -216,8 +230,11 @@ class Medicine(db.Model):
     manufacturing_date = Column(Date, nullable=False)
     expiry_date = Column(Date, nullable=False)
     price = Column(Double, nullable=False)
-    description = Column(String(100))
+    description = Column(UnicodeText)
     medicine_unit_id = Column(Integer, ForeignKey(MedicineUnit.id), nullable=False)
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        return f"<Medicine {self.name}>"
