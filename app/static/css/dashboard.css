@@ -11,7 +11,9 @@ body {
 /*
  * Sidebar
  */
-
+.navbar{
+    background: linear-gradient(  #5567C9, #C7D7FB);
+}
 .sidebar {
   position: fixed;
   top: 0;

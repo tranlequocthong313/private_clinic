@@ -1,118 +1,123 @@
 {% extends 'landing_page.html' %} {% block content %}
 <link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/contact.css') }}"
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/contact.css') }}"
 />
 <section
-  class="Material-contact-section section-padding section-dark full-center"
+        class="Material-contact-section section-padding section-dark full-center"
 >
-  <div class="container">
-    <div class="row">
-      <!-- Section Titile -->
-      <div class="col-md-12 wow animated fadeInLeft" data-wow-delay=".2s">
-        <h1 class="section-title">Love to Hear From You</h1>
-      </div>
+    <div class="container">
+        <!--    <div class="row mb-5">-->
+        <!--      &lt;!&ndash; Section Titile &ndash;&gt;-->
+        <!--       <h1 class="section-title">Hãy đến với chúng tôi</h1>-->
+
+        <!--    </div>-->
+        <div class="section-title mb-5">
+            <span>Hãy đến với chúng tôi </span>
+            <em class="mdi mdi-gamepad"><span>
+            </span>
+                <span>
+
+                </span>
+            </em>
+        </div>
+        <div class="row">
+            <!-- Section Titile -->
+            <div
+                    class="col-md-6 mt-3 contact-widget-section2 wow animated fadeInLeft"
+                    data-wow-delay=".2s"
+            >
+                <p>
+                      Với phương châm hoạt động “Luôn đáp ứng nhu cầu khám chữa bệnh chất lượng cao và tiết kiệm thời gian, chi phí tối thiểu cho khách hàng”, chúng tôi đã nhận được sự tin tưởng và những phản hồi rất tốt từ khách hàng. Đến nay, tổng số bệnh nhân đăng ký khám chữa bệnh ban đầu tại hệ thống Phòng Khám Đa Khoa Sài Gòn đã lên đến hơn 137.000 người.
+                </p>
+<!--                <div class="find-widget">-->
+<!--                    Company: <a href="https://hostriver.ro">HostRiver</a>-->
+<!--                </div>-->
+                <div class="find-widget">
+                    Địa chỉ: <a href="#">Nhơn Đức - Nhà Bè- TP HCM </a>
+                </div>
+                <div class="find-widget">Số điện thoại: <a href="#">0228812345</a></div>
+<!--                <div class="find-widget">-->
+<!--                    Website: <a href="https://uny.ro">www.uny.ro</a>-->
+<!--                </div>-->
+                <div class="find-widget">
+                    Giờ hoạt động: <a href="#">Thứ 2 đến Thứ 7: 09:00 AM - 5.30 PM</a>
+                </div>
+            </div>
+            <!-- contact form -->
+            <div class="col-md-6 wow animated fadeInRight" data-wow-delay=".2s">
+                <form
+                        class="shake"
+                        role="form"
+                        method="post"
+                        id="contactForm"
+                        name="contact-form"
+                        data-toggle="validator"
+                >
+                    <!-- Name -->
+                    <div class="form-group label-floating">
+                        <label class="control-label" for="name"> Họ Tên</label>
+                        <input
+                                class="form-control"
+                                id="name"
+                                type="text"
+                                name="name"
+                                required
+                                data-error="Please enter your name"
+                        />
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <!-- email -->
+                    <div class="form-group label-floating">
+                        <label class="control-label" for="email">Email</label>
+                        <input
+                                class="form-control"
+                                id="email"
+                                type="email"
+                                name="email"
+                                required
+                                data-error="Please enter your Email"
+                        />
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <!-- Subject -->
+                    <div class="form-group label-floating">
+                        <label class="control-label">Số điện thoại</label>
+                        <input
+                                class="form-control"
+                                id="msg_subject"
+                                type="text"
+                                name="subject"
+                                required
+                                data-error="Please enter your message subject"
+                        />
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <!-- Message -->
+                    <div class="form-group label-floating">
+                        <label for="message" class="control-label">Lời nhắn</label>
+                        <textarea
+                                class="form-control"
+                                rows="3"
+                                id="message"
+                                name="message"
+                                required
+                                data-error="Write your message"
+                        ></textarea>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <!-- Form Submit -->
+                    <div class="form-submit mt-5">
+                        <button class="btn btn-common" type="submit" id="form-submit">
+                            <i class="material-icons mdi mdi-message-outline"></i>
+                            Gửi
+                        </button>
+                        <div id="msgSubmit" class="h3 text-center hidden"></div>
+                        <div class="clearfix"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="row">
-      <!-- Section Titile -->
-      <div
-        class="col-md-6 mt-3 contact-widget-section2 wow animated fadeInLeft"
-        data-wow-delay=".2s"
-      >
-        <p>
-          It is a long established fact that a reader will be distracted by the
-          readable content of a page when looking at its layout. The point of
-          using Lorem Ipsum is that it has a more-or-less normal distribution of
-          letters, as opposed to using Content.
-        </p>
-        <div class="find-widget">
-          Company: <a href="https://hostriver.ro">HostRiver</a>
-        </div>
-        <div class="find-widget">
-          Address: <a href="#">4435 Berkshire Circle Knoxville</a>
-        </div>
-        <div class="find-widget">Phone: <a href="#">+ 879-890-9767</a></div>
-        <div class="find-widget">
-          Website: <a href="https://uny.ro">www.uny.ro</a>
-        </div>
-        <div class="find-widget">
-          Program: <a href="#">Mon to Sat: 09:30 AM - 10.30 PM</a>
-        </div>
-      </div>
-      <!-- contact form -->
-      <div class="col-md-6 wow animated fadeInRight" data-wow-delay=".2s">
-        <form
-          class="shake"
-          role="form"
-          method="post"
-          id="contactForm"
-          name="contact-form"
-          data-toggle="validator"
-        >
-          <!-- Name -->
-          <div class="form-group label-floating">
-            <label class="control-label" for="name">Name</label>
-            <input
-              class="form-control"
-              id="name"
-              type="text"
-              name="name"
-              required
-              data-error="Please enter your name"
-            />
-            <div class="help-block with-errors"></div>
-          </div>
-          <!-- email -->
-          <div class="form-group label-floating">
-            <label class="control-label" for="email">Email</label>
-            <input
-              class="form-control"
-              id="email"
-              type="email"
-              name="email"
-              required
-              data-error="Please enter your Email"
-            />
-            <div class="help-block with-errors"></div>
-          </div>
-          <!-- Subject -->
-          <div class="form-group label-floating">
-            <label class="control-label">Subject</label>
-            <input
-              class="form-control"
-              id="msg_subject"
-              type="text"
-              name="subject"
-              required
-              data-error="Please enter your message subject"
-            />
-            <div class="help-block with-errors"></div>
-          </div>
-          <!-- Message -->
-          <div class="form-group label-floating">
-            <label for="message" class="control-label">Message</label>
-            <textarea
-              class="form-control"
-              rows="3"
-              id="message"
-              name="message"
-              required
-              data-error="Write your message"
-            ></textarea>
-            <div class="help-block with-errors"></div>
-          </div>
-          <!-- Form Submit -->
-          <div class="form-submit mt-5">
-            <button class="btn btn-common" type="submit" id="form-submit">
-              <i class="material-icons mdi mdi-message-outline"></i> Send
-              Message
-            </button>
-            <div id="msgSubmit" class="h3 text-center hidden"></div>
-            <div class="clearfix"></div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </section>
 {% endblock %}

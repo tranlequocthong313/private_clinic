@@ -60,13 +60,13 @@
 }
 
 .aboutus-content h2 span {
-  color: #71b100;
+  color: rgb(39, 81, 158);
 }
 
 .aboutus-content h4 {
   font-size: 18px;
   font-weight: 500;
-  color: #9b9b9b;
+  color: blue ;
   margin-bottom: 23px;
 }
 
