@@ -35,6 +35,13 @@
                     </a>
                 </li>
 
+                 <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("index.login") }}">
+                    <strong class ="text">Đăng nhập </strong>
+                    </a>
+                </li>
+
+
 
 
             </ul>
@@ -43,7 +50,7 @@
                        type="text"
                        placeholder="Tìm kiếm"
                        aria-label="Search" />
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
+                <button class="btn btn btn-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
             </form>
             <a href="{{ url_for("index.home") }}" class="btn btn-primary ml-3">
                 <i class="fa-solid fa-calendar-check mr-2"></i>

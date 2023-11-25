@@ -27,3 +27,13 @@ def about():
 @blueprint.route("/doctor")
 def doctor():
     return render_template("doctor.html")
+
+
+@blueprint.route("/login")
+def login():
+    return render_template("login.html")
+
+
+@blueprint.route("/register")
+def register():
+    return render_template("register.html")
