@@ -26,13 +26,85 @@ class MedicineView(CustomModelView):
 
 
 def init_admin(app, db):
-    admin = Admin(app, name="Admin", template_mode="bootstrap4")
-    admin.add_view(CustomModelView(User, db.session))
-    admin.add_view(CustomModelView(Policy, db.session))
-    admin.add_view(MedicineView(Medicine, db.session))
-    admin.add_view(CustomModelView(MedicineUnit, db.session))
-    admin.add_view(CustomModelView(MedicineType, db.session))
-    admin.add_view(CustomModelView(MedicalExamination, db.session))
-    admin.add_view(CustomModelView(MedicalRegistration, db.session))
-    admin.add_view(CustomModelView(Bill, db.session))
-    admin.add_view(CustomModelView(AppointmentSchedule, db.session))
+    admin = Admin(app, name="Admin", template_mode="bootstrap4", url="/dashboard")
+    admin.add_view(
+        CustomModelView(
+            User,
+            db.session,
+            name="Người dùng",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            Policy,
+            db.session,
+            name="Chính sách",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        MedicineView(
+            Medicine,
+            db.session,
+            name="Thuốc",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            MedicineUnit,
+            db.session,
+            name="Đơn vị thuốc",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            MedicineType,
+            db.session,
+            name="Loại thuốc",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            MedicalExamination,
+            db.session,
+            name="Phiếu khám",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            MedicalRegistration,
+            db.session,
+            name="Phiếu đăng ký khám",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            Bill,
+            db.session,
+            name="Hóa đơn",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
+    admin.add_view(
+        CustomModelView(
+            AppointmentSchedule,
+            db.session,
+            name="Lịch khám",
+            menu_icon_type="fa",
+            menu_icon_value="fa-users",
+        )
+    )
