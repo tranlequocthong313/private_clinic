@@ -1,29 +1,39 @@
-from dotenv import load_dotenv
-from flask import Flask, render_template
+from flask import Flask
+from flask_mail import Mail
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_bootstrap import Bootstrap4
 
-from app import admin
-from app.config import Config
-from app.controllers.index import blueprint as index_blueprint
-from app.models import db
+from config import config
 
-load_dotenv()
-
-app = Flask(__name__)
-app.config.from_object(Config)
-
-db.init_app(app)
-migrate = Migrate(app, db, compare_type=True)
-
-admin.init_admin(app, db)
-
-app.register_blueprint(index_blueprint)
+db = SQLAlchemy()
+mail = Mail()
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+bootstrap = Bootstrap4()
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html"), 404
+def create_app(*args, **kwargs):
+    app = Flask(__name__)
+    app.config.from_object(config[kwargs.get("config_name", "default")])
 
+    bootstrap.init_app(app)
+    db.init_app(app)
+    mail.init_app(app)
+    login_manager.init_app(app)
+    migrate = Migrate(app, db, compare_type=True)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    from .main import main as main_blueprint
+
+    app.register_blueprint(main_blueprint)
+
+    from .doctor import doctor as doctor_blueprint
+
+    app.register_blueprint(doctor_blueprint, url_prefix="/dashboard")
+
+    from .auth import auth as auth_blueprint
+
+    app.register_blueprint(auth_blueprint, url_prefix="/auth")
+
+    return app

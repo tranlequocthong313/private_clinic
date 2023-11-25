@@ -1,6 +1,13 @@
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="{{ url_for("index.home") }}">Carousel</a>
+    <link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/style.css') }}"
+/>
+    <nav class="navbar navbar-expand-md fixed-top ">
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">
+            <img src="https://bizweb.dktcdn.net/100/335/052/themes/690843/assets/logo.png?1693322374959" style="width: 150px;" alt="TÂM ĐỨC"/>
+        </a>
+        </a>
         <button class="navbar-toggler"
                 type="button"
                 data-toggle="collapse"
@@ -12,25 +19,42 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for("index.home") }}">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{{ url_for('main.index') }}">
+                    <strong class ="text"> Trang Chủ </strong>
+                    <span class="sr-only">(current)</span>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("index.contact") }}">Contact</a>
+                    <a class="nav-link" href="{{ url_for('main.contact') }}">
+                    <strong class ="text">Liên Hệ </strong>
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("index.about") }}">About</a>
+                    <a class="nav-link" href="{{ url_for('main.about') }}">
+                    <strong class ="text">Giới thiệu </strong>
+                    </a>
                 </li>
+
+
+
             </ul>
             <form class="form-inline mt-2 mt-md-0">
                 <input class="form-control mr-sm-2"
                        type="text"
-                       placeholder="Search"
+                       placeholder="Tìm kiếm"
                        aria-label="Search" />
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
             </form>
-            <a href="{{ url_for("index.home") }}" class="btn btn-primary ml-3">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.medical_register') }}" class="btn btn-primary ml-3">
                 <i class="fa-solid fa-calendar-check mr-2"></i>
             Đăng ký khám bệnh</a>
+            {% else %}
+            <div class='d-flex'>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary ml-3">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>
+            Đăng nhập</a>
+            {% endif %}
         </div>
     </nav>
 </header>

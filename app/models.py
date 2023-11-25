@@ -1,6 +1,6 @@
 import enum
 
-from flask_sqlalchemy import SQLAlchemy
+from flask import current_app
 from sqlalchemy import (
     Boolean,
     Column,
@@ -16,8 +16,16 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 
-db = SQLAlchemy()
+from . import db, login_manager
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class Gender(enum.Enum):
@@ -35,19 +43,20 @@ class AccountRole(enum.Enum):
     UNKNOWN = "Unknown"
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String(50), nullable=False, unique=True)
-    phone_number = Column(String(11), nullable=False, unique=True)
+    phone_number = Column(String(11), unique=True)
     name = Column(String(50), nullable=False)
     gender = Column(Enum(Gender), default=Gender.UNKNOWN)
-    date_of_birth = Column(Date, nullable=False)
-    address = Column(String(50), nullable=False)
-    password = Column(String(255), nullable=False)
+    date_of_birth = Column(Date)
+    address = Column(String(50))
+    password_hash = Column(String(255), nullable=False)
     role = Column(Enum(AccountRole), default=AccountRole.UNKNOWN)
     avatar = Column(String(255))
+    confirmed = db.Column(Boolean, default=False)
     appointment_schedule = relationship(
         "AppointmentSchedule",
         backref="nurse",
@@ -81,6 +90,38 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.name}>"
+
+    @property
+    def password(self):
+        raise AttributeError("Password is not a readable attribute")
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def generate_confirmation_token(self):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        return s.dumps(str(self.id), salt=current_app.config["SALT"])
+
+    def confirm(self, token, exp=3600):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token, salt=current_app.config["SALT"], max_age=exp)
+        except:
+            return False
+        if int(data) != self.id:
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        return True
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class Policy(db.Model):
