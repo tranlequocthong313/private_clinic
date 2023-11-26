@@ -10,7 +10,7 @@ from ..models import AccountRole
 @doctor.route("/medical-form", methods=["GET", "POST"])
 @login_required
 @role_required([AccountRole.DOCTOR])
-def medical_register():
+def medical_form():
     form = MedicalForm()
     if form.validate_on_submit():
         # Thuc hien tao phieu kham benh va cac logic khac
