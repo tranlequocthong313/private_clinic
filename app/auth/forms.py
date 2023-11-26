@@ -9,7 +9,7 @@ class LoginForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
     remember_me = BooleanField("Keep me logged in")
-    submit = SubmitField("Log In")
+    submit = SubmitField("Đăng nhập")
 
 
 class RegistrationForm(FlaskForm):
@@ -23,7 +23,7 @@ class RegistrationForm(FlaskForm):
         ],
     )
     password2 = PasswordField("Confirm password", validators=[DataRequired()])
-    submit = SubmitField("Register")
+    submit = SubmitField("Đăng ký")
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data.lower()).first():
