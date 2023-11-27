@@ -1,9 +1,11 @@
-from flask import render_template
-from flask_login import login_required
+from flask import render_template, session
+from flask_login import login_required, current_user
 
 from . import main
 from .forms import MedicalRegisterForm
-from ..decorators import confirmed_required
+from ..decorators import confirmed_required, roles_required
+from ..dashboard_categories import dashboard_categories
+from ..models import AccountRole
 
 
 @main.route("/")
@@ -30,3 +32,18 @@ def medical_register():
         # Thuc hien tao phieu dang ky kham va cac logic khac
         pass
     return render_template("medical_register.html", form=form)
+
+
+@main.route("/dashboard")
+@login_required
+@confirmed_required
+@roles_required(
+    [AccountRole.ADMIN, AccountRole.CASHIER, AccountRole.DOCTOR, AccountRole.NURSE]
+)
+def dashboard():
+    return render_template("dashboard.html")
+
+
+@main.app_context_processor
+def inject_category():
+    return dict(category=dashboard_categories.get(current_user.role.value, []))

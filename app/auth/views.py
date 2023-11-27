@@ -17,8 +17,9 @@ def unconfirmed():
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
     form = LoginForm()
-    print("GET", form.validate_on_submit())
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.verify_password(form.password.data):
@@ -26,15 +27,15 @@ def login():
             next = request.args.get("next")
             if next is None or not next.startswith("/"):
                 next = url_for("main.index")
-            print("Dang nhap thanh cong")
             return redirect(next)
-        print("Dang nhap that bai")
         flash("Invalid email or password.")
     return render_template("auth/login.html", form=form)
 
 
 @auth.route("/register", methods=["GET", "POST"])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(

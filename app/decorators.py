@@ -15,7 +15,7 @@ def confirmed_required(f):
     return decorated_function
 
 
-def role_required(roles):
+def roles_required(roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -29,4 +29,4 @@ def role_required(roles):
 
 
 def admin_required(f):
-    return role_required([AccountRole.ADMIN])(f)
+    return roles_required([AccountRole.ADMIN])(f)
