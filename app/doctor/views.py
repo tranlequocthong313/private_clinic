@@ -3,13 +3,13 @@ from flask_login import login_required
 
 from . import doctor
 from .forms import MedicalForm
-from ..decorators import role_required
+from ..decorators import roles_required
 from ..models import AccountRole
 
 
 @doctor.route("/medical-form", methods=["GET", "POST"])
 @login_required
-@role_required([AccountRole.DOCTOR])
+@roles_required([AccountRole.DOCTOR])
 def medical_form():
     form = MedicalForm()
     if form.validate_on_submit():

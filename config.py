@@ -5,6 +5,7 @@ from urllib.parse import quote
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SALT = os.getenv("SALT")
+    ITEMS_PER_PAGE = os.getenv("ITEMS_PER_PAGE")
 
 
 class DevelopmentConfig(Config):

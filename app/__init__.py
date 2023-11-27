@@ -22,7 +22,7 @@ def create_app(*args, **kwargs):
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
-    migrate = Migrate(app, db, compare_type=True)
+    Migrate(app, db, compare_type=True)
 
     from .main import main as main_blueprint
 
@@ -31,6 +31,18 @@ def create_app(*args, **kwargs):
     from .doctor import doctor as doctor_blueprint
 
     app.register_blueprint(doctor_blueprint, url_prefix="/dashboard")
+
+    from .patient import patient as patient_blueprint
+
+    app.register_blueprint(patient_blueprint, url_prefix="/dashboard")
+
+    from .nurse import nurse as nurse_blueprint
+
+    app.register_blueprint(nurse_blueprint, url_prefix="/dashboard")
+
+    from .medicine import medicine as medicine_blueprint
+
+    app.register_blueprint(medicine_blueprint, url_prefix="/dashboard")
 
     from .auth import auth as auth_blueprint
 

@@ -1,0 +1,11 @@
+{% extends 'dashboard.html' %} {% from 'bootstrap4/form.html' import render_form
+%} {% set active_page = 'list_medicines' %} {% block content %}
+{{render_form(form)}} {% if medicines %}
+<ul>
+  {% for m in medicines %}
+  <li>{{m}}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Khong co thuoc</p>
+{% endif %} {% endblock %}
