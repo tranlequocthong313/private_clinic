@@ -13,11 +13,7 @@ render_field %}
                     <div class="card-body mx-auto">
                         <h3 class="card-title mt-3 text-center text-info">ĐĂNG NHẬP</h3>
                         <p class="text-center">Vui lòng đăng nhập vào phòng khám </p>
-<!--                        {% for message in get_flashed_messages() %}-->
-<!--{% if message %}-->
-<!-- {{message}}-->
-<!--{% endif %}-->
-<!--{% endfor %}-->
+
                         <form method='POST'>
                             {{ form.csrf_token }}
                             <div class="form-group input-group">
@@ -48,16 +44,7 @@ render_field %}
     </div>
 </section>
 
-<!--  <br />-->
-<!--  <p>-->
-<!--    Forgot your password?-->
-<!--    <a href="#">Click here to reset it</a>.-->
-<!--  </p>-->
-<!--  <p>-->
-<!--    New user?-->
-<!--    <a href="{{url_for('auth.register')}}">Click here to register</a>.-->
-<!--  </p>-->
-<!--</div>-->
+
 
 {% endblock %}
 
