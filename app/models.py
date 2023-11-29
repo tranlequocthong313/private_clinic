@@ -30,9 +30,9 @@ def load_user(user_id):
 
 
 class Gender(enum.Enum):
-    MALE = "Male"
-    FEMALE = "Female"
-    UNKNOWN = "Unknown"
+    MALE = "Nam"
+    FEMALE = "Nữ"
+    UNKNOWN = "Không xác định"
 
 
 class AccountRole(enum.Enum):

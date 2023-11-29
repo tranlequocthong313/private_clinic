@@ -1,8 +1,6 @@
 {% extends "landing_page.html" %} {% from 'bootstrap4/form.html' import
 render_form %} {% block content %}
-<!--<div class="page-header">-->
-<!--  <h1>Register</h1>-->
-<!--</div>-->
+
 <section class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark"
          style="min-height: 100vh; background-size: cover; background-image: url(https://png.pngtree.com/background/20210710/original/pngtree-blue-medical-care-safety-banner-picture-image_1033967.jpg);">
     <div class="container-fluid">
@@ -51,10 +49,10 @@ render_form %} {% block content %}
 
                                 <div class="form-group input-group">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-calendar-plus-o"></i> </span>
+                                        <span class="input-group-text"> <i class="fa fa-calendar"></i> </span>
                                     </div>
 
-                                    {{form.date_of_birth(class_="date", type="date", placeholder="Ngày sinh")}}
+                                    {{form.date_of_birth(class_="form-control", type="date", placeholder="Ngày sinh")}}
                                 </div>
 
                                 <div class="form-group input-group">
@@ -73,9 +71,10 @@ render_form %} {% block content %}
                                     {{form.password2(class_="form-control", placeholder="Nhập lại mật khẩu")}}
                                 </div>
 
+
                                 <div class="form-group input-group">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                                        <span class="input-group-text"> <i class="fa fa-venus-mars"></i> </span>
                                     </div>
 
                                     {{form.gender(class_="form-control", placeholder="Giới tính")}}

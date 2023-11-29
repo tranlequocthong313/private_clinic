@@ -23,6 +23,7 @@ class RegistrationForm(FlaskForm):
     address = StringField("Address", validators=[DataRequired()])
     gender = SelectField("Gender", choices=[(choice.name, choice.value) for choice in Gender])
     date_of_birth = DateField("Date_of_birth", validators=[DataRequired()], format='%Y-%m-%d')
+
     password = PasswordField(
         "Password",
         validators=[
@@ -42,5 +43,4 @@ class RegistrationForm(FlaskForm):
         if User.query.filter_by(username=field.data).first():
             raise ValueError("Người dùng đã sẵn sàng sử dụng .")
 
-    # def get_gender(self, field):
-    #     Gender.
+

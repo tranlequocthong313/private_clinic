@@ -45,7 +45,8 @@ def register():
             date_of_birth=form.date_of_birth.data,
             address=form.address.data,
             phone_number=form.phone_number.data,
-            gender=form.gender.data,
+            gender=form.gender.data
+
         )
         db.session.add(user)
         db.session.commit()
