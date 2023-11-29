@@ -22,8 +22,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(
-            email=form.email_phone.data.lower(),
-            phone_number=form.email_phone.data.lower(),
+            email=form.email.data.lower(),
+            phone_number=form.email.data.lower(),
         ).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
@@ -41,11 +41,15 @@ def register():
         return redirect(url_for("main.index"))
     form = RegistrationForm()
     if form.validate_on_submit():
+        print(form)
         user = User(
             name=form.name.data,
             email=form.email.data.lower(),
             phone_number=form.phone_number.data.lower(),
             password=form.password.data,
+            date_of_birth=form.date_of_birth.data,
+            address=form.address.data,
+            gender=form.gender.data,
         )
         db.session.add(user)
         db.session.commit()

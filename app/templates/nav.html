@@ -1,11 +1,12 @@
 <header>
     <link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/style.css') }}"
-/>
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/style.css') }}"
+    />
     <nav class="navbar navbar-expand-md fixed-top ">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">
-            <img src="https://bizweb.dktcdn.net/100/335/052/themes/690843/assets/logo.png?1693322374959" style="width: 150px;" alt="TÂM ĐỨC"/>
+            <img src="https://res.cloudinary.com/dgsii3nt1/image/upload/v1701079653/LOGO_ao7prq.png"
+                 style="width: 60px;" alt="TÂM ĐỨC"/>
         </a>
         </a>
         <button class="navbar-toggler"
@@ -20,42 +21,66 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="{{ url_for('main.index') }}">
-                    <strong class ="text"> Trang Chủ </strong>
-                    <span class="sr-only">(current)</span>
+                        <strong class="text"> Trang Chủ </strong>
+                        <span class="sr-only">(current)</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('main.contact') }}">
-                    <strong class ="text">Liên Hệ </strong>
+                        <strong class="text">Liên Hệ </strong>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('main.about') }}">
-                    <strong class ="text">Giới thiệu </strong>
+                        <strong class="text">Giới thiệu </strong>
                     </a>
                 </li>
 
-
+                {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex" href="#" role="button" data-bs-toggle="dropdown"><strong>Chào
+<!--                        ,{{ current_user.name }}-->
+                    </strong>
+                     <img class="img-rounded profile-thumbnail" style="padding-left:5px" src="{{ current_user.gravatar(size=25) }}">
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-item">
+                            <a>
+                                <i class="fas fa-plus mr-2"></i>
+                                <strong class="hide-nav">Thông tin tài khoản</strong>
+                            </a>
+                        </li>
+                        <li class="dropdown-item">
+                            <a>
+                                <i class="fas fa-plus mr-2"></i>
+                                <strong class="hide-nav">Thoát quyền sử dụng</strong>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
             </ul>
             <form class="form-inline mt-2 mt-md-0">
                 <input class="form-control mr-sm-2"
                        type="text"
                        placeholder="Tìm kiếm"
                        placeholder="Tìm kiếm"
-                       aria-label="Search" />
+                       aria-label="Search"/>
 
                 <button class="btn btn btn-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
             </form>
             {% if current_user.is_authenticated %}
+
             <a href="{{ url_for('main.medical_register') }}" class="btn btn-primary ml-3">
                 <i class="fa-solid fa-calendar-check mr-2"></i>
-            Đăng ký khám bệnh</a>
+                Đăng ký khám bệnh</a>
+
             {% else %}
             <div class='d-flex'>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-primary ml-3">
-                <i class="fa-solid fa-right-to-bracket mr-2"></i>
-            Đăng nhập</a>
-            {% endif %}
-        </div>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary ml-3">
+                    <i class="fa-solid fa-right-to-bracket mr-2"></i>
+                    Đăng nhập</a>
+                {% endif %}
+            </div>
     </nav>
 </header>

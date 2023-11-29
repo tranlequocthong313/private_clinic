@@ -4,6 +4,6 @@ from wtforms.validators import DataRequired
 
 
 class MedicalForm(FlaskForm):
-    chuan_doan = PasswordField("Chuan doan", validators=[DataRequired()])
-    dieu_tri = PasswordField("Dieu tri", validators=[DataRequired()])
+    chuan_doan = StringField("Chuan doan")
+    dieu_tri = StringField("Dieu tri")
     submit = SubmitField("Lap phieu kham")
