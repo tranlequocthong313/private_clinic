@@ -1,12 +1,22 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 
 from ..models import User
 
 
 class LoginForm(FlaskForm):
-    email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
+    email_phone = StringField(
+        "Email hoac so dien thoai",
+        validators=[
+            Length(min=6, max=50),
+            Regexp(
+                r"^[0-9+\-.]+@[a-z\d\-.]+\.[a-z]+$",
+                message="Enter a valid email or phone number.",
+            ),
+        ],
+        render_kw={"placeholder": "Email hoac so dien thoai"},
+    )
     password = PasswordField("Password", validators=[DataRequired()])
     remember_me = BooleanField("Keep me logged in")
     submit = SubmitField("Đăng nhập")
@@ -14,7 +24,17 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
+    email_phone = StringField(
+        "Email hoac so dien thoai",
+        validators=[
+            Length(min=6, max=50),
+            Regexp(
+                r"^[0-9+\-.]+@[a-z\d\-.]+\.[a-z]+$",
+                message="Enter a valid email or phone number.",
+            ),
+        ],
+        render_kw={"placeholder": "Email hoac so dien thoai"},
+    )
     password = PasswordField(
         "Password",
         validators=[

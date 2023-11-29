@@ -21,7 +21,10 @@ def login():
         return redirect(url_for("main.index"))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data.lower()).first()
+        user = User.query.filter_by(
+            email=form.email_phone.data.lower(),
+            phone_number=form.email_phone.data.lower(),
+        ).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             next = request.args.get("next")
@@ -41,6 +44,7 @@ def register():
         user = User(
             name=form.name.data,
             email=form.email.data.lower(),
+            phone_number=form.phone_number.data.lower(),
             password=form.password.data,
         )
         db.session.add(user)
