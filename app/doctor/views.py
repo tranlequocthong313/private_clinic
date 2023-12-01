@@ -15,8 +15,8 @@ def medical_form():
     form = MedicalForm()
     if form.validate_on_submit():
         medicalExamination = MedicalExamination(
-            symptom=form.trieu_chung.data,
-            diagnosis=form.chuan_doan.data
+            symptom=form.symptom.data,
+            diagnosis=form.diagnosis.data
         )
         db.session.add(medicalExamination)
         db.session.commit()

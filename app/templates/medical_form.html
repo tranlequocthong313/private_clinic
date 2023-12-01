@@ -7,26 +7,24 @@ render_form %} {% block content %}
 <div class="content" style="margin-bottom: 2%;">
     <div class="doctor row">
         <div class="doctor-left col-md-4 col-sm-12 text-center">
-            <div class="mb-3 mt-3">
+            <div class="mb-2 mt-2">
                 <div>
                     <h4 style="font-weight:bold">Tra cứu bệnh nhân</h4>
-                    <p>
-                        Nếu nhập sai thì vui lòng bảo bệnh nhân đừng thanh toán và ra đăng ký khám lại vào hôm sau
-                    </p>
+
                 </div>
                 <div class="m-user mb-3 mt-3">
-                    <label class="lb-id form-label">Mã bệnh nhân:</label>
+                    <label class="lb-id form-label">Bệnh nhân:</label>
                     <input type="text" class="form-control"
-                           placeholder="Nhập mã bệnh nhân">
+                           placeholder="Nhập mã, số điện thoại, email">
                 </div>
             </div>
             <hr>
 
-            <div class="mb-3 mt-3">
-                <div class="mb-3 mt-3">
+            <div class="mb-2 mt-2">
+                <div class="mb-2 mt-2">
                     <div>
                         <h4 style="font-weight:bold">Tra cứu thuốc</h4>
-                        <p>Nếu <b>không nhập thuốc</b> thì nó sẽ là <b>tra cứu phiếu khám</b> theo mã bệnh nhân</p>
+
                     </div>
                     <div class="m-medicine mb-3 mt-3">
                         <label class="form-label">Nhập thuốc:</label>
@@ -42,12 +40,10 @@ render_form %} {% block content %}
             </div>
         </div>
 
-        <div class="doctor-right col-md-8 col-sm-12 mt-3">
+        <div class="doctor-right col-md-8 col-sm-12 mt-2">
             <div>
-                <h2 style="font-weight: bold; color:blue; text-align: center ">PHIẾU KHÁM BỆNH</h2>
-                <p style="text-align: center ">
-                    Nếu nhập sai thì vui lòng bảo bệnh nhân đừng thanh toán và ra đăng ký khám lại vào hôm sau
-                </p>
+                <h2 style="font-weight: bold; color:blue; text-align: center; ">PHIẾU KHÁM BỆNH</h2>
+
                 <hr>
                 <div class="container-fluid">
                     <div style="font-weight: bold; font-size: 25px">
@@ -59,7 +55,7 @@ render_form %} {% block content %}
                             <div class="mb-3 mt-3">
                                 <div class="m-symptom">
                                     <label for="symptom" class="form-label">Triệu chứng:</label>
-                                    {{form.trieu_chung(class_="form-control")}}
+                                    {{form.symptom(class_="form-control")}}
                                 </div>
                             </div>
                         </div>
@@ -68,18 +64,18 @@ render_form %} {% block content %}
                             <div class="mb-3 mt-3">
                                 <div class="m-symptom">
                                     <label for="diagnosis" class="form-label">Chuẩn đoán:</label>
-                                    {{form.chuan_doan(class_="form-control")}}
+                                    {{form.diagnosis(class_="form-control")}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <br>
-
+                <br>
                 <div class="medicine-form">
-                    <table class="table">
+                    <table class="table table-primary ">
                         <tr>
-                            <th>Mã phiếu khám</th>
+                            <th>Số thứ tự</th>
 
                             <th>Thuốc</th>
                             <th>Đơn vị</th>
@@ -88,8 +84,10 @@ render_form %} {% block content %}
                         </tr>
                     </table>
                 </div>
-                <div class="bt-save form-floating mt-3 mb-3 text-center">
-                    <input type="submit" value="Lưu" class="btn btn-warning"/>
+                <div class="form-floating  text-center d-flex">
+                    <input type="submit" value="Lưu dữ liệu" class="btn btn-warning "/>
+                    <input type="submit" value="Xuất pdf" class="btn btn-danger ml-2 "/>
+
                 </div>
 
             </div>
