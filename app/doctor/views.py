@@ -3,8 +3,9 @@ from flask_login import login_required
 
 from . import doctor
 from .forms import MedicalForm
+from .. import db
 from ..decorators import roles_required
-from ..models import AccountRole
+from ..models import AccountRole, MedicalExamination
 
 
 @doctor.route("/medical-form", methods=["GET", "POST"])
@@ -13,6 +14,11 @@ from ..models import AccountRole
 def medical_form():
     form = MedicalForm()
     if form.validate_on_submit():
-        # Thuc hien tao phieu kham benh va cac logic khac
+        medicalExamination = MedicalExamination(
+            symptom=form.symptom.data,
+            diagnosis=form.diagnosis.data
+        )
+        db.session.add(medicalExamination)
+        db.session.commit()
         pass
     return render_template("medical_form.html", form=form)

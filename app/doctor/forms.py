@@ -4,6 +4,6 @@ from wtforms.validators import DataRequired
 
 
 class MedicalForm(FlaskForm):
-    chuan_doan = StringField("Chuan doan")
-    dieu_tri = StringField("Dieu tri")
+    diagnosis = StringField("Chuan doan")
+    symptom = StringField("Trieu chung")
     submit = SubmitField("Lap phieu kham")

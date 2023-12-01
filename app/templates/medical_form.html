@@ -1,10 +1,106 @@
 {% extends "landing_page.html" %} {% from 'bootstrap4/form.html' import
 render_form %} {% block content %}
-<div class="page-header">
-  <h1>Lập phiếu khám bệnh</h1>
+<link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/doctor.css') }}">
+
+<div class="content" style="margin-bottom: 2%;">
+    <div class="doctor row">
+        <div class="doctor-left col-md-4 col-sm-12 text-center">
+            <div class="mb-2 mt-2">
+                <div>
+                    <h4 style="font-weight:bold">Tra cứu bệnh nhân</h4>
+
+                </div>
+                <div class="m-user mb-3 mt-3">
+                    <label class="lb-id form-label">Bệnh nhân:</label>
+                    <input type="text" class="form-control"
+                           placeholder="Nhập mã, số điện thoại, email">
+                </div>
+            </div>
+            <hr>
+
+            <div class="mb-2 mt-2">
+                <div class="mb-2 mt-2">
+                    <div>
+                        <h4 style="font-weight:bold">Tra cứu thuốc</h4>
+
+                    </div>
+                    <div class="m-medicine mb-3 mt-3">
+                        <label class="form-label">Nhập thuốc:</label>
+                        <input class="form-control" list="medicines" name="medicine" id="medicine">
+
+                    </div>
+                    <div class="m-quantity mb-2 mt-2">
+                        <label class="form-label">Số lượng:</label>
+                        <input type="number" min="1" value="1" class="form-control" name="so_luong_thuoc"/>
+                    </div>
+                </div>
+                <button class="bt-add btn btn-primary" type="submit">Thêm</button>
+            </div>
+        </div>
+
+        <div class="doctor-right col-md-8 col-sm-12 mt-2">
+            <div>
+                <h2 style="font-weight: bold; color:blue; text-align: center; ">PHIẾU KHÁM BỆNH</h2>
+
+                <hr>
+                <div class="container-fluid">
+                    <div style="font-weight: bold; font-size: 25px">
+                        Phiếu khám của bệnh nhân: <span style="color: red"></span>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="mb-3 mt-3">
+                                <div class="m-symptom">
+                                    <label for="symptom" class="form-label">Triệu chứng:</label>
+                                    {{form.symptom(class_="form-control")}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 ">
+                            <div class="mb-3 mt-3">
+                                <div class="m-symptom">
+                                    <label for="diagnosis" class="form-label">Chuẩn đoán:</label>
+                                    {{form.diagnosis(class_="form-control")}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <br>
+                <div class="medicine-form">
+                    <table class="table table-primary ">
+                        <tr>
+                            <th>Số thứ tự</th>
+
+                            <th>Thuốc</th>
+                            <th>Đơn vị</th>
+                            <th>Số lượng</th>
+                            <th>Cách dùng</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="form-floating  text-center d-flex">
+                    <input type="submit" value="Lưu dữ liệu" class="btn btn-warning "/>
+                    <input type="submit" value="Xuất pdf" class="btn btn-danger ml-2 "/>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
-<div class="col-md-4">
-  {{ render_form(form) }}
-  <br />
+
+
+<div class="noti-click">
+    <div class="noti-info alert alert-warning">
+        Tạo phiếu <strong>thành công &#10004</strong>
+    </div>
 </div>
+
+
 {% endblock %}
