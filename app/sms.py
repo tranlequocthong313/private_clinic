@@ -1,22 +1,24 @@
-from . import sms_client
 from threading import Thread
 from flask import current_app
-import os
+from . import sms_client
 
 
-def send_async_sms(app, to, body):
+def send_async_sms(app, to, message):
     with app.app_context():
-        message = sms_client.messages.create(
-          from_=os.getenv('TWILIO_PHONE'),
-          body=body,
-          to=to
+        sms = sms_client.messages.create(
+            body=message,
+            from_=app.config.get("TWILIO_NUMBER"),
+            to=to,
         )
-        print(message)
+        print(sms)
+        # if sms["messages"][0]["status"] == "0":
+        #     print("Message sent successfully.")
+        # else:
+        #     print(f"Message failed with error: {sms['messages'][0]['error-text']}")
 
 
-def send_sms(to, body, **kwargs):
+def send_sms(to, message, **kwargs):
     app = current_app._get_current_object()
-    thr = Thread(target=send_async_sms, args=[app, to, body])
+    thr = Thread(target=send_async_sms, args=[app, to, message])
     thr.start()
     return thr
-

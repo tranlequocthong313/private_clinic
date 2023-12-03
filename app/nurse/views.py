@@ -1,10 +1,10 @@
-# from flask import render_template
-# from flask_login import login_required
+from flask import render_template, redirect, url_for
+from flask_login import login_required
 
-# from . import nurse
-# from .forms import MedicalForm
-# from ..decorators import roles_required
-# from ..models import AccountRole
+from . import nurse
+from .forms import MedicalForm
+from ..decorators import roles_required
+from ..models import AccountRole
 
 
 # @nurse.route("/medical-form", methods=["GET", "POST"])
@@ -16,3 +16,10 @@
 #         # Thuc hien tao phieu kham benh va cac logic khac
 #         pass
 #     return render_template("medical_form.html", form=form)
+
+
+@nurse.route("/medical-register", methods=["GET"])
+@login_required
+@roles_required([AccountRole.NURSE])
+def medical_register():
+    return redirect(url_for("main.medical_register"))
