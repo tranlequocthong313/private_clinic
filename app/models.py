@@ -32,7 +32,6 @@ def load_user(user_id):
 class Gender(enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
-    UNKNOWN = "Unknown"
 
 
 class AccountRole(enum.Enum):
@@ -41,7 +40,6 @@ class AccountRole(enum.Enum):
     DOCTOR = "Doctor"
     NURSE = "Nurse"
     CASHIER = "Cashier"
-    UNKNOWN = "Unknown"
 
 
 class User(UserMixin, db.Model):
@@ -51,11 +49,11 @@ class User(UserMixin, db.Model):
     email = Column(String(50), nullable=False, unique=True)
     phone_number = Column(String(11), unique=True)
     name = Column(String(50), nullable=False)
-    gender = Column(Enum(Gender), default=Gender.UNKNOWN)
+    gender = Column(Enum(Gender), default=Gender.MALE)
     date_of_birth = Column(Date)
     address = Column(String(50))
     password_hash = Column(String(255), nullable=False)
-    role = Column(Enum(AccountRole), default=AccountRole.UNKNOWN)
+    role = Column(Enum(AccountRole), default=AccountRole.PATIENT)
     avatar = Column(String(255))
     confirmed = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
@@ -132,7 +130,7 @@ class User(UserMixin, db.Model):
 
 
 class AnonymousUser(AnonymousUserMixin):
-    role = AccountRole.UNKNOWN
+    role = AccountRole.PATIENT
 
 
 login_manager.anonymous_user = AnonymousUser
@@ -225,7 +223,6 @@ class Bill(db.Model):
 class TimeToVisit(enum.Enum):
     MORNING = "Morning"
     AFTERNOON = "Afternoon"
-    UNKNOWN = "Unknown"
 
 
 class MedicalRegistration(db.Model):
@@ -235,7 +232,7 @@ class MedicalRegistration(db.Model):
     created_at = Column(DateTime, server_default=func.now())
     symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
-    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.UNKNOWN)
+    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.MORNING)
     fulfilled = Column(Boolean, default=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(
