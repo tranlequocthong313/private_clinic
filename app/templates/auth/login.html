@@ -1,8 +1,6 @@
 {% extends "landing_page.html" %} {% from 'bootstrap4/form.html' import
-render_form %}
-{% from 'bootstrap4/form.html' import
-render_field %}
-{% block content %}
+render_form %} {% from 'bootstrap4/form.html' import render_field %} {% block
+content %}
 
 <section class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark"
          style="min-height: 100vh; background-size: cover; background-image: url(https://png.pngtree.com/thumb_back/fw800/back_our/20190621/ourmid/pngtree-molecular-structure-illustration-medical-blue-gradient-background-image_199094.jpg);">
@@ -20,8 +18,16 @@ render_field %}
                                 <div class="input-group-prepend">
                                     <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
                                 </div>
-                             {{form.email(class_="form-control", placeholder="Email")}}
+                             {{form.email_phone(class_="form-control")}}
                             </div>
+                            {% if form.email_phone.errors %}
+                                <ul class="text-danger">
+                                    {% for error in form.email_phone.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
 
                             <div class="form-group input-group">
                                 <div class="input-group-prepend">
@@ -30,8 +36,9 @@ render_field %}
                                   {{form.password(class_="form-control", placeholder="Mật khẩu")}}
                             </div>
 
+
                             <div class="form-group">
-                                {{form.submit (class_="btn btn-info btn-block", type="submit")}}
+                                {{form.submit (class_="btn btn-info btn-block")}}
                             </div>
                             <p class="text-center">Bạn đã có tài khoản chưa ?
                                 <a href="{{url_for('auth.register')}}">Đăng ký</a>
@@ -39,12 +46,15 @@ render_field %}
                         </form>
                     </div>
                 </div>
-            </div>
+              </div>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
 
 
 
 {% endblock %}
-

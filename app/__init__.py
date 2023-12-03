@@ -1,9 +1,12 @@
+import os
+
 from flask import Flask
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap4
+from twilio.rest import Client
 
 from config import config
 
@@ -12,6 +15,7 @@ mail = Mail()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 bootstrap = Bootstrap4()
+sms_client = Client(os.getenv("TWILIO_SID"), os.getenv("TWILIO_TOKEN"))
 
 
 def create_app(*args, **kwargs):
