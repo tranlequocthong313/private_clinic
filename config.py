@@ -36,5 +36,9 @@ class DevelopmentConfig(Config):
     MAIL_SENDER = f"Hệ thống <{os.getenv('MAIL_SENDER')}>"
     ADMIN = os.getenv("ADMIN")
 
+    TWILIO_SID = os.getenv("TWILIO_SID")
+    TWILIO_TOKEN = os.getenv("TWILIO_TOKEN")
+    TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
+
 
 config = {"development": DevelopmentConfig, "default": DevelopmentConfig}

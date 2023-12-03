@@ -48,7 +48,7 @@ class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String(50), nullable=False, unique=True)
+    email = Column(String(50), unique=True)
     phone_number = Column(String(11), unique=True)
     name = Column(String(50), nullable=False)
     gender = Column(Enum(Gender), default=Gender.UNKNOWN)

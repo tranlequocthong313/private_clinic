@@ -17,12 +17,11 @@ from ..models import User, Gender
 
 
 class LoginForm(FlaskForm):
-    email = StringField(
+    email_phone = StringField(
         "Email hoac so dien thoai",
         validators=[
-            Length(min=6, max=50),
             Regexp(
-                r"^[0-9+\-.]+@[a-z\d\-.]+\.[a-z]+$",
+                r"^(?:\d{10}|\w+@\w+\.\w{2,3})$",
                 message="Enter a valid email or phone number.",
             ),
         ],
@@ -35,9 +34,16 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    email = StringField("Email", validators=[DataRequired(), Length(1, 64), Email()])
-    phone_number = StringField(
-        "Phone_number", validators=[DataRequired(), Length(min=0, max=10)]
+    email_phone = StringField(
+        "Email hoac so dien thoai",
+        validators=[
+            DataRequired(),
+            Regexp(
+                r"^(?:\d{10}|\w+@\w+\.\w{2,3})$",
+                message="Enter a valid email or phone number.",
+            ),
+        ],
+        render_kw={"placeholder": "Email hoac so dien thoai"},
     )
     address = StringField("Address", validators=[DataRequired()])
     gender = SelectField(
