@@ -123,7 +123,7 @@ class User(UserMixin, db.Model):
             url = "https://secure.gravatar.com/avatar"
         else:
             url = "http://www.gravatar.com/avatar"
-            hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
+            hash = hashlib.md5(self.email.encode("utf-8")).hexdigest() if self.email else ""
         return "{url}/{hash}?s={size}&d={default}&r={rating}".format(
             url=url, hash=hash, size=size, default=default, rating=rating
         )
@@ -178,7 +178,7 @@ medical_examination_detail = db.Table(
     ),
     db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
     db.Column("quantity", db.Integer, nullable=False),
-    db.Column("dosage", UnicodeText, nullable=False),
+    db.Cohumn("dosage", UnicodeText, nullable=False),
 )
 
 

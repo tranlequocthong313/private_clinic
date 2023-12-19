@@ -13,9 +13,9 @@ from ..models import AccountRole, MedicalExamination, User
 @roles_required([AccountRole.DOCTOR])
 def medical_form():
     form = MedicalForm()
-
+    user = get_user_by_phone()
     if form.validate_on_submit():
-        u = get_user_by_phone(form.phone.data)
+        # u = get_user_by_phone(form.phone.data)
         medical_examination = MedicalExamination(
             patient_id=4,
             doctor_id=3,
@@ -24,8 +24,8 @@ def medical_form():
         )
         db.session.add(medical_examination)
         db.session.commit()
-    return render_template("medical_form.html", form=form)
+    return render_template("medical_form.html", form=form, user=user)
 
 
-def get_user_by_phone(phone):
-        return User.query.filter.get(User.phone_number.__eq__(phone))
+def get_user_by_phone():
+    return User.query.get(4)

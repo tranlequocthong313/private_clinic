@@ -4,10 +4,12 @@ render_form %} {% block content %}
         rel="stylesheet"
         href="{{ url_for('static', filename='css/doctor.css') }}">
 
+
 <div class="content" style="margin-bottom: 2%;">
     <div class="doctor row">
         <div class="doctor-left col-md-4 col-sm-12 text-center">
             <div class="mb-2 mt-2">
+
                 <div>
                     <h4 style="font-weight:bold">Tra cứu bệnh nhân</h4>
 
@@ -16,31 +18,32 @@ render_form %} {% block content %}
                     <label class="lb-id form-label">Bệnh nhân:</label>
                     <input type="text" class="form-control"
                            placeholder="Nhập mã, số điện thoại, email">
+                    <button class="bt-add btn btn-primary" style="width:100px; margin-left: 10px;" type="submit">Tìm</button>
                 </div>
             </div>
             <hr>
 
             <div class="mb-2 mt-2">
-                <div class="mb-2 mt-2">
+                <form class="mb-2 mt-2" id="medicine-form">
                     <div>
                         <h4 style="font-weight:bold">Tra cứu thuốc</h4>
 
                     </div>
                     <div class="m-medicine mb-3 mt-3">
                         <label class="form-label">Nhập thuốc:</label>
-                        <input class="form-control" name="medicine" id="medicine">
+                        <input class="form-control" name="medicine-name" id="medicine">
 
                     </div>
                     <div class="m-quantity mb-2 mt-2">
                         <label class="form-label">Số lượng:</label>
-                        <input type="number" min="1" value="1" class="form-control" name="so_luong_thuoc"/>
+                        <input type="number" min="1" value="1" class="form-control" name="medicine-quantity"/>
                     </div>
                     <div class="m-medicine mb-3 mt-3">
                         <label class="form-label">Cách dùng:</label>
-                        <input class="form-control"  name="medicine" id=use-medicine">
+                        <input class="form-control"  name="medicine-dosage" id=use-medicine">
                     </div>
-                </div>
-                <button class="bt-add btn btn-primary" style="width:100px" type="submit">Thêm</button>
+                    <button class="bt-add btn btn-primary" style="width:100px" type="submit">Thêm</button>
+                </form>
             </div>
         </div>
 
@@ -54,9 +57,9 @@ render_form %} {% block content %}
                     <div class="container-fluid">
 
 
-                        <!--                    <div style="font-weight: bold; font-size: 25px">-->
-                        <!--                        Phiếu khám của bệnh nhân: <span style="color: red"></span>-->
-                        <!--                    </div>-->
+                        <div style="font-weight: bold; font-size: 25px">
+                            Phiếu khám của bệnh nhân:<span style="color: red">{{ user.name }}</span>
+                        </div>
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="mb-3 mt-3">

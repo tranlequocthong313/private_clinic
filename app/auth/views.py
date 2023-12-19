@@ -24,20 +24,13 @@ def login():
         return redirect(url_for("main.index"))
     form = LoginForm()
     if form.validate_on_submit():
-        print(form.email_phone.data)
+        print('valid login')
         user = User.query.filter(
             or_(
                 User.email == form.email_phone.data.lower(),
                 User.phone_number == form.email_phone.data.lower(),
             ),
-            User.password == form.password.data,
         ).first()
-        print(
-            or_(
-                User.email == form.email_phone.data.lower(),
-                User.phone_number == form.email_phone.data.lower(),
-            )
-        )
         print(user)
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
