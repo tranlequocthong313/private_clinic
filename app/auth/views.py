@@ -24,21 +24,12 @@ def login():
         return redirect(url_for("main.index"))
     form = LoginForm()
     if form.validate_on_submit():
-        print(form.email_phone.data)
         user = User.query.filter(
             or_(
                 User.email == form.email_phone.data.lower(),
                 User.phone_number == form.email_phone.data.lower(),
-            ),
-            User.password == form.password.data,
-        ).first()
-        print(
-            or_(
-                User.email == form.email_phone.data.lower(),
-                User.phone_number == form.email_phone.data.lower(),
             )
-        )
-        print(user)
+        ).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
             next = request.args.get("next")
@@ -101,13 +92,11 @@ def register():
             r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b",
             form.email_phone.data.lower(),
         )
-        print("mail", matches)
         if matches:
             user.email = form.email_phone.data.lower()
         matches = search(
             r"(84|0[3|5|7|8|9])+([0-9]{8})\b", form.email_phone.data.lower()
         )
-        print("phone", matches)
         if matches:
             user.phone_number = form.email_phone.data.lower()
         if not user.email and not user.phone_number:

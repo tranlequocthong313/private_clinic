@@ -32,7 +32,6 @@ def load_user(user_id):
 class Gender(enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
-    UNKNOWN = "Unknown"
 
 
 class AccountRole(enum.Enum):
@@ -41,7 +40,6 @@ class AccountRole(enum.Enum):
     DOCTOR = "Doctor"
     NURSE = "Nurse"
     CASHIER = "Cashier"
-    UNKNOWN = "Unknown"
 
 
 class User(UserMixin, db.Model):
@@ -55,7 +53,7 @@ class User(UserMixin, db.Model):
     date_of_birth = Column(Date)
     address = Column(String(50))
     password_hash = Column(String(255), nullable=False)
-    role = Column(Enum(AccountRole), default=AccountRole.UNKNOWN)
+    role = Column(Enum(AccountRole), default=AccountRole.PATIENT)
     avatar = Column(String(255))
     confirmed = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
@@ -125,14 +123,18 @@ class User(UserMixin, db.Model):
             url = "https://secure.gravatar.com/avatar"
         else:
             url = "http://www.gravatar.com/avatar"
-            hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
+            hash = (
+                hashlib.md5(self.email.encode("utf-8")).hexdigest()
+                if self.email
+                else ""
+            )
         return "{url}/{hash}?s={size}&d={default}&r={rating}".format(
             url=url, hash=hash, size=size, default=default, rating=rating
         )
 
 
 class AnonymousUser(AnonymousUserMixin):
-    role = AccountRole.UNKNOWN
+    role = AccountRole.PATIENT
 
 
 login_manager.anonymous_user = AnonymousUser
@@ -225,7 +227,6 @@ class Bill(db.Model):
 class TimeToVisit(enum.Enum):
     MORNING = "Morning"
     AFTERNOON = "Afternoon"
-    UNKNOWN = "Unknown"
 
 
 class MedicalRegistration(db.Model):
@@ -235,7 +236,7 @@ class MedicalRegistration(db.Model):
     created_at = Column(DateTime, server_default=func.now())
     symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
-    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.UNKNOWN)
+    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.MORNING)
     fulfilled = Column(Boolean, default=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(

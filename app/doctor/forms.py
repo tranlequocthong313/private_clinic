@@ -1,9 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
 
 class MedicalForm(FlaskForm):
+    name = StringField("Họ tên")
+    phone = StringField("Số điện thoại")
     diagnosis = StringField("Chuan doan")
     symptom = StringField("Trieu chung")
-    submit = SubmitField("Lap phieu kham")
+    submit = SubmitField("Lưu")
