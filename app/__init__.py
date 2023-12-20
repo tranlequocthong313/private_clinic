@@ -7,6 +7,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap4
 from twilio.rest import Client
+from flask_admin import Admin
 
 from config import config
 
@@ -51,5 +52,7 @@ def create_app(*args, **kwargs):
     from .auth import auth as auth_blueprint
 
     app.register_blueprint(auth_blueprint, url_prefix="/auth")
+
+    from . import admin as _admin
 
     return app

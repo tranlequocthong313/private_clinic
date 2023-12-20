@@ -11,10 +11,6 @@ def send_async_sms(app, to, message):
             to=to,
         )
         print(sms)
-        # if sms["messages"][0]["status"] == "0":
-        #     print("Message sent successfully.")
-        # else:
-        #     print(f"Message failed with error: {sms['messages'][0]['error-text']}")
 
 
 def send_sms(to, message, **kwargs):
