@@ -53,6 +53,8 @@ def create_app(*args, **kwargs):
 
     app.register_blueprint(auth_blueprint, url_prefix="/auth")
 
-    from . import admin as _admin
+    from .api import api as api_blueprint
+
+    app.register_blueprint(api_blueprint, url_prefix="/api")
 
     return app
