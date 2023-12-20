@@ -49,6 +49,38 @@ def login():
     return render_template("auth/login.html", form=form)
 
 
+def register_handler(user, email_phone):
+    print(email_phone)
+    matches = search(
+        r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b",
+        email_phone.lower(),
+    )
+    print("mail", matches)
+    if matches:
+        user.email = email_phone.lower()
+    matches = search(r"(84|0[3|5|7|8|9])+([0-9]{8})\b", email_phone.lower())
+    print("phone", matches)
+    if matches:
+        user.phone_number = email_phone.lower()
+    if not user.email and not user.phone_number:
+        raise Exception("Must provide email or phone number.")
+    print(user)
+    db.session.add(user)
+    db.session.commit()
+    token = user.generate_confirmation_token()
+    if user.email:
+        send_email(
+            user.email,
+            "Confirm Your Account",
+            "auth/email/confirm",
+            user=user,
+            token=token,
+        )
+    if user.phone_number:
+        send_sms(user.phone_number, "Hi from server")
+    return user
+
+
 @auth.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -59,8 +91,6 @@ def register():
         print("VALID REGISTER")
         user = User(
             name=form.name.data,
-            # email=form.email.data.lower(),
-            # phone_number=form.email_phone.data.lower(),
             password=form.password.data,
             date_of_birth=form.date_of_birth.data,
             address=form.address.data,
@@ -80,6 +110,8 @@ def register():
         print("phone", matches)
         if matches:
             user.phone_number = form.email_phone.data.lower()
+        if not user.email and not user.phone_number:
+            raise Exception("Must provide email or phone number.")
         db.session.add(user)
         db.session.commit()
         token = user.generate_confirmation_token()

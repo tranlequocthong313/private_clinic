@@ -20,7 +20,7 @@ class MedicalRegisterForm(FlaskForm):
     phone_number = StringField("So dien thoai", validators=[DataRequired()])
     email = EmailField("Email")
     address = StringField("Dia chi")
-    appointment_date = DateField("Ngay hen", validators=[DataRequired()])
+    date_of_visit = DateField("Ngay hen", validators=[DataRequired()])
     time_to_visit = SelectField("Buoi hen", choices=[g.value for g in (TimeToVisit)])
     symptom = StringField("Trieu chung")
     callable_time = StringField("Thoi gian co the goi")

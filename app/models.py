@@ -51,7 +51,7 @@ class User(UserMixin, db.Model):
     email = Column(String(50), unique=True)
     phone_number = Column(String(11), unique=True)
     name = Column(String(50), nullable=False)
-    gender = Column(Enum(Gender), default=Gender.UNKNOWN)
+    gender = Column(Enum(Gender), default=Gender.MALE)
     date_of_birth = Column(Date)
     address = Column(String(50))
     password_hash = Column(String(255), nullable=False)

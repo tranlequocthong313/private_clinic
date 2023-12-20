@@ -5,7 +5,9 @@ from . import main
 from .forms import MedicalRegisterForm
 from ..decorators import confirmed_required, roles_required
 from ..dashboard_categories import dashboard_categories
-from ..models import AccountRole, MedicalRegistration
+from ..models import AccountRole, MedicalRegistration, User
+from .. import db
+from ..auth.views import register_handler
 
 
 @main.route("/")
@@ -29,17 +31,36 @@ def about():
 def medical_register():
     form = MedicalRegisterForm()
     if form.validate_on_submit():
-        registration = MedicalRegistration(symptom=form.symptom.data)
-        # id = Column(Integer, primary_key=True, autoincrement=True)
-        # created_at = Column(DateTime, server_default=func.now())
-        # symptom = Column(UnicodeText)
-        # date_of_visit = Column(Date, nullable=False)
-        # time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.UNKNOWN)
-        # fulfilled = Column(Boolean, default=False)
-        # patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
-        # appointment_schedule_id = Column(
-        #     Integer, ForeignKey(AppointmentSchedule.id), nullable=True
-        # )
+        patient_id = None
+        if current_user.role == AccountRole.PATIENT:
+            patient_id = current_user.id
+        else:
+            # create an account
+            user = User(
+                name=form.name.data,
+                password=form.password.data,
+                date_of_birth=form.date_of_birth.data,
+                gender=form.gender.data,
+            )
+            try:
+                user = register_handler(
+                    user,
+                    form.phone_number.data
+                    if form.phone_number.data
+                    else form.email.data,
+                )
+                patient_id = user.id
+            except Exception as e:
+                flash(e)
+
+        registration = MedicalRegistration(
+            symptom=form.symptom.data,
+            date_of_visit=form.date_of_visit.data,
+            time_to_visit=form.time_to_visit.data,
+            patient_id=patient_id,
+        )
+        db.session.add(registration)
+        db.session.commit()
 
         flash("Dang ky thanh cong.")
         return redirect(url_for("main.medical_register"))
