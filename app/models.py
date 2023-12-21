@@ -54,7 +54,6 @@ class User(UserMixin, db.Model):
     address = Column(String(50))
     password_hash = Column(String(255), nullable=False)
     role = Column(Enum(AccountRole), default=AccountRole.PATIENT)
-    avatar = Column(String(255))
     confirmed = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     appointment_schedule = relationship(
@@ -90,6 +89,21 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.name}>"
+
+    def is_admin(self):
+        return self.role == AccountRole.ADMIN
+
+    def is_patient(self):
+        return self.role == AccountRole.PATIENT
+
+    def is_doctor(self):
+        return self.role == AccountRole.DOCTOR
+
+    def is_nurse(self):
+        return self.role == AccountRole.NURSE
+
+    def is_cashier(self):
+        return self.role == AccountRole.CASHIER
 
     @property
     def password(self):
@@ -247,14 +261,6 @@ class MedicalRegistration(db.Model):
         return self.id
 
 
-medicine_type = db.Table(
-    "medicine_medicine_type",
-    db.Column("id", db.Integer, primary_key=True, autoincrement=True),
-    db.Column("medicine_type", db.Integer, db.ForeignKey("medicine_types.id")),
-    db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
-)
-
-
 class MedicineUnit(db.Model):
     __tablename__ = "medicine_units"
 
@@ -265,21 +271,18 @@ class MedicineUnit(db.Model):
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return f"<MedicineUnit {self.name}>"
-
 
 class MedicineType(db.Model):
     __tablename__ = "medicine_types"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Unicode(50), nullable=False, unique=True)
+    medicines = relationship(
+        "Medicine_MedicineType", backref="medicine_type", lazy=True
+    )
 
     def __str__(self):
         return self.name
-
-    def __repr__(self):
-        return f"<MedicineType {self.name}>"
 
 
 class Medicine(db.Model):
@@ -293,9 +296,20 @@ class Medicine(db.Model):
     price = Column(Double, nullable=False)
     description = Column(UnicodeText)
     medicine_unit_id = Column(Integer, ForeignKey(MedicineUnit.id), nullable=False)
+    medicine_types = relationship(
+        "Medicine_MedicineType", backref="medicine", lazy=True
+    )
 
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return f"<Medicine {self.name}>"
+
+class Medicine_MedicineType(db.Model):
+    __tablename__ = "medicine_medicinetype"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    medicine_id = Column(String(50), ForeignKey(Medicine.id), nullable=False)
+    medicine_type_id = Column(Integer, ForeignKey(MedicineType.id), nullable=False)
+
+    def __str__(self):
+        return self.medicine_type.name

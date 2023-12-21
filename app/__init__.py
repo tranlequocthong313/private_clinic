@@ -7,7 +7,6 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap4
 from twilio.rest import Client
-from flask_admin import Admin
 
 from config import config
 
@@ -33,21 +32,21 @@ def create_app(*args, **kwargs):
 
     app.register_blueprint(main_blueprint)
 
-    from .doctor import doctor as doctor_blueprint
+    # from .doctor import doctor as doctor_blueprint
 
-    app.register_blueprint(doctor_blueprint, url_prefix="/dashboard")
+    # app.register_blueprint(doctor_blueprint, url_prefix="/dashboard")
 
-    from .patient import patient as patient_blueprint
+    # from .patient import patient as patient_blueprint
 
-    app.register_blueprint(patient_blueprint, url_prefix="/dashboard")
+    # app.register_blueprint(patient_blueprint, url_prefix="/dashboard")
 
-    from .nurse import nurse as nurse_blueprint
+    # from .nurse import nurse as nurse_blueprint
 
-    app.register_blueprint(nurse_blueprint, url_prefix="/dashboard")
+    # app.register_blueprint(nurse_blueprint, url_prefix="/dashboard")
 
-    from .medicine import medicine as medicine_blueprint
+    # from .medicine import medicine as medicine_blueprint
 
-    app.register_blueprint(medicine_blueprint, url_prefix="/dashboard")
+    # app.register_blueprint(medicine_blueprint, url_prefix="/dashboard")
 
     from .auth import auth as auth_blueprint
 

@@ -1,5 +1,6 @@
-{% extends "landing_page.html" %} {% from 'bootstrap4/form.html' import
-render_form %} {% block content %}
+{% extends "admin/master.html" %} 
+{% from 'bootstrap4/form.html' import render_form %} 
+{% block body %}
 <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/doctor.css') }}">

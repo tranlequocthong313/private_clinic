@@ -1,4 +1,4 @@
-from flask import render_template, request, current_app, jsonify, session
+from flask import render_template, request, current_app, jsonify, session, make_response
 from flask_login import login_required
 from sqlalchemy import or_
 
@@ -13,19 +13,19 @@ from ..models import AccountRole, Medicine
 def list_medicines():
     body = request.get_json()
     print(body)
-    medicine = Medicine.query.filter_by(name=body.get('name')).first()
-    print({
-        "id": medicine.id,
-        "name": medicine.name,
-        "unit": medicine.medicine_unit.name,
-        "quantity": body.get("quantity"),
-        "dosage": body.get("dosage"),
-    })
+    medicine = Medicine.query.filter_by(name=body.get("name")).first()
 
-    return jsonify({
-        "id": medicine.id,
-        "name": medicine.name,
-        "unit": medicine.medicine_unit.name,
-        "quantity": body.get("quantity"),
-        "dosage": body.get("dosage"),
-    })
+    if medicine:
+        return jsonify(
+            {
+                "id": medicine.id,
+                "name": medicine.name,
+                "unit": medicine.medicine_unit.name,
+                "quantity": body.get("quantity"),
+                "dosage": body.get("dosage"),
+            }
+        )
+    else:
+        response = jsonify({"error": "bad request", "message": "Medicine not found"})
+        response.status_code = 400
+        return response
