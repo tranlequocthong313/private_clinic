@@ -32,7 +32,6 @@ def load_user(user_id):
 class Gender(enum.Enum):
     MALE = "Male"
     FEMALE = "Female"
-    UNKNOWN = "Unknown"
 
 
 class AccountRole(enum.Enum):
@@ -41,7 +40,6 @@ class AccountRole(enum.Enum):
     DOCTOR = "Doctor"
     NURSE = "Nurse"
     CASHIER = "Cashier"
-    UNKNOWN = "Unknown"
 
 
 class User(UserMixin, db.Model):
@@ -51,12 +49,11 @@ class User(UserMixin, db.Model):
     email = Column(String(50), unique=True)
     phone_number = Column(String(11), unique=True)
     name = Column(String(50), nullable=False)
-    gender = Column(Enum(Gender), default=Gender.UNKNOWN)
+    gender = Column(Enum(Gender), default=Gender.MALE)
     date_of_birth = Column(Date)
     address = Column(String(50))
     password_hash = Column(String(255), nullable=False)
-    role = Column(Enum(AccountRole), default=AccountRole.UNKNOWN)
-    avatar = Column(String(255))
+    role = Column(Enum(AccountRole), default=AccountRole.PATIENT)
     confirmed = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     appointment_schedule = relationship(
@@ -93,6 +90,21 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.name}>"
 
+    def is_admin(self):
+        return self.role == AccountRole.ADMIN
+
+    def is_patient(self):
+        return self.role == AccountRole.PATIENT
+
+    def is_doctor(self):
+        return self.role == AccountRole.DOCTOR
+
+    def is_nurse(self):
+        return self.role == AccountRole.NURSE
+
+    def is_cashier(self):
+        return self.role == AccountRole.CASHIER
+
     @property
     def password(self):
         raise AttributeError("Password is not a readable attribute")
@@ -125,14 +137,18 @@ class User(UserMixin, db.Model):
             url = "https://secure.gravatar.com/avatar"
         else:
             url = "http://www.gravatar.com/avatar"
-            hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
+            hash = (
+                hashlib.md5(self.email.encode("utf-8")).hexdigest()
+                if self.email
+                else ""
+            )
         return "{url}/{hash}?s={size}&d={default}&r={rating}".format(
             url=url, hash=hash, size=size, default=default, rating=rating
         )
 
 
 class AnonymousUser(AnonymousUserMixin):
-    role = AccountRole.UNKNOWN
+    role = AccountRole.PATIENT
 
 
 login_manager.anonymous_user = AnonymousUser
@@ -225,7 +241,6 @@ class Bill(db.Model):
 class TimeToVisit(enum.Enum):
     MORNING = "Morning"
     AFTERNOON = "Afternoon"
-    UNKNOWN = "Unknown"
 
 
 class MedicalRegistration(db.Model):
@@ -235,7 +250,7 @@ class MedicalRegistration(db.Model):
     created_at = Column(DateTime, server_default=func.now())
     symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
-    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.UNKNOWN)
+    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.MORNING)
     fulfilled = Column(Boolean, default=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(
@@ -244,14 +259,6 @@ class MedicalRegistration(db.Model):
 
     def __str__(self):
         return self.id
-
-
-medicine_type = db.Table(
-    "medicine_medicine_type",
-    db.Column("id", db.Integer, primary_key=True, autoincrement=True),
-    db.Column("medicine_type", db.Integer, db.ForeignKey("medicine_types.id")),
-    db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
-)
 
 
 class MedicineUnit(db.Model):
@@ -264,21 +271,18 @@ class MedicineUnit(db.Model):
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return f"<MedicineUnit {self.name}>"
-
 
 class MedicineType(db.Model):
     __tablename__ = "medicine_types"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Unicode(50), nullable=False, unique=True)
+    medicines = relationship(
+        "Medicine_MedicineType", backref="medicine_type", lazy=True
+    )
 
     def __str__(self):
         return self.name
-
-    def __repr__(self):
-        return f"<MedicineType {self.name}>"
 
 
 class Medicine(db.Model):
@@ -292,9 +296,20 @@ class Medicine(db.Model):
     price = Column(Double, nullable=False)
     description = Column(UnicodeText)
     medicine_unit_id = Column(Integer, ForeignKey(MedicineUnit.id), nullable=False)
+    medicine_types = relationship(
+        "Medicine_MedicineType", backref="medicine", lazy=True
+    )
 
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return f"<Medicine {self.name}>"
+
+class Medicine_MedicineType(db.Model):
+    __tablename__ = "medicine_medicinetype"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    medicine_id = Column(String(50), ForeignKey(Medicine.id), nullable=False)
+    medicine_type_id = Column(Integer, ForeignKey(MedicineType.id), nullable=False)
+
+    def __str__(self):
+        return self.medicine_type.name

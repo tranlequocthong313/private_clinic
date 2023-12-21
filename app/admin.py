@@ -1,110 +1,196 @@
-from flask_admin import Admin
+import sys
+
+sys.path.append("..")
+
+from flask_admin import Admin, expose
+from flask_login import current_user
 from flask_admin.contrib.sqla import ModelView
+from flask import redirect, url_for, request, render_template
+from flask_admin import AdminIndexView, BaseView
+from . import db
+from manage import app
 
 from app.models import (
-    AppointmentSchedule,
-    Bill,
-    MedicalExamination,
-    MedicalRegistration,
     Medicine,
     MedicineType,
     MedicineUnit,
+    Medicine_MedicineType,
     Policy,
     User,
+    AccountRole,
 )
 
 
-class CustomModelView(ModelView):
+class ProtectedView(BaseView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin()
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("main.index"))
+
+    @expose("/")
+    def index(self):
+        print("url", request.url)
+        return super(ProtectedView, self).index_view()
+
+
+class CustomModelView(ProtectedView, ModelView):
     column_display_pk = True
     column_hide_backrefs = False
     can_export = True
     can_view_details = True
 
 
-class MedicineView(CustomModelView):
-    column_list = ["id", "name", "medicine_unit"]
+class UserModelView(CustomModelView):
+    column_list = [
+        "id",
+        "name",
+        "email",
+        "phone_number",
+        "gender",
+        "date_of_birth",
+        "address",
+        "role",
+        "confirmed",
+        "created_at",
+    ]
+    form_columns = [
+        "name",
+        "email",
+        "phone_number",
+        "name",
+        "gender",
+        "date_of_birth",
+        "address",
+        "password_hash",
+        "role",
+        "confirmed",
+    ]
 
 
-def init_admin(app, db):
-    admin = Admin(app, name="Admin", template_mode="bootstrap4", url="/dashboard")
-    admin.add_view(
-        CustomModelView(
-            User,
-            db.session,
-            name="Người dùng",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+class MedicineUnitModelView(CustomModelView):
+    column_list = ["id", "name"]
+    form_columns = ["id", "name"]
+
+
+class MedicineModelView(CustomModelView):
+    column_list = [
+        "id",
+        "name",
+        "quantity",
+        "manufacturing_date",
+        "expiry_date",
+        "price",
+        "description",
+        "medicine_unit",
+        "medicine_types",
+    ]
+    form_columns = [
+        "id",
+        "name",
+        "quantity",
+        "manufacturing_date",
+        "expiry_date",
+        "price",
+        "description",
+        "medicine_unit",
+    ]
+
+
+class MedicineTypeModelView(CustomModelView):
+    column_list = [
+        "id",
+        "name",
+    ]
+    form_columns = [
+        "name",
+    ]
+
+
+class Medicine_MedicineTypeModelView(CustomModelView):
+    column_list = ["id", "medicine", "medicine_type"]
+    form_columns = ["medicine", "medicine_type"]
+
+
+class StatsView(ProtectedView):
+    @expose("/")
+    def index(self):
+        return self.render("admin/stats.html")
+
+
+admin = Admin(
+    app,
+    name="Admin",
+    template_mode="bootstrap4",
+    url="/dashboard",
+)
+
+admin.add_view(
+    UserModelView(
+        User,
+        db.session,
+        name="Người dùng",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            Policy,
-            db.session,
-            name="Chính sách",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    CustomModelView(
+        Policy,
+        db.session,
+        name="Chính sách",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        MedicineView(
-            Medicine,
-            db.session,
-            name="Thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    MedicineModelView(
+        Medicine,
+        db.session,
+        name="Thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="medicines",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicineUnit,
-            db.session,
-            name="Đơn vị thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    MedicineUnitModelView(
+        MedicineUnit,
+        db.session,
+        name="Đơn vị thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicineType,
-            db.session,
-            name="Loại thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    MedicineTypeModelView(
+        MedicineType,
+        db.session,
+        name="Loại thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicalExamination,
-            db.session,
-            name="Phiếu khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    Medicine_MedicineTypeModelView(
+        Medicine_MedicineType,
+        db.session,
+        name="Thuốc thuộc Loại thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicalRegistration,
-            db.session,
-            name="Phiếu đăng ký khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    StatsView(
+        name="Thống kê",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="stats",
     )
-    admin.add_view(
-        CustomModelView(
-            Bill,
-            db.session,
-            name="Hóa đơn",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            AppointmentSchedule,
-            db.session,
-            name="Lịch khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
+)
+
+from .doctor.views import *
+from .nurse.views import *
+from .cashier.views import *
+from .patient.views import *
+from .medicine.views import *
