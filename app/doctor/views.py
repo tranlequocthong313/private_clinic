@@ -15,16 +15,18 @@ def medical_form():
     form = MedicalForm()
     user = get_user_by_phone()
     if form.validate_on_submit():
-        # u = get_user_by_phone(form.phone.data)
+
         medical_examination = MedicalExamination(
             patient_id=4,
             doctor_id=3,
             symptom=form.symptom.data,
-            diagnosis=form.diagnosis.data
+            diagnosis=form.diagnosis.data,
+
         )
         db.session.add(medical_examination)
         db.session.commit()
     return render_template("medical_form.html", form=form, user=user)
+
 
 
 def get_user_by_phone():

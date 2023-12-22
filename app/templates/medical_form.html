@@ -112,6 +112,17 @@ render_form %} {% block content %}
                             <th>Số lượng</th>
                             <th>Cách dùng</th>
                         </tr>
+                        {% for t in thuoc_trong_ctpk %}
+                        <tr>
+                            <td>{{ t.phieuKham_id }}</td>
+
+                            <td>{{ t.tenThuoc }}</td>
+                            <td>{{ t.donViThuoc }}</td>
+                            <td>{{ t.soLuongThuoc }}</td>
+                            <td>{{ t.moTa }}</td>
+
+                        </tr>
+                        {% endfor %}
 
                     </table>
                 </div>

@@ -4,8 +4,8 @@ from wtforms.validators import DataRequired
 
 
 class MedicalForm(FlaskForm):
-    name = StringField("Họ tên")
-    phone = StringField("Số điện thoại")
-    diagnosis = StringField("Chuan doan")
-    symptom = StringField("Trieu chung")
-    submit = SubmitField("Lưu")
+    name = StringField("Họ tên", validators=[DataRequired()])
+    phone = StringField("Số điện thoại", validators=[DataRequired()])
+    diagnosis = StringField("Chuan doan", validators=[DataRequired()])
+    symptom = StringField("Trieu chung", validators=[DataRequired()])
+    submit = SubmitField("Submit")
