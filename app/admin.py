@@ -1,16 +1,22 @@
+import sys
+
+sys.path.append("..")
+
 from flask_admin import Admin
+from flask_login import current_user
 from flask_admin.contrib.sqla import ModelView
+from flask import redirect, url_for, request
+from flask_admin import AdminIndexView
+from . import db
+from manage import app
 
 from app.models import (
-    AppointmentSchedule,
-    Bill,
-    MedicalExamination,
-    MedicalRegistration,
     Medicine,
     MedicineType,
     MedicineUnit,
     Policy,
     User,
+    AccountRole,
 )
 
 
@@ -20,91 +26,59 @@ class CustomModelView(ModelView):
     can_export = True
     can_view_details = True
 
+    def is_accessible(self):
+        print(current_user.is_authenticated)
+        print(current_user.role)
+        return current_user.is_authenticated and current_user.role == AccountRole.ADMIN
 
-class MedicineView(CustomModelView):
-    column_list = ["id", "name", "medicine_unit"]
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for("auth.login", next=request.url))
 
 
-def init_admin(app, db):
-    admin = Admin(app, name="Admin", template_mode="bootstrap4", url="/dashboard")
-    admin.add_view(
-        CustomModelView(
-            User,
-            db.session,
-            name="Người dùng",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+admin = Admin(app, name="Admin", template_mode="bootstrap4")
+
+admin.add_view(
+    ModelView(
+        User,
+        db.session,
+        name="Người dùng",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            Policy,
-            db.session,
-            name="Chính sách",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    ModelView(
+        Policy,
+        db.session,
+        name="Chính sách",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        MedicineView(
-            Medicine,
-            db.session,
-            name="Thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+# admin.add_view(
+#     ModelView(
+#         Medicine,
+#         db.session,
+#         name="Thuốc",
+#         menu_icon_type="fa",
+#         menu_icon_value="fa-users",
+#     )
+# )
+admin.add_view(
+    ModelView(
+        MedicineUnit,
+        db.session,
+        name="Đơn vị thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicineUnit,
-            db.session,
-            name="Đơn vị thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
+)
+admin.add_view(
+    ModelView(
+        MedicineType,
+        db.session,
+        name="Loại thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
     )
-    admin.add_view(
-        CustomModelView(
-            MedicineType,
-            db.session,
-            name="Loại thuốc",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            MedicalExamination,
-            db.session,
-            name="Phiếu khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            MedicalRegistration,
-            db.session,
-            name="Phiếu đăng ký khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            Bill,
-            db.session,
-            name="Hóa đơn",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
-    admin.add_view(
-        CustomModelView(
-            AppointmentSchedule,
-            db.session,
-            name="Lịch khám",
-            menu_icon_type="fa",
-            menu_icon_value="fa-users",
-        )
-    )
+)

@@ -4,20 +4,35 @@
   justify-content: center;
   align-items: center;
 }
-.navbar{
- background: rgb(39, 81, 130);
+
+.navbar {
+  background: rgb(39, 81, 130);
 }
+
 .text {
- color:white ;
- font-size: 18px ;
+  color: white;
+  font-size: 18px;
 }
+
 .text:hover {
-color:#AEE4FF ;
+  color: #AEE4FF;
 }
+
 .title {
-color: rgb(39, 81, 158)
+  color: rgb(39, 81, 158)
 }
 
-.dropdown-toggle::after {margin-top: 5px;}
+.dropdown-toggle::after {
+  margin-top: 5px;
+}
 
-
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 1rem 1.25rem;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
