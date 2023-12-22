@@ -178,7 +178,7 @@ medical_examination_detail = db.Table(
     ),
     db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
     db.Column("quantity", db.Integer, nullable=False),
-    db.Cohumn("dosage", UnicodeText, nullable=False),
+    db.Column("dosage", UnicodeText, nullable=False),
 )
 
 
