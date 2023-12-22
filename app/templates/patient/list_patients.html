@@ -1,5 +1,5 @@
-{% extends 'dashboard.html' %} {% from 'bootstrap4/form.html' import render_form
-%} {% set active_page = 'list_patients' %} {% block content %}
+{% extends 'admin/master.html' %} {% from 'bootstrap4/form.html' import
+render_form %} {% set active_page = 'list_patients' %} {% block body %}
 {{render_form(form)}} {% if patients %}
 <ul>
   {% for p in patients %}

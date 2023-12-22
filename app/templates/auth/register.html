@@ -1,93 +1,126 @@
 {% extends "landing_page.html" %} {% from 'bootstrap4/form.html' import
-render_form %}
-{% from "_formhelper.html" import render_field %}
-{% block content %}
+render_form %} {% from "_formhelper.html" import render_field %} {% block
+content %}
 
-<section class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark"
-         style="min-height: 100vh; background-size: cover; background-image: url(https://png.pngtree.com/background/20210710/original/pngtree-blue-medical-care-safety-banner-picture-image_1033967.jpg);">
-    <div class="container-fluid">
-        <div class="row  justify-content-center align-items-center d-flex-row text-center h-100">
-            <div class="col-12 col-md-4 col-lg-3   h-50 ">
-                <div class="card shadow">
-                    <div class="card-body mx-auto">
-                        <h3 class="card-title mt-3 text-center text-info">ĐĂNG KÝ</h3>
-                        <p class="text-center">Chào mừng đến với phòng khám Tâm Đức </p>
+<section
+  class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark"
+  style="
+    min-height: 100vh;
+    background-size: cover;
+    background-image: url(https://png.pngtree.com/background/20210710/original/pngtree-blue-medical-care-safety-banner-picture-image_1033967.jpg);
+  "
+>
+  <div class="container-fluid">
+    <div
+      class="row justify-content-center align-items-center d-flex-row text-center h-100"
+    >
+      <div class="col-12 col-md-4 col-lg-3 h-50">
+        <div class="card shadow">
+          <div class="card-body mx-auto">
+            <h3 class="card-title mt-3 text-center text-info">ĐĂNG KÝ</h3>
+            <p class="text-center">Chào mừng đến với phòng khám Tâm Đức</p>
 
-                        <form method='POST'>
-                            {{ form.csrf_token }}
+            <form method="POST">
+              {{ form.csrf_token }}
 
-                            <form>
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-                                    </div>
+              <form>
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-user"></i>
+                    </span>
+                  </div>
 
-                                    {{form.name(class_="form-control", placeholder="Họ Tên")}}
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-envelope" aria-hidden="true"></i> </span>
-                                    </div>
-                                   {{render_field(form.email_phone)}}
-<!--                                     {{form.name(class_=" form.email_phone", placeholder="Email hoặc số điện thoại")}}-->
-
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-location-arrow"></i> </span>
-                                    </div>
-
-                                    {{form.address(class_="form-control", placeholder="Địa chỉ")}}
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-calendar"></i> </span>
-                                    </div>
-
-                                    {{form.date_of_birth(class_="form-control", type="date", placeholder="Ngày sinh")}}
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-                                    </div>
-
-                                    {{form.password(class_="form-control", placeholder="Mật khẩu")}}
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
-                                    </div>
-
-                                    {{form.password2(class_="form-control", placeholder="Nhập lại mật khẩu")}}
-                                </div>
-
-                                <div class="form-group input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"> <i class="fa fa-venus-mars"></i> </span>
-                                    </div>
-
-                                    {{form.gender(class_="form-control", placeholder="Giới tính")}}
-
-                                </div>
-
-                                <div class="form-group">
-                                    {{form.submit (class_="btn btn-info btn-block", type="submit")}}
-                                </div>
-                                <p class="text-center">Bạn đã có tài khoản?
-                                    <a href="{{url_for('auth.login')}}">Đăng nhập</a>
-                                </p>
-                            </form>
-                        </form>
-                    </div>
+                  {{form.name(class_="form-control", placeholder="Họ Tên")}}
                 </div>
-            </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                  {{render_field(form.phone_number)}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                  {{render_field(form.email)}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-location-arrow"></i>
+                    </span>
+                  </div>
+
+                  {{form.address(class_="form-control", placeholder="Địa chỉ")}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </div>
+
+                  {{form.date_of_birth(class_="form-control", type="date",
+                  placeholder="Ngày sinh")}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-lock"></i>
+                    </span>
+                  </div>
+
+                  {{form.password(class_="form-control", placeholder="Mật
+                  khẩu")}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-lock"></i>
+                    </span>
+                  </div>
+
+                  {{form.password2(class_="form-control", placeholder="Nhập lại
+                  mật khẩu")}}
+                </div>
+
+                <div class="form-group input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-venus-mars"></i>
+                    </span>
+                  </div>
+
+                  {{form.gender(class_="form-control", placeholder="Giới
+                  tính")}}
+                </div>
+
+                <div class="form-group">
+                  {{form.submit (class_="btn btn-info btn-block",
+                  type="submit")}}
+                </div>
+                <p class="text-center">
+                  Bạn đã có tài khoản?
+                  <a href="{{url_for('auth.login')}}">Đăng nhập</a>
+                </p>
+              </form>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </section>
 
 {% endblock %}

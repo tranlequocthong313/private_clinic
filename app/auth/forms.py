@@ -6,8 +6,10 @@ from wtforms import (
     SubmitField,
     DateField,
     SelectField,
+    EmailField,
 )
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
+from re import search
 
 from ..models import User, Gender
 
@@ -30,16 +32,11 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
-    email_phone = StringField(
-        "Email hoac so dien thoai",
-        validators=[
-            DataRequired(),
-            Regexp(
-                r"^(?:\d{10}|\w+@\w+\.\w{2,3})$",
-                message="Enter a valid email or phone number.",
-            ),
-        ],
-        render_kw={"placeholder": "Email hoac so dien thoai"},
+    email = EmailField(
+        "Email",
+    )
+    phone_number = StringField(
+        "Phone number",
     )
     address = StringField("Address", validators=[DataRequired()])
     gender = SelectField(
@@ -60,9 +57,34 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField("Đăng ký")
 
     def validate_email(self, field):
-        if User.query.filter_by(email=field.data.lower()).first():
+        if field.data and User.query.filter_by(email=field.data.lower()).first():
             raise ValueError("Email đã được đăng ký.")
+
+    def validate_phone_number(self, field):
+        if field.data and User.query.filter_by(phone_number=field.data.lower()).first():
+            raise ValueError("Số điện thoại đã được đăng ký.")
 
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValueError("Người dùng đã sẵn sàng sử dụng .")
+
+    def validate(self, extra_validators=None):
+        if super().validate(extra_validators):
+            if not (self.email.data or self.phone_number.data):
+                self.email.errors.append("Enter email or phone number.")
+                self.phone_number.errors.append("Enter email or phone number.")
+                return False
+            else:
+                email_matches = search(
+                    r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b",
+                    self.email.data.lower(),
+                )
+                phone_matches = search(
+                    r"(84|0[3|5|7|8|9])+([0-9]{8})\b", self.phone_number.data.lower()
+                )
+                if not (email_matches or phone_matches):
+                    self.email.errors.append("Enter email or phone number.")
+                    self.phone_number.errors.append("Enter email or phone number.")
+                return True
+
+        return False

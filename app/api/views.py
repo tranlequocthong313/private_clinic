@@ -29,5 +29,3 @@ def list_medicines():
         "quantity": body.get("quantity"),
         "dosage": body.get("dosage"),
     })
-
-
