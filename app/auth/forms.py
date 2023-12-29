@@ -58,15 +58,11 @@ class RegistrationForm(FlaskForm):
 
     def validate_email(self, field):
         if field.data and User.query.filter_by(email=field.data.lower()).first():
-            raise ValueError("Email đã được đăng ký.")
+            field.errors.append("Email đã được đăng ký.")
 
     def validate_phone_number(self, field):
         if field.data and User.query.filter_by(phone_number=field.data.lower()).first():
-            raise ValueError("Số điện thoại đã được đăng ký.")
-
-    def validate_username(self, field):
-        if User.query.filter_by(username=field.data).first():
-            raise ValueError("Người dùng đã sẵn sàng sử dụng .")
+            field.errors.append("Số điện thoại đã được đăng ký.")
 
     def validate(self, extra_validators=None):
         if super().validate(extra_validators):

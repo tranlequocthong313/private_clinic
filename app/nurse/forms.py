@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, DateField
 from wtforms.validators import DataRequired
+from datetime import date
 
 
-class MedicalForm(FlaskForm):
-    chuan_doan = PasswordField("Chuan doan", validators=[DataRequired()])
-    dieu_tri = PasswordField("Dieu tri", validators=[DataRequired()])
-    submit = SubmitField("Lap phieu kham")
+class AppointmentDateForm(FlaskForm):
+    date = DateField("Ngay kham", validators=[DataRequired()], default=date.today())
+    submit = SubmitField("Dong y")

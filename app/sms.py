@@ -8,9 +8,8 @@ def send_async_sms(app, to, message):
         sms = sms_client.messages.create(
             body=message,
             from_=app.config.get("TWILIO_NUMBER"),
-            to=f'+84{to}',
+            to=f"+84{to}",
         )
-        print(sms)
 
 
 def send_sms(to, message, **kwargs):

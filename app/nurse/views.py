@@ -1,18 +1,28 @@
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from flask_admin import expose
+from sqlalchemy import func, or_, desc, case
+from datetime import date
 
 from . import nurse
-from .forms import MedicalForm
+from .forms import AppointmentDateForm
 from ..main.forms import MedicalRegisterForm
 from ..decorators import roles_required
-from ..models import AccountRole, User, MedicalRegistration
+from ..models import (
+    AccountRole,
+    User,
+    MedicalRegistration,
+    TimeToVisit,
+    AppointmentSchedule,
+    Policy,
+)
 from ..admin import ProtectedView, admin
 from ..utils import random_password
 from ..auth.views import register_handler
 from ..sms import send_sms
 from ..email import send_email
 from .. import db
+from ..main.views import register_medical
 
 
 class NurseView(ProtectedView):
@@ -21,64 +31,50 @@ class NurseView(ProtectedView):
 
 
 class MedicalRegistrationView(NurseView):
-    @expose("/")
+    @expose("/", methods=["GET", "POST"])
     def index(self):
         form = MedicalRegisterForm()
         if form.validate_on_submit():
-            patient_id = None
-            if current_user.is_patient():
-                patient_id = current_user.id
-            else:
-                password = random_password()
-                user = User(
-                    name=form.name.data,
-                    password=password,
-                    date_of_birth=form.date_of_birth.data,
-                    gender=form.gender.data,
-                    email=form.email.data if form.email.data else None,
-                    phone_number=form.phone_number.data
-                    if form.phone_number.data
-                    else None,
-                )
-                try:
-                    user = register_handler(
-                        user,
-                    )
-                    patient_id = user.id
-                    if user.email:
-                        send_email(
-                            user.email,
-                            "Account",
-                            "auth/email/account",
-                            user=user,
-                            password=password,
-                        )
-                    if user.phone_number:
-                        send_sms(
-                            user.phone_number,
-                            f"Account: Phone number: {user.phone_number}, Password: {password}",
-                        )
-                except Exception as e:
-                    flash(e)
-
-            registration = MedicalRegistration(
-                symptom=form.symptom.data,
-                date_of_visit=form.date_of_visit.data,
-                time_to_visit=form.time_to_visit.data,
-                patient_id=patient_id,
-            )
-            db.session.add(registration)
-            db.session.commit()
-
-            flash("Dang ky thanh cong.")
-            return redirect(url_for("main.medical_register"))
+            register_medical(form)
+            return redirect(url_for(".index"))
         return self.render("nurse/medical_register.html", form=form)
 
 
 class AppointmentScheduleView(NurseView):
-    @expose("/")
+    @expose("/", methods=["GET", "POST"])
     def index(self):
-        return self.render("nurse/appointment_schedule.html")
+        form = AppointmentDateForm()
+        medical_registrations = MedicalRegistration.query
+        appointment = AppointmentSchedule.query
+        policy = Policy.query.get("so-benh-nhan")
+        if form.validate_on_submit():
+            medical_registrations = medical_registrations.filter(
+                func.date(MedicalRegistration.date_of_visit) <= form.date.data,
+                MedicalRegistration.appointment_schedule_id == None,
+            ).order_by(MedicalRegistration.date_of_visit)
+            appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
+        all_fulfilled = True
+        if appointment.first():
+            for r in appointment.first().medical_registrations:
+                if not r.fulfilled:
+                    all_fulfilled = False
+                    break
+        print(form.date.data, date.today(), form.date.data >= date.today())
+        return self.render(
+            "nurse/appointment_schedule.html",
+            medical_registrations=medical_registrations.all(),
+            appointment=appointment.first(),
+            policy=policy,
+            date=form.date.data,
+            form=form,
+            can_add=form.date.data >= date.today()
+            and (
+                not appointment.first()
+                or len(appointment.first().medical_registrations) < policy.value
+            ),
+            can_edit=form.date.data >= date.today(),
+            can_create=form.date.data >= date.today() and not all_fulfilled,
+        )
 
 
 admin.add_view(

@@ -1,6 +1,217 @@
 {% extends "admin/master.html" %} {% from 'bootstrap4/form.html' import
-render_form %} {% block body %}
-<div>
-  <h1>Appoitment Schedule</h1>
+render_form %} {% block head %}
+<style>
+  .registration-container {
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 10px;
+  }
+
+  .registraions {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .registraions li {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .patient-avatar {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .registration-btn {
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .choose-btn:hover {
+    background-color: #45a049;
+  }
+</style>
+{% endblock %} {% block body %}
+<div class="mb-3">
+  <div class="mb-3">{{render_form(form)}}</div>
+  <div class="registration-container">
+    {% if medical_registrations %}
+    <ul class="registraions row">
+      {% for registration in medical_registrations %}
+      <div class="col-md-4">
+        <li>
+          <img
+            class="patient-avatar"
+            src="{{ registration.patient.gravatar(size=50) }}"
+            alt="Avatar"
+            width="50"
+            height="50"
+          />
+          <div>
+            <strong>Bệnh nhân:</strong> {{ registration.patient.name }}<br />
+            <strong>Email:</strong> {{ registration.patient.email }}<br />
+            <strong>Điện thoại:</strong> {{ registration.patient.phone_number
+            }}<br />
+            <strong>Ngày sinh:</strong> {{ registration.patient.date_of_birth
+            }}<br />
+            <strong>Địa chỉ:</strong> {{ registration.patient.address }}<br />
+            <strong>Hẹn khám:</strong> {{ registration.date_of_visit }}
+            <br />
+            <strong>Thời gian bắt đầu:</strong> {{registration.start_time}}
+            <br />
+            <strong>Bác sĩ:</strong> {{registration.doctor.name}}
+            <br />
+            <strong>Triệu chứng:</strong> {{ registration.symptom }}<br />
+            {% if can_add %}
+            <button
+              class="registration-btn bg-success"
+              onclick="selectRegistration({
+                id: '{{ registration.id }}', 
+                date: '{{date}}'
+              })"
+            >
+              Chọn
+            </button>
+            {% endif %}
+            <button
+              class="registration-btn bg-danger"
+              onclick="deleteRegistration('{{ registration.id }}')"
+            >
+              Xóa
+            </button>
+          </div>
+        </li>
+      </div>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>Không có ca hẹn khám nào.</p>
+    {% endif %}
+  </div>
+
+  <table class="table" style="text-align: center">
+    <thead>
+      <tr>
+        <th scope="col" colspan="6">Danh sách khám bệnh</th>
+      </tr>
+      <tr>
+        <th scope="col" colspan="6">Ngày khám: {{date}}</th>
+      </tr>
+      <tr>
+        <th scope="col" colspan="6">
+          Số bệnh nhân:
+          {{appointment.medical_registrations|length}}/{{policy.value}}
+        </th>
+      </tr>
+      <tr>
+        <th scope="col">STT</th>
+        <th scope="col">Họ tên</th>
+        <th scope="col">Giới tính</th>
+        <th scope="col">Năm sinh</th>
+        <th scope="col">Địa chỉ</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for registration in appointment.medical_registrations %}
+      <tr>
+        <th scope="row">{{registration.id}}</th>
+        <td>{{registration.patient.name}}</td>
+        <td>{{registration.patient.gender.value}}</td>
+        <td>{{registration.patient.date_of_birth}}</td>
+        <td>{{registration.patient.address}}</td>
+        <td>
+          {% if can_edit %}
+          <i
+            class="fa-solid fa-trash"
+            onclick="unSelectRegistration('{{registration.id}}')"
+          ></i>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if can_create %}
+  <div class="form-floating text-center d-flex" style="padding-left: 79%">
+    <button
+      class="btn btn-warning ml-2"
+      onclick="createAppointmentSchedule('{{date}}')"
+    >
+      Lập danh sách
+    </button>
+    <button class="btn btn-danger ml-2">Xuất pdf</button>
+  </div>
+  {%endif%}
 </div>
+
+<script>
+  function selectRegistration(data) {
+    fetch('/api/medical-registrations', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        window.location.reload();
+      });
+  }
+
+  function unSelectRegistration(registrationId) {
+    if (confirm('Are you sure?')) {
+      fetch(`/api/appointment/medical-registrations/${registrationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          window.location.reload();
+        });
+    }
+  }
+
+  function deleteRegistration(id) {
+    if (confirm('Are you sure?')) {
+      fetch(`/api/medical-registrations/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          window.location.reload();
+        });
+    }
+  }
+
+  function createAppointmentSchedule(date) {
+    fetch('/api/appointment-schedule', {
+      method: 'POST',
+      body: JSON.stringify({ date }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message);
+        window.location.reload();
+      });
+  }
+</script>
 {% endblock %}

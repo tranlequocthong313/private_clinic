@@ -30,7 +30,6 @@ class ProtectedView(BaseView):
 
     @expose("/")
     def index(self):
-        print("url", request.url)
         return super(ProtectedView, self).index_view()
 
 
@@ -39,6 +38,10 @@ class CustomModelView(ProtectedView, ModelView):
     column_hide_backrefs = False
     can_export = True
     can_view_details = True
+
+
+class PolicyModelView(CustomModelView):
+    form_columns = ["id", "name", "value"]
 
 
 class UserModelView(CustomModelView):
@@ -135,7 +138,7 @@ admin.add_view(
     )
 )
 admin.add_view(
-    CustomModelView(
+    PolicyModelView(
         Policy,
         db.session,
         name="Chính sách",

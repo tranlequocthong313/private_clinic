@@ -24,7 +24,6 @@ def login():
         return redirect(url_for("main.index"))
     form = LoginForm()
     if form.validate_on_submit():
-        print(form.email_phone.data)
         user = User.query.filter(
             or_(
                 User.email == form.email_phone.data.lower(),
@@ -68,7 +67,6 @@ def register():
         return redirect(url_for("main.index"))
     form = RegistrationForm()
     if form.validate_on_submit():
-        print("VALID REGISTER")
         user = User(
             name=form.name.data,
             password=form.password.data,

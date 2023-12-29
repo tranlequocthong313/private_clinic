@@ -106,3 +106,9 @@ body {
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
 }
+
+.main-content-full {
+  width: 100%;
+  padding: 20px;
+  /* transition: width 0.3s ease; */
+}
