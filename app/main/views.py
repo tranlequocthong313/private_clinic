@@ -1,5 +1,6 @@
 from flask import render_template, session, flash, redirect, url_for
 from flask_login import login_required, current_user
+from sqlalchemy import func, or_, desc, case
 
 from . import main
 from .forms import MedicalRegisterForm
@@ -11,6 +12,7 @@ from ..auth.views import register_handler
 from ..utils import random_password
 from ..sms import send_sms
 from ..email import send_email
+from datetime import datetime, timedelta
 
 
 @main.route("/")
@@ -31,20 +33,38 @@ def about():
 @main.route("/medical-register", methods=["GET", "POST"])
 @login_required
 @confirmed_required
-@roles_required([AccountRole.PATIENT, AccountRole.NURSE])
 def medical_register():
     form = MedicalRegisterForm()
     if form.validate_on_submit():
-        patient_id = None
-        if current_user.is_patient():
-            patient_id = current_user.id
-        else:
+        register_medical(form)
+        return redirect(url_for("main.medical_register"))
+    return render_template("medical_register.html", form=form)
+
+
+@main.app_context_processor
+def inject_category():
+    return dict(category=dashboard_categories.get(current_user.role.value, []))
+
+
+def register_medical(form):
+    patient_id = None
+    if current_user.is_patient():
+        patient_id = current_user.id
+    else:
+        user = User.query.filter(
+            or_(
+                User.phone_number == form.phone_number.data,
+                User.email == form.email.data,
+            )
+        ).first()
+        if not user:
             password = random_password()
             user = User(
                 name=form.name.data,
                 password=password,
                 date_of_birth=form.date_of_birth.data,
                 gender=form.gender.data,
+                address=form.address.data,
                 email=form.email.data if form.email.data else None,
                 phone_number=form.phone_number.data if form.phone_number.data else None,
             )
@@ -68,31 +88,36 @@ def medical_register():
                     )
             except Exception as e:
                 flash(e)
+        else:
+            patient_id = user.id
 
+    registered = False
+    for r in MedicalRegistration.query.filter(
+        MedicalRegistration.date_of_visit == form.date_of_visit.data
+    ).all():
+        start_time = form.start_time.data
+        end_time = (
+            datetime.strptime(str(form.start_time.data), "%H:%M:%S")
+            + timedelta(minutes=30)
+        ).time()
+        current_end_time = (
+            datetime.strptime(str(r.start_time), "%H:%M:%S") + timedelta(minutes=30)
+        ).time()
+        if start_time < current_end_time and r.start_time < end_time:
+            registered = True
+            break
+
+    if registered:
+        flash("Da co nguoi dang ky bac si vao thoi gian nay!")
+    else:
         registration = MedicalRegistration(
             symptom=form.symptom.data,
             date_of_visit=form.date_of_visit.data,
-            time_to_visit=form.time_to_visit.data,
+            start_time=form.start_time.data,
             patient_id=patient_id,
+            doctor_id=form.doctor.data,
         )
         db.session.add(registration)
         db.session.commit()
 
         flash("Dang ky thanh cong.")
-        return redirect(url_for("main.medical_register"))
-    return render_template("medical_register.html", form=form)
-
-
-# @main.route("/dashboard")
-# @login_required
-# @confirmed_required
-# @roles_required(
-#     [AccountRole.ADMIN, AccountRole.CASHIER, AccountRole.DOCTOR, AccountRole.NURSE]
-# )
-# def dashboard():
-#     return render_template("dashboard.html")
-
-
-@main.app_context_processor
-def inject_category():
-    return dict(category=dashboard_categories.get(current_user.role.value, []))

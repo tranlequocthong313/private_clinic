@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, date
+from time import time
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -7,11 +8,12 @@ from wtforms import (
     SelectField,
     EmailField,
     DateField,
+    TimeField,
 )
 from wtforms.validators import DataRequired, Email
 from re import search
 
-from ..models import Gender, TimeToVisit, User
+from ..models import Gender, TimeToVisit, User, AccountRole
 
 
 class MedicalRegisterForm(FlaskForm):
@@ -22,24 +24,23 @@ class MedicalRegisterForm(FlaskForm):
     email = EmailField("Email")
     address = StringField("Dia chi")
     date_of_visit = DateField("Ngay hen", validators=[DataRequired()])
-    time_to_visit = SelectField("Buoi hen", choices=[g.value for g in (TimeToVisit)])
+    start_time = TimeField(
+        "Gio tiep nhan (Sáng: 6h - 11h30, Chiều: 13h - 20h):",
+        validators=[DataRequired()],
+    )
+    doctor = SelectField("Bac si kham")
     symptom = StringField("Trieu chung")
     callable_time = StringField("Thoi gian co the goi")
     submit = SubmitField("Dang ky")
 
-    def validate_appointment_date(self, field):
-        past = datetime.strptime(field.data, "%d/%m/%Y")
-        present = datetime.now()
-        if past.date() <= present.date():
-            raise ValueError("Invalid appointment time.")
+    def __init__(self):
+        super(MedicalRegisterForm, self).__init__()
+        doctors = User.query.filter(User.role == AccountRole.DOCTOR).all()
+        self.doctor.choices = [(d.id, d.name) for d in doctors]
 
-    def validate_email(self, field):
-        if field.data and User.query.filter_by(email=field.data.lower()).first():
-            raise ValueError("Email đã được đăng ký.")
-
-    def validate_phone_number(self, field):
-        if field.data and User.query.filter_by(phone_number=field.data.lower()).first():
-            raise ValueError("Số điện thoại đã được đăng ký.")
+    def validate_date_of_visit(self, field):
+        if field.data < date.today():
+            field.errors.append("Ngày hẹn không hợp lệ")
 
     def validate(self, extra_validators=None):
         if super().validate(extra_validators):
@@ -58,6 +59,26 @@ class MedicalRegisterForm(FlaskForm):
                 if not (email_matches or phone_matches):
                     self.email.errors.append("Enter email or phone number.")
                     self.phone_number.errors.append("Enter email or phone number.")
-                return True
+                    return False
+
+            morning_start = (datetime.strptime("06:00:00", "%H:%M:%S")).time()
+            morning_end = (datetime.strptime("11:30:00", "%H:%M:%S")).time()
+            afternoon_start = (datetime.strptime("13:00:00", "%H:%M:%S")).time()
+            afternoon_end = (datetime.strptime("20:00:00", "%H:%M:%S")).time()
+            if not (
+                morning_start <= self.start_time.data <= morning_end
+                or afternoon_start <= self.start_time.data <= afternoon_end
+            ):
+                self.start_time.errors.append(
+                    "Thời gian không hợp lệ. Hãy chọn thời gian trong khoảng 6h-11h30 hoặc 13h-20h."
+                )
+                return False
+            if (
+                self.date_of_visit.data == date.today()
+                and self.start_time.data < datetime.now().time()
+            ):
+                self.start_time.errors.append("Hãy đăng ký giờ đó vào ngày mai.")
+                return False
+            return True
 
         return False

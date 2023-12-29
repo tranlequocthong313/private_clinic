@@ -14,6 +14,7 @@ from sqlalchemy import (
     String,
     Unicode,
     UnicodeText,
+    Time,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -81,7 +82,16 @@ class User(UserMixin, db.Model):
         "Bill", backref="patient", lazy=True, foreign_keys="Bill.patient_id"
     )
     medical_registrations = relationship(
-        "MedicalRegistration", backref="patient", lazy=True
+        "MedicalRegistration",
+        backref="patient",
+        lazy=True,
+        foreign_keys="MedicalRegistration.patient_id",
+    )
+    medical = relationship(
+        "MedicalRegistration",
+        backref="doctor",
+        lazy=True,
+        foreign_keys="MedicalRegistration.doctor_id",
     )
 
     def __str__(self):
@@ -162,7 +172,7 @@ def load_user(user_id):
 class Policy(db.Model):
     __tablename__ = "policies"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String(50), primary_key=True)
     name = Column(UnicodeText, nullable=False)
     value = Column(Integer, nullable=False)
 
@@ -178,14 +188,14 @@ class AppointmentSchedule(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
+    date = Column(Date, nullable=False, unique=True)
     nurse_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    examination_date = Column(DateTime, nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
-    policy = Column(Integer, ForeignKey(Policy.id), nullable=False)
+    medical_registrations = relationship(
+        "MedicalRegistration", backref="appoitment_schedule", lazy=True
+    )
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 medical_examination_detail = db.Table(
@@ -232,7 +242,7 @@ class Bill(db.Model):
     medical_examination_id = Column(
         Integer, ForeignKey(MedicalExamination.id), nullable=False
     )
-    policy = Column(Integer, ForeignKey(Policy.id), nullable=False)
+    policy = Column(String(50), ForeignKey(Policy.id), nullable=False)
 
     def __str__(self):
         return self.id
@@ -250,9 +260,10 @@ class MedicalRegistration(db.Model):
     created_at = Column(DateTime, server_default=func.now())
     symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
-    time_to_visit = Column(Enum(TimeToVisit), default=TimeToVisit.MORNING)
+    start_time = Column(Time)
     fulfilled = Column(Boolean, default=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(
         Integer, ForeignKey(AppointmentSchedule.id), nullable=True
     )
