@@ -1,132 +1,103 @@
-{% extends "admin/master.html" %} 
-{% from 'bootstrap4/form.html' import render_form %} 
+{% extends "admin/master.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
 {% block body %}
 <link
         rel="stylesheet"
-        href="{{ url_for('static', filename='css/doctor.css') }}">
-
-
-<div class="content" style="margin-bottom: 2%;">
-    <div class="doctor row">
-        <div class="doctor-left col-md-4 col-sm-12 text-center">
-            <div class="mb-2 mt-2">
-
-                <div>
-                    <h4 style="font-weight:bold">Tra cứu bệnh nhân</h4>
-
-                </div>
-                <div class="m-user mb-3 mt-3">
-                    <label class="lb-id form-label">Bệnh nhân:</label>
-                    <input type="text" class="form-control"
-                           placeholder="Nhập mã, số điện thoại, email">
-                    <button class="bt-add btn btn-primary" style="width:100px; margin-left: 10px;" type="submit">Tìm</button>
-                </div>
-            </div>
-            <hr>
-
-            <div class="mb-2 mt-2">
-                <form class="mb-2 mt-2" id="medicine-form">
-                    <div>
-                        <h4 style="font-weight:bold">Tra cứu thuốc</h4>
-
-                    </div>
-                    <div class="m-medicine mb-3 mt-3">
-                        <label class="form-label">Nhập thuốc:</label>
-                        <input class="form-control" name="medicine-name" id="medicine">
-
-                    </div>
-                    <div class="m-quantity mb-2 mt-2">
-                        <label class="form-label">Số lượng:</label>
-                        <input type="number" min="1" value="1" class="form-control" name="medicine-quantity"/>
-                    </div>
-                    <div class="m-medicine mb-3 mt-3">
-                        <label class="form-label">Cách dùng:</label>
-                        <input class="form-control"  name="medicine-dosage" id=use-medicine">
-                    </div>
-                    <button class="bt-add btn btn-primary" style="width:100px" type="submit">Thêm</button>
-                </form>
-            </div>
+        href="{{ url_for('static', filename='css/doctor.css') }}" xmlns="http://www.w3.org/1999/html">
+<link
+        rel='stylesheet'
+        href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
+<h3 class="  gap-5 mb-3">
+    <div style="fs-3 fw-bold; text-align:center ">LẬP PHIẾU KHÁM</div>
+</h3>
+<form>
+    <div class="row my-4">
+        <div class="col-lg-6">
+            <label for="name" class="form-label">HỌ TÊN </label>
+            <span style="color:red">(*)</span>
+            <input name="name" required type="text" class="form-control" id="name" placeholder="Họ và tên">
+        </div>
+        <div class="col-lg-6">
+            <label for="phone" class="fw-bold form-label">SỐ ĐIỆN THOẠI </label>
+            <span style="color:red">(*)</span>
+            <input placeholder="XXXXXXXXXX" required minlength="10" maxlength="10" type="text" name="phone"
+                   class="phone form-control" id="phone">
         </div>
 
-        <div class="doctor-right col-md-8 col-sm-12 mt-2">
-            <div>
-                <h2 style="font-weight: bold; color:blue; text-align: center; ">PHIẾU KHÁM BỆNH</h2>
-
-                <hr>
-                <form method='POST'>
-                    {{ form.csrf_token }}
-                    <div class="container-fluid">
-
-
-                        <div style="font-weight: bold; font-size: 25px">
-                            Phiếu khám của bệnh nhân:<span style="color: red">{{ user.name }}</span>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="mb-3 mt-3">
-                                    <div class="m-symptom">
-                                        <label class="form-label">Họ tên:</label>
-                                        {{form.name(class_="form-control", placeholder="Họ Tên")}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="mb-3 mt-3">
-                                    <div class="m-symptom">
-                                        <label class="form-label">Số điện thoại:</label>
-                                        {{form.phone(class_="form-control", placeholder="Số điện thoại")}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="mb-3 mt-3">
-                                    <div class="m-symptom">
-                                        <label class="form-label">Triệu chứng:</label>
-                                        {{form.symptom(class_="form-control")}}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 ">
-                                <div class="mb-3 mt-3">
-                                    <div class="m-symptom">
-                                        <label class="form-label">Chuẩn đoán:</label>
-                                        {{form.diagnosis(class_="form-control")}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <br>
-                    <div class="form-floating  text-center d-flex " style="padding-left:79%">
-                        {{form.submit (class_="btn btn-warning btn-block", type="submit", style="width:100px")}}
-                        <input type="submit" value="Xuất pdf" class="btn btn-danger ml-2 "/>
-                    </div>
-                </form>
-                <hr>
-                <div class="medicine-form">
-                    <table class="table table-primary ">
-                        <tr>
-                            <th>Số thứ tự</th>
-
-                            <th>Thuốc</th>
-                            <th>Đơn vị</th>
-                            <th>Số lượng</th>
-                            <th>Cách dùng</th>
-                        </tr>
-                    </table>
-                </div>
-
-            </div>
+        <div class="col-lg-6 mt-3">
+            <label for="m-symptom" class="form-label">TRIỆU CHỨNG</label>
+            <span style="color:red">(*)</span>
+            <input required name="m-symptom" type="text" class="form-control" id="m-symptom" placeholder="Triệu chứng">
+        </div>
+        <div class="col-lg-6 mt-3">
+            <label for="m-diagnosis" class="form-label">CHUẨN ĐOÁN</label>
+            <span style="color:red">(*)</span>
+            <input required name="m-diagnosis" type="text" class="form-control" id="m-diagnosis"
+                   placeholder="Chuẩn đoán">
         </div>
     </div>
-</div>
-
-
-<div class="noti-click">
-    <div class="noti-info alert alert-warning">
-        Tạo phiếu <strong>thành công &#10004</strong>
+    <hr>
+    <div class="row my-4">
+        <div class="col-lg-6">
+            <label for="group_medicine" class="form-label">NHÓM THUỐC</label>
+            <span style="color:red">(*)</span>
+            <input required name="group_medicine" type="text" class="form-control" id="group_medicine"
+                   list="group_medicine_options">
+            <datalist id="group_medicine_options">
+                <option value="Kháng sinh">
+                <option value="Kháng viêm">
+                <option value="Kháng virus">
+            </datalist>
+        </div>
+        <div class="col-lg-6">
+            <label for="name_medicine" class="form-label">TÊN THUỐC</label>
+            <span style="color:red">(*)</span>
+            <input required name="name_medicine" type="text" class="form-control" id="name_medicine"
+             list="name_medicine_options">
+            <datalist id="name_medicine_options">
+                <option value="vitamin">
+                <option value="panadol">
+                <option value="Paracetamol">
+            </datalist>
+        </div>
     </div>
-</div>
+    <div class="row airport-between">
+        <div class="col-lg-3">
+            <label for="quantity-1st" class="form-label">SỐ LƯỢNG THUỐC</label>
+            <span style="color:red">(*)</span>
+            <input required name="quantity_1st" value="1" type="number" class="form-control" id="quantity-1st" min="1"
+                   max="10">
+        </div>
+        <div class="col-lg-3">
+            <label for="type_medicine" class="form-label">ĐƠN VỊ</label>
+            <span style="color:red">(*)</span>
+            <input required name="type_medicine" type="text" class="form-control" id="type_medicine"
+             list="type_medicine_options">
+            <datalist id="type_medicine_options">
+                <option value="Viên">
+                <option value="Chai">
+                <option value="Vĩ">
+            </datalist>
+        </div>
+        <div class="col-lg-6">
+            <label for="use_medicine" class="form-label">CÁCH DÙNG</label>
+            <input name="use_medicine" type="text" class="form-control" id="use_medicine">
+        </div>
+    </div>
+    <div class="d-flex justify-content-end gap-2 mt-4 ">
+        <button class="btn btn-success submit-btn">Tạo phiếu khám</button>
+        <button class="btn btn-warning submit-btn ml-4">Xuất PDF</button>
+    </div>
+
+</form>
+
+
+<!--<div class="noti-click">-->
+<!--    <div class="noti-info alert alert-warning">-->
+<!--        Tạo phiếu <strong>thành công &#10004</strong>-->
+<!--    </div>-->
+<!--</div>-->
 
 
 {% endblock %}
