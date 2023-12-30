@@ -59,6 +59,7 @@ class AppointmentScheduleView(NurseView):
                 if not r.scheduled():
                     all_scheduled = False
                     break
+        print(form.date.data, date.today(), form.date.data >= date.today())
         return self.render(
             "nurse/appointment_schedule.html",
             medical_registrations=medical_registrations.all(),
@@ -69,10 +70,7 @@ class AppointmentScheduleView(NurseView):
             can_add=form.date.data >= date.today()
             and (
                 not appointment.first()
-                or (
-                    policy
-                    and len(appointment.first().medical_registrations) < policy.value
-                )
+                or len(appointment.first().medical_registrations) < policy.value
             ),
             can_edit=form.date.data >= date.today(),
             can_create=form.date.data >= date.today() and not all_scheduled,
