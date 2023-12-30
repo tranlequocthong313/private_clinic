@@ -15,6 +15,7 @@ from ..models import (
     TimeToVisit,
     AppointmentSchedule,
     Policy,
+    MedicalRegistrationStatus,
 )
 from ..admin import ProtectedView, admin
 from ..utils import random_password
@@ -49,14 +50,14 @@ class AppointmentScheduleView(NurseView):
         policy = Policy.query.get("so-benh-nhan")
         medical_registrations = medical_registrations.filter(
             func.date(MedicalRegistration.date_of_visit) <= form.date.data,
-            MedicalRegistration.appointment_schedule_id == None,
+            MedicalRegistration.status == MedicalRegistrationStatus.VERIFIED,
         ).order_by(MedicalRegistration.date_of_visit)
         appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
-        all_fulfilled = True
+        all_scheduled = True
         if appointment.first():
             for r in appointment.first().medical_registrations:
-                if not r.fulfilled:
-                    all_fulfilled = False
+                if not r.scheduled():
+                    all_scheduled = False
                     break
         return self.render(
             "nurse/appointment_schedule.html",
@@ -74,7 +75,7 @@ class AppointmentScheduleView(NurseView):
                 )
             ),
             can_edit=form.date.data >= date.today(),
-            can_create=form.date.data >= date.today() and not all_fulfilled,
+            can_create=form.date.data >= date.today() and not all_scheduled,
         )
 
 
