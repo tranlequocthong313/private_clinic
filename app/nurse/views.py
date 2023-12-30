@@ -47,17 +47,19 @@ class AppointmentScheduleView(NurseView):
         medical_registrations = MedicalRegistration.query
         appointment = AppointmentSchedule.query
         policy = Policy.query.get("so-benh-nhan")
-        medical_registrations = medical_registrations.filter(
-            func.date(MedicalRegistration.date_of_visit) <= form.date.data,
-            MedicalRegistration.appointment_schedule_id == None,
-        ).order_by(MedicalRegistration.date_of_visit)
-        appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
+        if form.validate_on_submit():
+            medical_registrations = medical_registrations.filter(
+                func.date(MedicalRegistration.date_of_visit) <= form.date.data,
+                MedicalRegistration.appointment_schedule_id == None,
+            ).order_by(MedicalRegistration.date_of_visit)
+            appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
         all_fulfilled = True
         if appointment.first():
             for r in appointment.first().medical_registrations:
                 if not r.fulfilled:
                     all_fulfilled = False
                     break
+        print(form.date.data, date.today(), form.date.data >= date.today())
         return self.render(
             "nurse/appointment_schedule.html",
             medical_registrations=medical_registrations.all(),
@@ -68,10 +70,7 @@ class AppointmentScheduleView(NurseView):
             can_add=form.date.data >= date.today()
             and (
                 not appointment.first()
-                or (
-                    policy
-                    and len(appointment.first().medical_registrations) < policy.value
-                )
+                or len(appointment.first().medical_registrations) < policy.value
             ),
             can_edit=form.date.data >= date.today(),
             can_create=form.date.data >= date.today() and not all_fulfilled,
