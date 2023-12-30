@@ -6,7 +6,7 @@ from .forms import MedicalForm
 from .. import db
 from ..decorators import roles_required
 from ..models import AccountRole, MedicalExamination, User
-from ..admin import ProtectedView, admin
+from ..admin import ProtectedView, dashboard
 
 
 class CashierView(ProtectedView):
@@ -26,7 +26,7 @@ class BillView(CashierView):
         return self.render("cashier/bill.html")
 
 
-admin.add_view(
+dashboard.add_view(
     PayBillView(
         name="Thanh toán hóa đơn",
         menu_icon_type="fa",
@@ -34,7 +34,7 @@ admin.add_view(
         endpoint="pay-bill",
     )
 )
-admin.add_view(
+dashboard.add_view(
     BillView(
         name="Tra cứu hoá đơn",
         menu_icon_type="fa",

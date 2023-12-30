@@ -56,7 +56,7 @@ def schedule():
 
     for r in registrations:
         r = MedicalRegistration.query.get(r.id)
-        if r.not_scheduled():
+        if r.staging():
             r.status = MedicalRegistrationStatus.SCHEDULED
             if r.patient.phone_number:
                 send_sms(r.patient.phone_number, "Lịch khám của bạn là")
@@ -88,6 +88,7 @@ def add_to_schedule():
         db.session.add(appointment)
     registration = MedicalRegistration.query.get(body["id"])
     registration.appointment_schedule_id = appointment.id
+    registration.status = MedicalRegistrationStatus.STAGING
     db.session.commit()
 
     return jsonify(
@@ -103,7 +104,7 @@ def add_to_schedule():
 def delete_from_schedule(id):
     registration = MedicalRegistration.query.get(id)
     registration.appointment_schedule_id = None
-    registration.status = MedicalRegistrationStatus.NOT_SCHEDULED
+    registration.status = MedicalRegistrationStatus.VERIFIED
     db.session.commit()
 
     return jsonify(

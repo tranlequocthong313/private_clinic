@@ -17,7 +17,7 @@ from ..models import (
     Policy,
     MedicalRegistrationStatus,
 )
-from ..admin import ProtectedView, admin
+from ..admin import ProtectedView, dashboard
 from ..utils import random_password
 from ..auth.views import register_handler
 from ..sms import send_sms
@@ -59,7 +59,6 @@ class AppointmentScheduleView(NurseView):
                 if not r.scheduled():
                     all_scheduled = False
                     break
-        print(form.date.data, date.today(), form.date.data >= date.today())
         return self.render(
             "nurse/appointment_schedule.html",
             medical_registrations=medical_registrations.all(),
@@ -77,7 +76,7 @@ class AppointmentScheduleView(NurseView):
         )
 
 
-admin.add_view(
+dashboard.add_view(
     AppointmentScheduleView(
         name="Lập danh sách khám bệnh",
         menu_icon_type="fa",
@@ -85,7 +84,7 @@ admin.add_view(
         endpoint="appointment-schedule",
     )
 )
-admin.add_view(
+dashboard.add_view(
     MedicalRegistrationView(
         name="Đăng ký khám bệnh",
         menu_icon_type="fa",

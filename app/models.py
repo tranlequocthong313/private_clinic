@@ -256,7 +256,7 @@ class TimeToVisit(enum.Enum):
 class MedicalRegistrationStatus(enum.Enum):
     NOT_VERIFIED = "Not verified"
     VERIFIED = "Verified"
-    NOT_SCHEDULED = "Not scheduled"
+    STAGING = "staging"
     SCHEDULED = "Scheduled"
     ARRIVED = "Arrived"
     IN_PROGRESS = "In progress"
@@ -286,8 +286,8 @@ class MedicalRegistration(db.Model):
     def verified(self):
         return self.status == MedicalRegistrationStatus.VERIFIED
 
-    def not_scheduled(self):
-        return self.status == MedicalRegistrationStatus.NOT_SCHEDULED
+    def staging(self):
+        return self.status == MedicalRegistrationStatus.STAGING
 
     def scheduled(self):
         return self.status == MedicalRegistrationStatus.SCHEDULED
