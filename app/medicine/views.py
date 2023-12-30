@@ -7,7 +7,7 @@ from . import medicine
 from .forms import SearchingMedicineForm
 from ..decorators import roles_required
 from ..models import AccountRole, Medicine
-from ..admin import ProtectedView, admin
+from ..admin import ProtectedView, dashboard
 
 
 class MedicineView(ProtectedView):
@@ -48,7 +48,7 @@ class MedicineView(ProtectedView):
         )
 
 
-admin.add_view(
+dashboard.add_view(
     MedicineView(
         name="Tra cứu thuốc",
         menu_icon_type="fa",

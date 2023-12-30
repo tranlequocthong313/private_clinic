@@ -253,6 +253,16 @@ class TimeToVisit(enum.Enum):
     AFTERNOON = "Afternoon"
 
 
+class MedicalRegistrationStatus(enum.Enum):
+    NOT_VERIFIED = "Not verified"
+    VERIFIED = "Verified"
+    STAGING = "staging"
+    SCHEDULED = "Scheduled"
+    ARRIVED = "Arrived"
+    IN_PROGRESS = "In progress"
+    COMPLETED = "Completed"
+
+
 class MedicalRegistration(db.Model):
     __tablename__ = "medical_registrations"
 
@@ -261,12 +271,35 @@ class MedicalRegistration(db.Model):
     symptom = Column(UnicodeText)
     date_of_visit = Column(Date, nullable=False)
     start_time = Column(Time)
-    fulfilled = Column(Boolean, default=False)
+    status = Column(
+        Enum(MedicalRegistrationStatus), default=MedicalRegistrationStatus.NOT_VERIFIED
+    )
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(
         Integer, ForeignKey(AppointmentSchedule.id), nullable=True
     )
+
+    def not_verified(self):
+        return self.status == MedicalRegistrationStatus.NOT_VERIFIED
+
+    def verified(self):
+        return self.status == MedicalRegistrationStatus.VERIFIED
+
+    def staging(self):
+        return self.status == MedicalRegistrationStatus.STAGING
+
+    def scheduled(self):
+        return self.status == MedicalRegistrationStatus.SCHEDULED
+
+    def arrived(self):
+        return self.status == MedicalRegistrationStatus.ARRIVED
+
+    def in_progress(self):
+        return self.status == MedicalRegistrationStatus.IN_PROGRESS
+
+    def completed(self):
+        return self.status == MedicalRegistrationStatus.COMPLETED
 
     def __str__(self):
         return self.id

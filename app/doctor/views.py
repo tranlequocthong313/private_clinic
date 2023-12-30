@@ -7,7 +7,7 @@ from .forms import MedicalForm, MedicalDetaiForm
 from .. import db
 from ..decorators import roles_required
 from ..models import AccountRole, MedicalExamination, User, medical_examination_detail
-from ..admin import ProtectedView, admin
+from ..admin import ProtectedView, dashboard
 
 
 class DoctorView(ProtectedView):
@@ -22,7 +22,6 @@ class MedicalFormView(DoctorView):
         form2 = MedicalDetaiForm()
         user = self.__get_user_by_phone()
         if form.validate_on_submit():
-
             medical_examination = MedicalExamination(
                 patient_id=2,
                 doctor_id=1,
@@ -34,20 +33,19 @@ class MedicalFormView(DoctorView):
 
         if form2.validate_on_submit():
             medical = medical_examination_detail(
-
-                dosage=form2.dosage.data,
-                quantity=form2.quantity.data
+                dosage=form2.dosage.data, quantity=form2.quantity.data
             )
             db.session.add(medical)
             db.session.commit()
-        return self.render("doctor/medical_form.html", form=form, user=user, form2=form2)
+        return self.render(
+            "doctor/medical_form.html", form=form, user=user, form2=form2
+        )
 
     def __get_user_by_phone(self):
         return User.query.get(4)
 
 
-
-admin.add_view(
+dashboard.add_view(
     MedicalFormView(
         name="Lập phiếu khám",
         menu_icon_type="fa",

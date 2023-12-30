@@ -10,6 +10,7 @@ from ..models import (
     AppointmentSchedule,
     MedicalRegistration,
     Policy,
+    MedicalRegistrationStatus,
 )
 from .. import db
 from ..sms import send_sms
@@ -55,8 +56,8 @@ def schedule():
 
     for r in registrations:
         r = MedicalRegistration.query.get(r.id)
-        if not r.fulfilled:
-            r.fulfilled = True
+        if r.staging():
+            r.status = MedicalRegistrationStatus.SCHEDULED
             if r.patient.phone_number:
                 send_sms(r.patient.phone_number, "Lịch khám của bạn là")
             if r.patient.email:
@@ -87,6 +88,7 @@ def add_to_schedule():
         db.session.add(appointment)
     registration = MedicalRegistration.query.get(body["id"])
     registration.appointment_schedule_id = appointment.id
+    registration.status = MedicalRegistrationStatus.STAGING
     db.session.commit()
 
     return jsonify(
@@ -102,7 +104,7 @@ def add_to_schedule():
 def delete_from_schedule(id):
     registration = MedicalRegistration.query.get(id)
     registration.appointment_schedule_id = None
-    registration.fulfilled = False
+    registration.status = MedicalRegistrationStatus.VERIFIED
     db.session.commit()
 
     return jsonify(

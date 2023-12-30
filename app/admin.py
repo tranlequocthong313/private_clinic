@@ -28,6 +28,10 @@ class ProtectedView(BaseView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("main.index"))
 
+    def render(self, template, **kwargs):
+        dashboard.name = current_user.role.value
+        return super().render(template, **kwargs)
+
     @expose("/")
     def index(self):
         return super(ProtectedView, self).index_view()
@@ -121,14 +125,14 @@ class StatsView(ProtectedView):
         return self.render("admin/stats.html")
 
 
-admin = Admin(
+dashboard = Admin(
     app,
     name="Admin",
     template_mode="bootstrap4",
     url="/dashboard",
 )
 
-admin.add_view(
+dashboard.add_view(
     UserModelView(
         User,
         db.session,
@@ -137,7 +141,7 @@ admin.add_view(
         menu_icon_value="fa-users",
     )
 )
-admin.add_view(
+dashboard.add_view(
     PolicyModelView(
         Policy,
         db.session,
@@ -146,7 +150,7 @@ admin.add_view(
         menu_icon_value="fa-users",
     )
 )
-admin.add_view(
+dashboard.add_view(
     MedicineModelView(
         Medicine,
         db.session,
@@ -156,7 +160,7 @@ admin.add_view(
         endpoint="medicines",
     )
 )
-admin.add_view(
+dashboard.add_view(
     MedicineUnitModelView(
         MedicineUnit,
         db.session,
@@ -165,7 +169,7 @@ admin.add_view(
         menu_icon_value="fa-users",
     )
 )
-admin.add_view(
+dashboard.add_view(
     MedicineTypeModelView(
         MedicineType,
         db.session,
@@ -174,7 +178,7 @@ admin.add_view(
         menu_icon_value="fa-users",
     )
 )
-admin.add_view(
+dashboard.add_view(
     Medicine_MedicineTypeModelView(
         Medicine_MedicineType,
         db.session,
@@ -183,7 +187,7 @@ admin.add_view(
         menu_icon_value="fa-users",
     )
 )
-admin.add_view(
+dashboard.add_view(
     StatsView(
         name="Thống kê",
         menu_icon_type="fa",

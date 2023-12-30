@@ -7,7 +7,7 @@ from . import patient
 from .forms import SearchingPatientForm
 from ..decorators import roles_required, confirmed_required
 from ..models import AccountRole, User
-from ..admin import ProtectedView, admin
+from ..admin import ProtectedView, dashboard
 
 
 class PatientView(ProtectedView):
@@ -51,7 +51,7 @@ class PatientView(ProtectedView):
         )
 
 
-admin.add_view(
+dashboard.add_view(
     PatientView(
         name="Tra cứu bệnh nhân",
         menu_icon_type="fa",
