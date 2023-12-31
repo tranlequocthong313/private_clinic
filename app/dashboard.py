@@ -125,6 +125,7 @@ dashboard = Admin(
     app,
     name="Admin",
     template_mode="bootstrap4",
+    endpoint="dashboard",
     url="/dashboard",
 )
 

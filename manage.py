@@ -15,7 +15,7 @@ cloudinary.config(
     api_secret=app.get("CLOUDINARY_API_SECRET"),
 )
 
-from app.admin import *
+from app.dashboard import *
 
 if __name__ == "__main__":
     app.run()

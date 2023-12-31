@@ -17,7 +17,7 @@ from ..models import (
     Policy,
     MedicalRegistrationStatus,
 )
-from ..admin import ProtectedView, dashboard
+from ..dashboard import ProtectedView, dashboard
 from ..utils import random_password
 from ..auth.views import register_handler
 from ..sms import send_sms
@@ -38,7 +38,7 @@ class MedicalRegisterView(NurseView):
         if form.validate_on_submit():
             register_medical(form)
             return redirect(url_for(".index"))
-        return self.render("nurse/medical_register.html", form=form)
+        return self.render("medical_register.html", form=form)
 
 
 class AppointmentScheduleView(NurseView):
