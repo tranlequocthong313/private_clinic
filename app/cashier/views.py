@@ -6,7 +6,7 @@ from .forms import MedicalForm
 from .. import db
 from ..decorators import roles_required
 from ..models import AccountRole, MedicalExamination, User
-from ..admin import ProtectedView, dashboard
+from ..dashboard import ProtectedView, dashboard
 
 
 class CashierView(ProtectedView):

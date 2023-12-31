@@ -36,51 +36,47 @@
                     </a>
                 </li>
 
-                {% if current_user.is_authenticated %}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex" href="#" role="button" data-bs-toggle="dropdown"><strong>Chào
-<!--                        ,{{ current_user.name }}-->
-                    </strong>
-                     <img class="img-rounded profile-thumbnail" style="padding-left:5px" src="{{ current_user.gravatar(size=25) }}">
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="dropdown-item">
-                            <a>
-                                <i class="fas fa-plus mr-2"></i>
-                                <strong class="hide-nav">Thông tin tài khoản</strong>
-                            </a>
-                        </li>
-                        <li class="dropdown-item">
-                            <a href='{{url_for("auth.logout")}}'>
-                                <i class="fas fa-plus mr-2"></i>
-                                <strong class="hide-nav">Thoát quyền sử dụng</strong>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                {% endif %}
             </ul>
-            <form class="form-inline mt-2 mt-md-0">
-                <input class="form-control mr-sm-2"
-                       type="text"
-                       placeholder="Tìm kiếm"
-                       placeholder="Tìm kiếm"
-                       aria-label="Search"/>
-
-                <button class="btn btn btn-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
-            </form>
             {% if current_user.is_authenticated %}
 
+            {% if current_user.is_nurse() %}
+            <a href="{{url_for('medical-register.index')}}" class="btn btn-primary ml-3">
+                <i class="fa-solid fa-calendar-check mr-2"></i>
+                Đăng ký khám bệnh</a>
+            {% else %}
             <a href="{{ url_for('main.medical_register') }}" class="btn btn-primary ml-3">
                 <i class="fa-solid fa-calendar-check mr-2"></i>
                 Đăng ký khám bệnh</a>
+            {% endif %}
+
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                    <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=25) }}">
+                </a>
+                <ul class="dropdown-menu" style='left: -105px'>
+                    {% if not current_user.is_patient() %}
+                    <li class="dropdown-item">
+                        <a href='{{url_for("dashboard.index")}}'>
+                            <i class="fas fa-plus mr-2"></i>
+                            <strong class="hide-nav">Dashboard</strong>
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="dropdown-item">
+                        <a href='{{url_for("auth.logout")}}'>
+                            <i class="fas fa-plus mr-2"></i>
+                            <strong class="hide-nav">Đăng xuất</strong>
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
             {% else %}
             <div class='d-flex'>
                 <a href="{{ url_for('auth.login') }}" class="btn btn-primary ml-3">
                     <i class="fa-solid fa-right-to-bracket mr-2"></i>
                     Đăng nhập</a>
-                {% endif %}
             </div>
+            {% endif %}
     </nav>
 </header>
