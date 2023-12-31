@@ -13,7 +13,7 @@
     <title>
         {% block title %}
             {% if admin_view.category %}{{ admin_view.category }} -{% endif %}
-            {{ admin_view.name }} - {{ admin_view.admin.name }}
+            {{ admin_view.name }} - {{ current_user.role.value }}
         {% endblock
         %}
     </title>
@@ -56,15 +56,20 @@
   </head>
   <body>
     {%block page_body%}
-    <nav class="navbar sticky-top flex-md-nowrap p-0">
+    <nav class="navbar sticky-top flex-md-nowrap p-0 ">
       <div class='navbar-brand col-sm-3 col-md-2 mr-0 d-flex'>
         {% block brand %}
-          <a href="{{ admin_view.admin.url }}">{{ admin_view.admin.name }}</a>
+          <a href="{{ admin_view.admin.url }}">{{ current_user.role.value }}</a>
         {% endblock %}
         <a class='ml-auto' href='#' onclick='openNav()'>
           <i class="fa-solid fa-bars"></i>
         </a> 
       </div>
+
+      <div class="navbar-nav mr-auto pl-4">
+        <h4 class='mb-0'>{{admin_view.name}}</h4>
+      </div>
+
       <ul class="navbar-nav px-3">
       {% if current_user.is_authenticated %}
       <li class="nav-item dropdown">

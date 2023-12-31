@@ -1,0 +1,88 @@
+{% extends "admin/master.html" %} {% from 'bootstrap4/form.html' import
+render_form %} {% import "_macros.html" as macros %}{% block body %}
+<div class="mb-3">
+  {{render_form(form)}}
+  <table class="table" style="text-align: center">
+    <thead>
+      <tr>
+        <th scope="col" colspan="9">Ngày khám: {{date}}</th>
+      </tr>
+      <tr>
+        <th scope="col" colspan="9">
+          Số bệnh nhân: {{total_registered_count}}/{{policy.value}}
+        </th>
+      </tr>
+      <tr>
+        <th scope="col">STT</th>
+        <th scope="col">Mã ca khám</th>
+        <th scope="col">Mã bệnh nhân</th>
+        <th scope="col">Họ tên</th>
+        <th scope="col">Năm sinh</th>
+        <th scope="col">Liên lạc</th>
+        <th scope="col">Giờ hẹn</th>
+        <th scope="col">Bác sĩ</th>
+        <th scope="col">Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for registration in registrations %}
+      <tr>
+        <th scope="row">{{loop.index}}</th>
+        <td>{{registration.id}}</td>
+        <td>{{registration.patient.id}}</td>
+        <td>{{registration.patient.name}}</td>
+        <td>{{registration.patient.date_of_birth}}</td>
+        {% if registration.patient.phone_number %}
+        <td>{{registration.patient.phone_number}}</td>
+        {% else %}
+        <td>{{registration.patient.email}}</td>
+        {% endif %}
+        <td>{{registration.start_time}}</td>
+        <td>{{registration.doctor.name}}</td>
+        <td>
+          <select
+            id="statusSelect_{{registration.id}}"
+            class="form-select"
+            aria-label="Status"
+            onchange="changeStatus('{{ registration.id }}')"
+          >
+            {% for status in statuses %} {% if status.value ==
+            registration.status.value %}
+            <option selected value="{{status.value}}">{{status.name}}</option>
+            {% else %}
+            <option value="{{status.value}}">{{status.name}}</option>
+            {% endif %} {%endfor %}
+          </select>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    {{macros.pagination_widget(pagination, '.index')}}
+  </div>
+</div>
+
+<script>
+  function changeStatus(registrationId) {
+    var selectField = document.querySelector(`#statusSelect_${registrationId}`);
+    var selectedStatus = selectField.value;
+
+    fetch(`/api/medical-registrations/${registrationId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status: selectedStatus }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+</script>
+{% endblock %}

@@ -6,7 +6,7 @@ from . import main
 from .forms import MedicalRegisterForm
 from ..decorators import confirmed_required, roles_required
 from ..dashboard_categories import dashboard_categories
-from ..models import AccountRole, MedicalRegistration, User
+from ..models import AccountRole, MedicalRegistration, User, MedicalRegistrationStatus
 from .. import db
 from ..auth.views import register_handler
 from ..utils import random_password
@@ -93,7 +93,8 @@ def register_medical(form):
 
     registered = False
     for r in MedicalRegistration.query.filter(
-        MedicalRegistration.date_of_visit == form.date_of_visit.data
+        MedicalRegistration.date_of_visit == form.date_of_visit.data,
+        MedicalRegistration.doctor_id == form.doctor.data,
     ).all():
         start_time = form.start_time.data
         end_time = (
@@ -116,6 +117,7 @@ def register_medical(form):
             start_time=form.start_time.data,
             patient_id=patient_id,
             doctor_id=form.doctor.data,
+            status=MedicalRegistrationStatus.VERIFIED,  # For dev purposes, this must be replaced by actual verification (otp, link...)
         )
         db.session.add(registration)
         db.session.commit()

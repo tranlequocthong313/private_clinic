@@ -36,3 +36,10 @@
   border: none;
   background: none;
 }
+
+div.pagination {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  justify-content: center;
+}

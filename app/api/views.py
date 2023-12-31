@@ -75,10 +75,10 @@ def schedule():
     )
 
 
-@api.route("/medical-registrations", methods=["PUT"])
+@api.route("/medical-registrations/<id>/appointment", methods=["PUT"])
 @login_required
 @roles_required([AccountRole.NURSE])
-def add_to_schedule():
+def add_to_schedule(id):
     body = request.get_json()
     appointment = AppointmentSchedule.query.filter(
         AppointmentSchedule.date == body["date"]
@@ -86,7 +86,7 @@ def add_to_schedule():
     if not appointment:
         appointment = AppointmentSchedule(nurse_id=current_user.id, date=body["date"])
         db.session.add(appointment)
-    registration = MedicalRegistration.query.get(body["id"])
+    registration = MedicalRegistration.query.get(id)
     registration.appointment_schedule_id = appointment.id
     registration.status = MedicalRegistrationStatus.STAGING
     db.session.commit()
@@ -98,7 +98,7 @@ def add_to_schedule():
     )
 
 
-@api.route("/appointment/medical-registrations/<id>", methods=["DELETE"])
+@api.route("/medical-registrations/<id>/appointment", methods=["DELETE"])
 @login_required
 @roles_required([AccountRole.NURSE])
 def delete_from_schedule(id):
@@ -124,6 +124,22 @@ def delete_medical_registration(id):
     return jsonify(
         {
             "message": "Xóa ca hẹn khám thành công",
+        }
+    )
+
+
+@api.route("/medical-registrations/<id>/status", methods=["PUT"])
+@login_required
+@roles_required([AccountRole.NURSE])
+def change_medical_registration_status(id):
+    body = request.get_json()
+    r = MedicalRegistration.query.get(id)
+    r.status = body["status"]
+    db.session.commit()
+
+    return jsonify(
+        {
+            "message": "Thay đổi trạng thái ca khám thành công",
         }
     )
 
