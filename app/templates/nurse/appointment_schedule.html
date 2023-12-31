@@ -124,7 +124,7 @@ render_form %} {% block head %}
     <tbody>
       {% for registration in appointment.medical_registrations %}
       <tr>
-        <th scope="row">{{registration.id}}</th>
+        <th scope="row">{{loop.index}}</th>
         <td>{{registration.patient.name}}</td>
         <td>{{registration.patient.gender.value}}</td>
         <td>{{registration.patient.date_of_birth}}</td>
@@ -141,6 +141,7 @@ render_form %} {% block head %}
       {% endfor %}
     </tbody>
   </table>
+
   {% if can_create %}
   <div class="form-floating text-center d-flex" style="padding-left: 79%">
     <button
@@ -156,9 +157,9 @@ render_form %} {% block head %}
 
 <script>
   function selectRegistration(data) {
-    fetch('/api/medical-registrations', {
+    fetch(`/api/medical-registrations/${data.id}/appointment`, {
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: JSON.stringify({ date: data.date }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -171,7 +172,7 @@ render_form %} {% block head %}
 
   function unSelectRegistration(registrationId) {
     if (confirm('Are you sure?')) {
-      fetch(`/api/appointment/medical-registrations/${registrationId}`, {
+      fetch(`/api/medical-registrations/${registrationId}/appointment`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
