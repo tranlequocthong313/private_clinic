@@ -11,6 +11,8 @@ from ..models import (
     MedicalRegistration,
     Policy,
     MedicalRegistrationStatus,
+    Medicine_MedicineType,
+    MedicineType,
 )
 from .. import db
 from ..sms import send_sms
@@ -64,7 +66,7 @@ def schedule():
                 send_email(
                     r.patient.email,
                     "Lịch khám",
-                    "nurse/email/appointment",
+                    "nurse/email/appointment_email",
                     user=r.patient,
                 )
     db.session.commit()
@@ -150,3 +152,22 @@ def change_medical_registration_status(id):
 def get_policies(id):
     policy = Policy.query.get(id)
     return jsonify({"value": policy.value})
+
+
+@api.route("/medicines", methods=["GET"])
+@login_required
+@roles_required([AccountRole.DOCTOR])
+def get_medicines():
+    type_name = request.args.get("type")
+    medicine_type = MedicineType.query.filter(MedicineType.name == type_name).first()
+
+    if not medicine_type:
+        return jsonify({"message": "Không tìm thấy loại thuốc."})
+
+    medicines = Medicine_MedicineType.query.filter(
+        Medicine_MedicineType.medicine_type_id == medicine_type.id
+    ).all()
+    if not medicines:
+        return jsonify({"message": "Loại thuốc này không có thuốc nào."})
+    else:
+        return jsonify({"medicines": medicines.medicine})

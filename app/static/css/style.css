@@ -39,3 +39,7 @@ div.pagination {
   margin: 0px;
   justify-content: center;
 }
+
+.no-label .form-control-label {
+  display: none;
+}

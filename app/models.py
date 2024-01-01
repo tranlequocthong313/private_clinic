@@ -219,6 +219,7 @@ class MedicalExamination(db.Model):
     diagnosis = Column(UnicodeText, nullable=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
     medicines = relationship(
         "Medicine",
         secondary=medical_examination_detail,
@@ -227,7 +228,7 @@ class MedicalExamination(db.Model):
     )
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Bill(db.Model):
@@ -245,12 +246,7 @@ class Bill(db.Model):
     policy = Column(String(50), ForeignKey(Policy.id), nullable=False)
 
     def __str__(self):
-        return self.id
-
-
-class TimeToVisit(enum.Enum):
-    MORNING = "Morning"
-    AFTERNOON = "Afternoon"
+        return str(self.id)
 
 
 class MedicalRegistrationStatus(enum.Enum):
@@ -303,7 +299,7 @@ class MedicalRegistration(db.Model):
         return self.status == MedicalRegistrationStatus.COMPLETED
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class MedicineUnit(db.Model):
@@ -322,9 +318,6 @@ class MedicineType(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(Unicode(50), nullable=False, unique=True)
-    medicines = relationship(
-        "Medicine_MedicineType", backref="medicine_type", lazy=True
-    )
 
     def __str__(self):
         return self.name

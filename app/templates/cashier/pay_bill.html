@@ -1,77 +1,73 @@
-{% extends "admin/master.html" %} {% from 'bootstrap4/form.html' import
-render_form %} {% block body %}
+{% extends "admin/master.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% block body %}
 
 <div class="d-flex flex-column align-items-center p-5">
-        <h3 class="d-flex align-items-center gap-5 mb-3">
-            <div class="fs-3 fw-bold">THANH TOÁN HÓA ĐƠN</div>
-            <div style="color: rgb(255, 94, 31);" class="fw-bold fs-4"><span id="price" class="price"></span>
-                VNĐ
-            </div>
-        </h3>
-        <div class="card-body border col-lg-7 p-0">
-            <p>
-                <a class="btn btn-primary p-2 h-100 d-flex align-items-center justify-content-between"
-                   data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true"
-                   aria-controls="collapseExample">
-                    <span class="ms-2 fw-bold align-items-center">HÓA ĐƠN CẦN THANH TOÁN</span>
-                </a>
-            </p>
-            <div class="collapse show p-3 pt-0" id="collapseExample">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <form action="" class="form">
-                            <div class="row">
-                                <div class="col-6 mt-3">
-                                    <div class="form__div">
-                                        <label for="name" class="form__label">HỌ TÊN</label>
-                                         <span style="color:red" >(*)</span>
-                                        <input type="text" id="name"
-                                               class="form-control" placeholder="Họ và tên">
-                                    </div>
-                                </div>
-
-                                <div class="col-6 mt-3">
-                                    <div class="form__div">
-                                        <label for="mm-yy" class="form__label"> NGÀY KHÁM </label>
-                                        <span style="color:red" >(*)</span>
-                                        <input  type="date" id="mm-yy" class="form-control"
-                                               placeholder="XX /XX / XXXX">
-                                    </div>
-                                </div>
-
-                                <div class="col-6 mt-3">
-                                    <div class="form__div">
-                                        <label  class="form__label">TIỀN KHÁM</label>
-                                          <span style="color:red" >(*)</span>
-                                        <input  type="text" id="text" class="form-control"
-                                               placeholder="VND">
-                                    </div>
-                                </div>
-
-                                <div class="col-6 mt-3">
-                                    <div class="form__div">
-                                        <label class="form__label">TIỀN THUỐC</label>
-                                         <input  type="text" id="" class="form-control"
-                                               placeholder="VND">
-                                    </div>
-                                </div>
-
-
-                                <div class="col-12 mt-3">
-                                    <div class="form__div">
-                                        <label for="total" class="form__label">TỔNG TIỀN</label>
-                                        <input type="text" id="total" class="form-control"
-                                               placeholder="VND">
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <button id="submit-btn" class="mt-4 btn btn-primary w-100">Thanh toán ngay</button>
+    <h3 class="d-flex align-items-center gap-5 mb-3">
+        <div class="fs-3 fw-bold">THANH TOÁN HÓA ĐƠN</div>
+        <div style="color: rgb(255, 94, 31);" class="fw-bold fs-4"><span id="price" class="price"></span>
+            VNĐ
+        </div>
+    </h3>
+    <div class="card-body border col-lg-7 p-0">
+        <p>
+            <a class="btn btn-primary p-2 h-100 d-flex align-items-center justify-content-between"
+                data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true"
+                aria-controls="collapseExample">
+                <span class="ms-2 fw-bold align-items-center">HÓA ĐƠN CẦN THANH TOÁN</span>
+            </a>
+        </p>
+        <div class="collapse show p-3 pt-0" id="collapseExample">
+            <div class="row">
+                <div class="col-lg-12">
+                    <form action="" class="form">
+                        <div class="row">
+                            <div class="col-6 mt-3">
+                                <div class="form__div">
+                                    <label for="name" class="form__label">HỌ TÊN</label>
+                                    <span style="color:red">(*)</span>
+                                    <input type="text" id="name" class="form-control" placeholder="Họ và tên">
                                 </div>
                             </div>
-                        </form>
-                    </div>
+
+                            <div class="col-6 mt-3">
+                                <div class="form__div">
+                                    <label for="mm-yy" class="form__label"> NGÀY KHÁM </label>
+                                    <span style="color:red">(*)</span>
+                                    <input type="date" id="mm-yy" class="form-control" placeholder="XX /XX / XXXX">
+                                </div>
+                            </div>
+
+                            <div class="col-6 mt-3">
+                                <div class="form__div">
+                                    <label class="form__label">TIỀN KHÁM</label>
+                                    <span style="color:red">(*)</span>
+                                    <input type="text" id="text" class="form-control" placeholder="VND">
+                                </div>
+                            </div>
+
+                            <div class="col-6 mt-3">
+                                <div class="form__div">
+                                    <label class="form__label">TIỀN THUỐC</label>
+                                    <input type="text" id="" class="form-control" placeholder="VND">
+                                </div>
+                            </div>
+
+
+                            <div class="col-12 mt-3">
+                                <div class="form__div">
+                                    <label for="total" class="form__label">TỔNG TIỀN</label>
+                                    <input type="text" id="total" class="form-control" placeholder="VND">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button id="submit-btn" class="mt-4 btn btn-primary w-100">Thanh toán ngay</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

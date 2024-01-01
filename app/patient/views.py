@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 from flask_admin import expose
 from sqlalchemy import or_
 
-from . import patient
 from .forms import SearchingPatientForm
 from ..decorators import roles_required, confirmed_required
 from ..models import AccountRole, User
