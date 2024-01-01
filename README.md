@@ -16,7 +16,7 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    cd private_clinic
    ```
 
-3. **Tạo Môi Trường Ảo (Optional, nhưng được khuyến khích):**
+3. **Tạo Môi Trường Ảo (Recommend):**
 
    ```bash
    python -m venv venv
@@ -41,47 +41,30 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    pip install -r requirements.txt
    ```
 
-6. **Gắn pre-commit hook:**
-
-   ```bash
-   pre-commit install --install-hooks
-   ```
-
-7. **Tạo CSDL MYSQL:**
+6. **Tạo CSDL MYSQL:**
 
    **_NOTE:_** Có thể dùng MySQL Workbench
 
    ```bash
-   CREATE DATABASE db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+   CREATE DATABASE clinic CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
    ```
 
-8. **Tạo file .env và thêm vào các biến môi trường:**
+7. **Tạo file .env và thêm vào các biến môi trường**
 
-   ```
-   SECRET_KEY=secrect_key_to_encrypt_data_in_session
-   DATABASE_HOST=db_host
-   DATABASE_NAME=db_name
-   DATABASE_PORT=db_port
-   DATABASE_USERNAME=db_username
-   DATABASE_PASSWORD=db_password
-   ```
+8. **Tạo các bảng cho CSDL:**
 
-9. **Tạo các bảng cho CSDL:**
+   ```bash
+   flask db migrate
+   ```
 
    ```bash
    flask db upgrade
    ```
 
-10. **Chạy ứng dụng:**
-
-   - **Windows:**
+9. **Chạy ứng dụng:**
 
    ```bash
-   set FLASK_APP=app && flask run --debug
+   python manage.py
    ```
 
-   - **Bash:**
-
-   ```bash
-   export FLASK_APP='app' && flask run --debug
-   ```
+  

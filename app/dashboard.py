@@ -28,10 +28,6 @@ class ProtectedView(BaseView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("main.index"))
 
-    def render(self, template, **kwargs):
-        dashboard.name = current_user.role.value
-        return super().render(template, **kwargs)
-
     @expose("/")
     def index(self):
         return super(ProtectedView, self).index_view()
@@ -129,6 +125,7 @@ dashboard = Admin(
     app,
     name="Admin",
     template_mode="bootstrap4",
+    endpoint="dashboard",
     url="/dashboard",
 )
 

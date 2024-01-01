@@ -7,7 +7,7 @@ from . import medicine
 from .forms import SearchingMedicineForm
 from ..decorators import roles_required
 from ..models import AccountRole, Medicine
-from ..admin import ProtectedView, dashboard
+from ..dashboard import ProtectedView, dashboard
 
 
 class MedicineView(ProtectedView):

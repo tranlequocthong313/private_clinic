@@ -258,6 +258,7 @@ class MedicalRegistrationStatus(enum.Enum):
     VERIFIED = "Verified"
     STAGING = "staging"
     SCHEDULED = "Scheduled"
+    CANCELED = "Canceled"
     ARRIVED = "Arrived"
     IN_PROGRESS = "In progress"
     COMPLETED = "Completed"

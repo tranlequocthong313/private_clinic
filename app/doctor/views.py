@@ -7,7 +7,7 @@ from .forms import MedicalForm, MedicalDetaiForm
 from .. import db
 from ..decorators import roles_required
 from ..models import AccountRole, MedicalExamination, User, medical_examination_detail
-from ..admin import ProtectedView, dashboard
+from ..dashboard import ProtectedView, dashboard
 
 
 class DoctorView(ProtectedView):

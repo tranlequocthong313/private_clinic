@@ -22,10 +22,6 @@
   color: rgb(39, 81, 158)
 }
 
-.dropdown-toggle::after {
-  margin-top: 5px;
-}
-
 .close-button {
   position: absolute;
   top: 0;
@@ -35,4 +31,11 @@
   cursor: pointer;
   border: none;
   background: none;
+}
+
+div.pagination {
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  justify-content: center;
 }
