@@ -36,7 +36,7 @@ def login():
             if next is None or not next.startswith("/"):
                 next = url_for("main.index")
             return redirect(next)
-        flash("Invalid email or password.")
+        flash("Invalid email or password.", category="danger")
     return render_template("auth/login.html", form=form)
 
 
@@ -50,7 +50,7 @@ def register_handler(user):
         send_email(
             user.email,
             "Confirm Your Account",
-            "auth/email/confirm",
+            "auth/email/confirm_email",
             user=user,
             token=token,
         )
@@ -80,9 +80,9 @@ def register():
             user = register_handler(user)
         except Exception as e:
             print(e)
-            flash(e)
+            flash(e, category="danger")
             return redirect(url_for("auth.login"))
-        flash("A confirmation email has been sent to you by email.")
+        flash("A confirmation email has been sent to you by email.", category="info")
         return redirect(url_for("auth.login"))
     return render_template("auth/register.html", form=form)
 
@@ -96,7 +96,7 @@ def confirm(token):
         db.session.commit()
         flash("You have confirmed your account. Thanks!")
     else:
-        flash("The confirmation link is invalid or has expired.")
+        flash("The confirmation link is invalid or has expired.", category="danger")
     return redirect(url_for("main.index"))
 
 
@@ -108,17 +108,19 @@ def resend_confirmation():
         send_email(
             current_user.email,
             "Confirm Your Account",
-            "auth/email/confirm",
+            "auth/email/confirm_email",
             user=current_user,
             token=token,
         )
-        flash("A new confirmation email has been sent to you by email.")
+        flash(
+            "A new confirmation email has been sent to you by email.", category="info"
+        )
     if current_user.phone_number:
         send_sms(
             current_user.phone_number,
             url_for("auth.confirm", token=token, _external=True),
         )
-        flash("A new confirmation sms has been sent to you by sms.")
+        flash("A new confirmation sms has been sent to you by sms.", category="info")
     return redirect(url_for("main.index"))
 
 
@@ -126,5 +128,4 @@ def resend_confirmation():
 @login_required
 def logout():
     logout_user()
-    flash("You have been logged out.")
     return redirect(url_for("main.index"))

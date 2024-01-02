@@ -77,7 +77,7 @@ def register_medical(form):
                     send_email(
                         user.email,
                         "Account",
-                        "auth/email/account",
+                        "auth/email/account_email",
                         user=user,
                         password=password,
                     )
@@ -87,7 +87,7 @@ def register_medical(form):
                         f"Account: Phone number: {user.phone_number}, Password: {password}",
                     )
             except Exception as e:
-                flash(e)
+                flash(e, category="danger")
         else:
             patient_id = user.id
 
@@ -109,7 +109,7 @@ def register_medical(form):
             break
 
     if registered:
-        flash("Da co nguoi dang ky bac si vao thoi gian nay!")
+        flash("Da co nguoi dang ky bac si vao thoi gian nay!", category="danger")
     else:
         registration = MedicalRegistration(
             symptom=form.symptom.data,
@@ -122,4 +122,4 @@ def register_medical(form):
         db.session.add(registration)
         db.session.commit()
 
-        flash("Dang ky thanh cong.")
+        flash("Đăng ký thành công.", category="success")

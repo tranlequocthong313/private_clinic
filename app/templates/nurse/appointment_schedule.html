@@ -1,5 +1,6 @@
-{% extends "admin/master.html" %} {% from 'bootstrap4/form.html' import
-render_form %} {% block head %}
+{% extends "admin/master.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% block head %}
 <style>
   .registration-container {
     max-height: 300px;
@@ -40,7 +41,8 @@ render_form %} {% block head %}
     background-color: #45a049;
   }
 </style>
-{% endblock %} {% block body %}
+{% endblock %}
+{% block body %}
 <div class="mb-3">
   <div class="mb-3">{{render_form(form)}}</div>
   <div class="registration-container">
@@ -49,13 +51,8 @@ render_form %} {% block head %}
       {% for registration in medical_registrations %}
       <div class="col-md-4">
         <li>
-          <img
-            class="patient-avatar"
-            src="{{ registration.patient.gravatar(size=50) }}"
-            alt="Avatar"
-            width="50"
-            height="50"
-          />
+          <img class="patient-avatar" src="{{ registration.patient.gravatar(size=50) }}" alt="Avatar" width="50"
+            height="50" />
           <div>
             <strong>Bệnh nhân:</strong> {{ registration.patient.name }}<br />
             <strong>Email:</strong> {{ registration.patient.email }}<br />
@@ -72,20 +69,14 @@ render_form %} {% block head %}
             <br />
             <strong>Triệu chứng:</strong> {{ registration.symptom }}<br />
             {% if can_add %}
-            <button
-              class="registration-btn bg-success"
-              onclick="selectRegistration({
+            <button class="registration-btn bg-success" onclick="selectRegistration({
                 id: '{{ registration.id }}', 
                 date: '{{date}}'
-              })"
-            >
+              })">
               Chọn
             </button>
             {% endif %}
-            <button
-              class="registration-btn bg-danger"
-              onclick="deleteRegistration('{{ registration.id }}')"
-            >
+            <button class="registration-btn bg-danger" onclick="deleteRegistration('{{ registration.id }}')">
               Xóa
             </button>
           </div>
@@ -131,10 +122,7 @@ render_form %} {% block head %}
         <td>{{registration.patient.address}}</td>
         <td>
           {% if can_edit %}
-          <i
-            class="fa-solid fa-trash"
-            onclick="unSelectRegistration('{{registration.id}}')"
-          ></i>
+          <i class="fa-solid fa-trash" onclick="unSelectRegistration('{{registration.id}}')"></i>
           {% endif %}
         </td>
       </tr>
@@ -144,10 +132,7 @@ render_form %} {% block head %}
 
   {% if can_create %}
   <div class="form-floating text-center d-flex" style="padding-left: 79%">
-    <button
-      class="btn btn-warning ml-2"
-      onclick="createAppointmentSchedule('{{date}}')"
-    >
+    <button class="btn btn-warning ml-2" onclick="createAppointmentSchedule('{{date}}')">
       Lập danh sách
     </button>
     <button class="btn btn-danger ml-2">Xuất pdf</button>
@@ -166,8 +151,8 @@ render_form %} {% block head %}
     })
       .then((res) => res.json())
       .then((data) => {
-        window.location.reload();
-      });
+        window.location.reload()
+      })
   }
 
   function unSelectRegistration(registrationId) {
@@ -180,8 +165,8 @@ render_form %} {% block head %}
       })
         .then((res) => res.json())
         .then((data) => {
-          window.location.reload();
-        });
+          window.location.reload()
+        })
     }
   }
 
@@ -195,8 +180,8 @@ render_form %} {% block head %}
       })
         .then((res) => res.json())
         .then((data) => {
-          window.location.reload();
-        });
+          window.location.reload()
+        })
     }
   }
 
@@ -210,9 +195,9 @@ render_form %} {% block head %}
     })
       .then((res) => res.json())
       .then((data) => {
-        alert(data.message);
-        window.location.reload();
-      });
+        alert(data.message)
+        window.location.reload()
+      })
   }
 </script>
 {% endblock %}

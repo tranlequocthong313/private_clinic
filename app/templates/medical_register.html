@@ -1,17 +1,12 @@
-{% if current_user.is_nurse() %} {% extends "admin/master.html" %} {% else %} {%
-extends "landing_page.html" %} {% endif %} {% from 'bootstrap4/form.html' import
-render_form %} {% block body %}
-<div style="margin-top: 100px">
-  <div class="page-header">
-    <h1>Đăng ký khám bệnh</h1>
-  </div>
-  {% with messages = get_flashed_messages()%}
-  <ul>
-    {% for message in messages %}
-    <li>{{message}}</li>
-    {% endfor %}
-  </ul>
-  {% endwith %}
+{% if current_user.is_nurse() %}
+{% extends "admin/master.html" %}
+{% else %}
+{% extends "landing_page.html" %}
+{% endif %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import '_macros.html' as macros %}
+{% block body %}
+<div class="section-padding section-dark">
   <div class="col-md-4">
     {{ render_form(form) }}
     <br />

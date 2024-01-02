@@ -27,16 +27,6 @@ async function getMedicine() {
         })
 }
 
-window.onload = function () {
-    const element = document.querySelector('#medicine-form')
-    element.addEventListener('submit', async event => {
-        event.preventDefault()
-        const medicine = await getMedicine()
-        // Hien thi thong tin thuoc len phieu kham
-        console.log(medicine)
-    })
-}
-
 var isOpening = true
 var mainBodyClasses = ""
 function openNav() {

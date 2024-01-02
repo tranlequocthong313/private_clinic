@@ -1,8 +1,10 @@
-{% extends "admin/master.html" %} {% from 'bootstrap4/form.html' import
-render_form %} {% import "_macros.html" as macros %}{% block body %}
+{% extends "admin/master.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import "_macros.html" as macros %}
+{% block body %}
 <div class="mb-3">
   {{render_form(form)}}
-  <table class="table" style="text-align: center">
+  <table class="table text-center">
     <thead>
       <tr>
         <th scope="col" colspan="9">Ngày khám: {{date}}</th>
@@ -14,21 +16,30 @@ render_form %} {% import "_macros.html" as macros %}{% block body %}
       </tr>
       <tr>
         <th scope="col">STT</th>
+        {% if current_user.is_nurse() %}
         <th scope="col">Mã ca khám</th>
+        {% endif %}
         <th scope="col">Mã bệnh nhân</th>
         <th scope="col">Họ tên</th>
         <th scope="col">Năm sinh</th>
         <th scope="col">Liên lạc</th>
+        {% if current_user.is_nurse() %}
         <th scope="col">Giờ hẹn</th>
         <th scope="col">Bác sĩ</th>
+        {% endif %}
         <th scope="col">Trạng thái</th>
+        {% if current_user.is_doctor() %}
+        <th scope="col"></th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
-      {% for registration in registrations %}
+      {% if registrations %} {% for registration in registrations %}
       <tr>
         <th scope="row">{{loop.index}}</th>
+        {% if current_user.is_nurse() %}
         <td>{{registration.id}}</td>
+        {% endif %}
         <td>{{registration.patient.id}}</td>
         <td>{{registration.patient.name}}</td>
         <td>{{registration.patient.date_of_birth}}</td>
@@ -37,37 +48,59 @@ render_form %} {% import "_macros.html" as macros %}{% block body %}
         {% else %}
         <td>{{registration.patient.email}}</td>
         {% endif %}
+        {% if current_user.is_nurse() %}
         <td>{{registration.start_time}}</td>
         <td>{{registration.doctor.name}}</td>
+        {% endif %}
+        {% if current_user.is_nurse() %}
         <td>
-          <select
-            id="statusSelect_{{registration.id}}"
-            class="form-select"
-            aria-label="Status"
-            onchange="changeStatus('{{ registration.id }}')"
-          >
+          <select id="statusSelect_{{registration.id}}" class="form-select" aria-label="Status"
+            onchange="changeStatus('{{ registration.id }}')">
             {% for status in statuses %} {% if status.value ==
             registration.status.value %}
             <option selected value="{{status.value}}">{{status.name}}</option>
             {% else %}
             <option value="{{status.value}}">{{status.name}}</option>
-            {% endif %} {%endfor %}
+            {% endif %}
+            {%endfor %}
           </select>
         </td>
+        {% else %}
+        <td>{{registration.status.name}}</td>
+        {% endif %}
+        {% if current_user.is_doctor() %}
+        <td>
+          <a href='{{url_for("medical-examination.index", mid=registration.id, pid=registration.patient.id)}}'
+            class="rounded-circle shadow-4-strong bg-primary p-2">
+            <i class="fa-solid fa-stethoscope text-white"></i>
+          </a>
+        </td>
+        {% endif %}
       </tr>
       {% endfor %}
+      {% else %}
+      <tr>
+        {% if current_user.is_doctor() %}
+        <td colspan="9">Không có bệnh nhân nào được chỉ định cho bạn.</td>
+        {% else %}
+        <td colspan="9">Không có bệnh nhân nào hẹn khám trong hôm nay.</td>
+        {% endif %}
+      </tr>
+      {% endif %}
     </tbody>
   </table>
 
+  {% if registrations %}
   <div class="pagination">
     {{macros.pagination_widget(pagination, '.index')}}
   </div>
+  {% endif %}
 </div>
 
 <script>
   function changeStatus(registrationId) {
-    var selectField = document.querySelector(`#statusSelect_${registrationId}`);
-    var selectedStatus = selectField.value;
+    var selectField = document.querySelector(`#statusSelect_${registrationId}`)
+    var selectedStatus = selectField.value
 
     fetch(`/api/medical-registrations/${registrationId}/status`, {
       method: 'PUT',
@@ -78,11 +111,11 @@ render_form %} {% import "_macros.html" as macros %}{% block body %}
     })
       .then((res) => res.json())
       .then((data) => {
-        window.location.reload();
+        window.location.reload()
       })
       .catch((error) => {
-        console.error('Error:', error);
-      });
+        console.error('Error:', error)
+      })
   }
 </script>
 {% endblock %}

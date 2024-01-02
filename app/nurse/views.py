@@ -4,15 +4,13 @@ from flask_admin import expose
 from sqlalchemy import func, or_, desc, case, asc
 from datetime import date, datetime
 
-from . import nurse
-from .forms import AppointmentDateForm, SearchingMedicalRegistrationForm
-from ..main.forms import MedicalRegisterForm
+from .forms import AppointmentDateForm
+from ..main.forms import MedicalRegisterForm, SearchingMedicalRegistrationForm
 from ..decorators import roles_required
 from ..models import (
     AccountRole,
     User,
     MedicalRegistration,
-    TimeToVisit,
     AppointmentSchedule,
     Policy,
     MedicalRegistrationStatus,
@@ -54,11 +52,11 @@ class AppointmentScheduleView(NurseView):
         ).order_by(MedicalRegistration.date_of_visit)
         appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
 
-        all_scheduled = True
+        has_staging = False
         if appointment.first():
             for r in appointment.first().medical_registrations:
-                if not r.scheduled():
-                    all_scheduled = False
+                if r.staging():
+                    has_staging = True
                     break
 
         return self.render(
@@ -74,7 +72,7 @@ class AppointmentScheduleView(NurseView):
                 or len(appointment.first().medical_registrations) < policy.value
             ),
             can_edit=form.date.data >= date.today(),
-            can_create=form.date.data >= date.today() and not all_scheduled,
+            can_create=form.date.data >= date.today() and has_staging,
         )
 
 
@@ -114,9 +112,9 @@ class MedicalRegistrationView(NurseView):
             pagination = q.paginate(page=page, per_page=per_page, error_out=False)
 
         return self.render(
-            "nurse/medical_registrations.html",
+            "medical_registrations.html",
             policy=policy,
-            registrations=pagination.items,
+            registrations=pagination.items if pagination else None,
             total_registered_count=total_registered_count,
             pagination=pagination,
             statuses=self.nurse_concerned_statuses,

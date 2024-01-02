@@ -1,60 +1,46 @@
 {% macro pagination_widget(pagination, endpoint) %}
 <ul class="pagination">
-  <li
-    class="page-item"
-    {%
-    if
-    not
-    pagination.has_prev
-    %}
-    class="disabled"
-    {%
-    endif
-    %}
-  >
-    <a
-      class="page-link"
-      href="{% if pagination.has_prev %}{{ url_for(endpoint,
- page = pagination.page - 1, **kwargs) }}{% else %}#{% endif %}"
-    >
+  <li class="page-item" {% if not pagination.has_prev %} class="disabled" {% endif %}>
+    <a class="page-link" href="{% if pagination.has_prev %}{{ url_for(endpoint,
+ page = pagination.page - 1, **kwargs) }}{% else %}#{% endif %}">
       &laquo;
     </a>
   </li>
-  {% for p in pagination.iter_pages() %} {% if p %} {% if p == pagination.page
-  %}
+  {% for p in pagination.iter_pages() %}
+  {% if p %}
+  {% if p == pagination.page %}
   <li class="page-item active">
-    <a class="page-link" href="{{ url_for(endpoint, page = p, **kwargs) }}"
-      >{{ p }}</a
-    >
+    <a class="page-link" href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
   </li>
   {% else %}
   <li class="page-item">
-    <a class="page-link" href="{{ url_for(endpoint, page = p, **kwargs) }}"
-      >{{ p }}</a
-    >
+    <a class="page-link" href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
   </li>
-  {% endif %} {% else %}
+  {% endif %}
+  {% else %}
   <li class="disabled"><a href="#">&hellip;</a></li>
-  {% endif %} {% endfor %}
-  <li
-    class="page-item"
-    {%
-    if
-    not
-    pagination.has_next
-    %}
-    class="disabled"
-    {%
-    endif
-    %}
-  >
-    <a
-      class="page-link"
-      href="{% if pagination.has_next %}{{ url_for(endpoint,
- page = pagination.page + 1, **kwargs) }}{% else %}#{% endif %}"
-    >
+  {% endif %}
+  {% endfor %}
+  <li class="page-item" {% if not pagination.has_next %} class="disabled" {% endif %}>
+    <a class="page-link" href="{% if pagination.has_next %}{{ url_for(endpoint,
+ page = pagination.page + 1, **kwargs) }}{% else %}#{% endif %}">
       &raquo;
     </a>
   </li>
 </ul>
+{% endmacro %}
+
+{% macro flash_messages()%}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" data-bs-dismiss="alert" class="close-button">
+    &times;
+  </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 {% endmacro %}

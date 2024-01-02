@@ -1,6 +1,7 @@
 from datetime import datetime, date
 from time import time
 from flask_wtf import FlaskForm
+from flask_login import current_user
 from wtforms import (
     StringField,
     PasswordField,
@@ -13,13 +14,18 @@ from wtforms import (
 from wtforms.validators import DataRequired, Email
 from re import search
 
-from ..models import Gender, TimeToVisit, User, AccountRole
+from ..models import Gender, User, AccountRole
 
 
 class MedicalRegisterForm(FlaskForm):
     name = StringField("Ho va ten", validators=[DataRequired()])
-    gender = SelectField("Gioi tinh", choices=[g.value for g in (Gender)])
-    date_of_birth = DateField("Ngay sinh")
+    gender = SelectField(
+        "Gioi tinh",
+        choices=[g.value for g in (Gender)],
+    )
+    date_of_birth = DateField(
+        "Ngay sinh",
+    )
     phone_number = StringField("So dien thoai")
     email = EmailField("Email")
     address = StringField("Dia chi")
@@ -36,6 +42,14 @@ class MedicalRegisterForm(FlaskForm):
     def __init__(self):
         super(MedicalRegisterForm, self).__init__()
         doctors = User.query.filter(User.role == AccountRole.DOCTOR).all()
+        if not current_user.is_nurse():
+            self.name.data = current_user.name
+            self.gender.data = current_user.gender
+            self.phone_number.data = current_user.phone_number
+            self.email.data = current_user.email
+            self.date_of_birth.data = current_user.date_of_birth
+            self.address.data = current_user.address
+        self.date_of_visit.data = date.today()
         self.doctor.choices = [(d.id, d.name) for d in doctors]
 
     def validate_date_of_visit(self, field):
@@ -77,8 +91,13 @@ class MedicalRegisterForm(FlaskForm):
                 self.date_of_visit.data == date.today()
                 and self.start_time.data < datetime.now().time()
             ):
-                self.start_time.errors.append("Hãy đăng ký giờ đó vào ngày mai.")
+                self.start_time.errors.append("Hãy đăng ký giờ này vào ngày khác.")
                 return False
             return True
 
         return False
+
+
+class SearchingMedicalRegistrationForm(FlaskForm):
+    search = StringField("Tim kiem benh nhan")
+    submit = SubmitField("Tim kiem")
