@@ -1,0 +1,56 @@
+{% extends "admin/master.html" %}
+
+{% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}" xmlns="http://www.w3.org/1999/html" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
+
+<ul class="nav nav-tabs d-flex justify-content-between py-2">
+    <div class="nav-item d-flex">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Khám bệnh</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Lịch sử bệnh</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Tra cứu thuốc</a>
+        </li>
+    </div>
+    <div class="gap-2 nav-item">
+        {{form.submit(form='examination-form', class="btn btn-success submit-btn")}}
+        <button class="btn btn-warning submit-btn ml-4">Xuất PDF</button>
+    </div>
+</ul>
+
+<table class="table text-center">
+    <thead>
+        <tr>
+            <th scope="col">STT</th>
+            <th scope="col">Ngày khám</th>
+            <th scope="col">Lý do khám</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if medical_examinations %}
+        {% for medical_examination in medical_examinations %}
+        <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td>
+                {{medical_examination.created_at}}
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4">Bệnh nhân không có lịch sử khám.</td>
+        </tr>
+        {% endif %}
+    </tbody>
+</table>
+{% endblock %}

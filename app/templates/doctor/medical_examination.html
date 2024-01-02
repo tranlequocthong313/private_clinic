@@ -1,6 +1,7 @@
 {% extends "admin/master.html" %}
 {% from 'bootstrap4/form.html' import render_form %}
 {% from "_formhelper.html" import render_field %}
+{% import '_macros.html' as macros %}
 {% block head %}
 <style>
   #examination-form {
@@ -37,8 +38,11 @@
   </div>
 </ul>
 
+
 <form method="POST" id="examination-form" novalidate>
   {{ form.csrf_token }}
+  <strong>Ngày khám: {{medical_registration.date_of_visit}}</strong>
+
   <div class="row my-4">
     <div class="col-lg-6">
       {{render_field(form.name, class='form-control', readonly=true, value=patient.name)}}
@@ -62,7 +66,7 @@
 
   <div class="row my-4">
     <div class="col-lg-6">
-      {{render_field(form.medicine_type, class='form-control', list="medicine-type-list",
+      {{render_field(form.medicine_type, class='form-control', list="medicine-type-list", autocomplete="off",
       onchange="selectMedicineType()")}}
       <datalist id="medicine-type-list">
         {% for type in medicine_types %}
@@ -71,12 +75,15 @@
       </datalist>
     </div>
     <div class="col-lg-5">
-      {{render_field(form.medicine_name, class='form-control', list="medicine-name-list" )}}
+      {{render_field(form.medicine_name, class='form-control', list="medicine-name-list", autocomplete="off")}}
       <datalist id="medicine-name-list">
+        {% for medicine in medicines %}
+        <option value="{{medicine.name}}"></option>
+        {% endfor %}
       </datalist>
     </div>
     <div class="col-lg-1 d-flex align-self-end">
-      {{form.add_medicine(form='add-medicine-form', class="btn btn-info")}}
+      {{form.add_medicine(class="btn btn-info")}}
     </div>
   </div>
 
@@ -84,8 +91,9 @@
     <thead>
       <tr>
         <th scope="col">STT</th>
-        <th scope="col">Số lượng</th>
+        <th scope="col">Thuốc</th>
         <th scope="col">Đơn vị</th>
+        <th scope="col">Số lượng</th>
         <th scope="col">Cách dùng</th>
         <th scope="col"></th>
       </tr>
@@ -93,13 +101,17 @@
     <tbody>
       {% if form.medicines %}
       {% for medicine in form.medicines %}
+      {{medicine.hidden_tag()}}
       <tr>
         <th scope="row">{{loop.index}}</th>
         <td>
-          {{render_field(medicine.quantity, class='form-control', has_label=False)}}
+          {{render_field(medicine.medicine_name, class='form-control', has_label=False, readonly=true)}}
         </td>
         <td>
           {{render_field(medicine.unit, class='form-control', has_label=False, readonly=true)}}
+        </td>
+        <td>
+          {{render_field(medicine.quantity, class='form-control', has_label=False)}}
         </td>
         <td>
           {{render_field(medicine.dosage, class='form-control', has_label=False, list="dosage-list")}}
@@ -125,17 +137,53 @@
 
 <script>
   function selectMedicineType() {
+    console.log('HERE')
     var selectedMedicineType = document.getElementById('medicine_type').value
+    var selectedMedicine = document.getElementById('medicine_name')
+    var medicineNameList = document.getElementById('medicine-name-list')
 
     // Thực hiện yêu cầu GET qua API với giá trị đã chọn
-    fetch(`/api/medicines/?type=${selectedMedicineType}`)
+    fetch(`/api/medicines?type=${selectedMedicineType}`)
       .then(response => response.json())
       .then(data => {
         console.log(data)
+        const medicines = data.medicines
+        console.log(medicines)
+        if (!medicines) {
+          medicineNameList.innerHTML = ""
+          selectedMedicine.value = "Loại thuốc này hiện đang trống."
+          return
+        } else {
+          medicineNameList.innerHTML = ""
+          selectedMedicine.value = ""
+          medicines.forEach(medicine => {
+            medicineNameList.innerHTML += `<option value="${medicine.name}"></option>`
+          })
+        }
       })
       .catch(error => {
         console.error(error)
       })
   }
+
+  document.getElementById('add_medicine').addEventListener('click', function (e) {
+    var enteredValue = document.getElementById('medicine_name').value
+    var medicineNameList = document.getElementById('medicine-name-list')
+
+    var options = medicineNameList.getElementsByTagName('option')
+    var found = false
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === enteredValue) {
+        found = true
+        break
+      }
+    }
+
+    if (!found) {
+      alert("Vui lòng chọn giá trị từ danh sách.")
+      e.stopPropagation()
+      e.preventDefault()
+    }
+  });
 </script>
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 from flask_admin import expose
 from datetime import datetime, date
@@ -9,17 +9,19 @@ from ..main.forms import SearchingMedicalRegistrationForm
 from .. import db
 from ..decorators import roles_required
 from ..models import (
+    Medicine,
     MedicineType,
     AccountRole,
     MedicalExamination,
     User,
-    medical_examination_detail,
     MedicalRegistrationStatus,
     MedicalRegistration,
     AppointmentSchedule,
     Policy,
+    MedicalExaminationDetail,
 )
 from ..dashboard import ProtectedView, dashboard
+from ..api.views import get_medicines_by_type
 
 
 class DoctorView(ProtectedView):
@@ -53,9 +55,6 @@ class MedicalExaminationView(DoctorView):
         medical_registration = MedicalRegistration.query.get(medical_registration_id)
 
         form = MedicalExaminationForm()
-        if form.add_medicine.data:
-            print("ADD")
-            form.medicines.append_entry(None)
 
         # - WTF Form's docs: "Do not resize the entries list directly,
         # this will result in undefined behavior. See append_entry and
@@ -66,11 +65,57 @@ class MedicalExaminationView(DoctorView):
                 del form.medicines.entries[i]
                 break
 
-        print(form.validate_on_submit())
-        if form.validate_on_submit():
+        if form.add_medicine.data:
+            print("ADD")
+            print(form.medicine_type.data, form.medicine_name.data)
+            medicine = Medicine.query.filter(
+                Medicine.name == form.medicine_name.data
+            ).first()
+            if medicine:
+                if medicine.id in [m["medicine_id"] for m in form.medicines.data]:
+                    flash(f"{medicine.name} đã có trong đơn thuốc", category="danger")
+                else:
+                    form.medicines.append_entry(
+                        {
+                            "medicine_id": medicine.id,
+                            "medicine_name": medicine.name,
+                            "unit": medicine.medicine_unit.name,
+                        }
+                    )
+        elif form.validate_on_submit():
+            medical_examination = MedicalExamination(
+                diagnosis=form.diagnosis.data,
+                patient_id=medical_registration.patient.id,
+                doctor_id=current_user.id,
+                fulfilled=True,
+            )
+            db.session.add(medical_examination)
+            db.session.commit()
+            print(medical_examination.id)
+            print(medical_examination.diagnosis)
+            print(medical_examination.patient_id)
+            print(medical_examination.doctor_id)
             print("SUBMIT")
             for medicine in form.medicines.data:
                 print(medicine)
+                medical_examination_detail = MedicalExaminationDetail(
+                    medical_examination_id=medical_examination.id,
+                    medicine_id=medicine["medicine_id"],
+                    quantity=medicine["quantity"],
+                    dosage=medicine["dosage"],
+                )
+                db.session.add(medical_examination_detail)
+            db.session.commit()
+            flash("Lập phiếu khám thành công", category="success")
+
+        medicines = []
+        medicine_types = MedicineType.query.all()
+        try:
+            if not form.medicine_type.data:
+                form.medicine_type.data = medicine_types[0].name
+            medicines = get_medicines_by_type(form.medicine_type.data)
+        except Exception as e:
+            print(str(e))
 
         return self.render(
             "doctor/medical_examination.html",
@@ -78,7 +123,8 @@ class MedicalExaminationView(DoctorView):
             patient=patient,
             medical_registration=medical_registration,
             dosages=self.dosages,
-            medicine_types=MedicineType.query.all(),
+            medicine_types=medicine_types,
+            medicines=medicines,
         )
 
 

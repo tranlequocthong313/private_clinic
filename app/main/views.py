@@ -122,4 +122,4 @@ def register_medical(form):
         db.session.add(registration)
         db.session.commit()
 
-        flash("Dang ky thanh cong.", category="danger")
+        flash("Đăng ký thành công.", category="success")
