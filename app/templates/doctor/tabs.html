@@ -12,7 +12,9 @@
                 bệnh</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Tra cứu thuốc</a>
+            <a class="nav-link {% if active_tab == 'searching' %} active {% endif %}"
+                href='{{url_for("search-medicines.index", mid=registration.id, pid=registration.patient.id)}}'>Tra cứu
+                thuốc</a>
         </li>
     </div>
 </ul>

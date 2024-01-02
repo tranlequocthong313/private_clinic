@@ -4,7 +4,5 @@ from wtforms.validators import DataRequired, Email
 
 
 class SearchingPatientForm(FlaskForm):
-    id = IntegerField("Ma benh nhan")
-    email = EmailField("Email")
-    phone_number = StringField("So dien thoai")
+    keyword = StringField("Tìm kiếm", render_kw={"placeholder": "Từ khóa"})
     submit = SubmitField("Tra cuu")
