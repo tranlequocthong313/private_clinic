@@ -32,7 +32,7 @@
             </ul>
             {% if current_user.is_authenticated %}
 
-            {% if current_user.is_nurse() %}
+            {% if current_user.is_nurse %}
             <a href="{{url_for('medical-register.index')}}" class="btn btn-primary ml-3">
                 <i class="fa-solid fa-calendar-check mr-2"></i>
                 Đăng ký khám bệnh</a>
@@ -48,7 +48,7 @@
                     <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=25) }}">
                 </a>
                 <ul class="dropdown-menu" style='left: -105px'>
-                    {% if not current_user.is_patient() %}
+                    {% if not current_user.is_patient %}
                     <li class="dropdown-item">
                         <a href='{{url_for("dashboard.index")}}'>
                             <i class="fas fa-plus mr-2"></i>

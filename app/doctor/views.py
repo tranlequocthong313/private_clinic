@@ -8,7 +8,6 @@ from .forms import MedicalExaminationForm
 from ..main.forms import SearchingMedicalRegistrationForm
 from .. import db
 from ..decorators import roles_required
-
 from ..models import (
     Medicine,
     MedicineType,
@@ -27,7 +26,7 @@ from ..api.views import get_medicines_by_type
 
 class DoctorView(ProtectedView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_doctor()
+        return current_user.is_authenticated and current_user.is_doctor
 
 
 class MedicalExaminationView(DoctorView):
@@ -47,6 +46,8 @@ class MedicalExaminationView(DoctorView):
 
     @expose("/", methods=["GET", "POST"])
     def index(self):
+        form = MedicalExaminationForm()
+
         medical_registration_id = request.args.get("mid", type=int)
         patient_id = request.args.get("pid", type=int)
         if not medical_registration_id or not patient_id:
@@ -54,21 +55,42 @@ class MedicalExaminationView(DoctorView):
 
         patient = User.query.get(patient_id)
         medical_registration = MedicalRegistration.query.get(medical_registration_id)
+        medical_examination = MedicalExamination.query.filter(
+            MedicalExamination.medical_registration_id == medical_registration_id
+        ).first()
+        if (
+            medical_registration
+            and not medical_examination
+            or not medical_examination.fulfilled
+        ):
+            medical_registration.status = MedicalRegistrationStatus.IN_PROGRESS
+        if medical_examination:
+            if not form.diagnosis.data:
+                form.diagnosis.data = medical_examination.diagnosis
+            if not form.medicines.data:
+                for detail in medical_examination.medical_examination_details:
+                    form.medicines.append_entry(
+                        {
+                            "medicine_id": detail.medicine.id,
+                            "medicine_name": detail.medicine.name,
+                            "unit": detail.medicine.medicine_unit.name,
+                            "quantity": detail.quantity,
+                            "dosage": detail.dosage,
+                        }
+                    )
 
-        form = MedicalExaminationForm()
+        validating = True
 
         # - WTF Form's docs: "Do not resize the entries list directly,
         # this will result in undefined behavior. See append_entry and
         # pop_entry for ways you can manipulate the list."
-        for i, medicine in enumerate(form.medicines):
-            if medicine.delete_medicine.data:
-                print("DELETE")
+        for i, detail in enumerate(form.medicines):
+            if detail.delete_medicine.data:
                 del form.medicines.entries[i]
+                validating = False
                 break
 
         if form.add_medicine.data:
-            print("ADD")
-            print(form.medicine_type.data, form.medicine_name.data)
             medicine = Medicine.query.filter(
                 Medicine.name == form.medicine_name.data
             ).first()
@@ -83,31 +105,42 @@ class MedicalExaminationView(DoctorView):
                             "unit": medicine.medicine_unit.name,
                         }
                     )
-        elif form.validate_on_submit():
-            medical_examination = MedicalExamination(
-                diagnosis=form.diagnosis.data,
-                patient_id=medical_registration.patient.id,
-                doctor_id=current_user.id,
-                fulfilled=True,
-            )
-            db.session.add(medical_examination)
+        elif form.validate_on_submit() and validating:
+            if not medical_examination:
+                medical_examination = MedicalExamination(
+                    diagnosis=form.diagnosis.data,
+                    patient_id=medical_registration.patient.id,
+                    doctor_id=current_user.id,
+                    medical_registration_id=medical_registration.id,
+                    fulfilled=form.submit.data,
+                )
+                db.session.add(medical_examination)
+            else:
+                MedicalExaminationDetail.query.filter(
+                    MedicalExaminationDetail.medical_examination_id
+                    == medical_examination.id
+                ).delete()
+                medical_examination.diagnosis = form.diagnosis.data
+                medical_examination.fulfilled = form.submit.data
             db.session.commit()
-            print(medical_examination.id)
-            print(medical_examination.diagnosis)
-            print(medical_examination.patient_id)
-            print(medical_examination.doctor_id)
-            print("SUBMIT")
-            for medicine in form.medicines.data:
-                print(medicine)
+            for detail in form.medicines.data:
                 medical_examination_detail = MedicalExaminationDetail(
                     medical_examination_id=medical_examination.id,
-                    medicine_id=medicine["medicine_id"],
-                    quantity=medicine["quantity"],
-                    dosage=medicine["dosage"],
+                    medicine_id=detail["medicine_id"],
+                    quantity=detail["quantity"],
+                    dosage=detail["dosage"],
                 )
                 db.session.add(medical_examination_detail)
+            if medical_examination.fulfilled:
+                medical_registration.status = MedicalRegistrationStatus.UNPAID
             db.session.commit()
-            flash("Lập phiếu khám thành công", category="success")
+
+            message = "Lập phiếu khám thành công."
+            category = "success"
+            if form.draft.data:
+                message = "Lưu nháp thành công"
+                category = "info"
+            flash(message, category)
 
         medicines = []
         medicine_types = MedicineType.query.all()
@@ -126,6 +159,12 @@ class MedicalExaminationView(DoctorView):
             dosages=self.dosages,
             medicine_types=medicine_types,
             medicines=medicines,
+            medical_examination=medical_examination,
+            readonly=True
+            if medical_examination and medical_examination.fulfilled
+            else False,
+            date=date.today(),
+            active_tab="examination",
         )
 
 
@@ -177,6 +216,27 @@ class EncounterPatientView(DoctorView):
         )
 
 
+class DiseaseHistoryView(DoctorView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        medical_registration_id = request.args.get("mid", type=int)
+        patient_id = request.args.get("pid", type=int)
+        medical_examinations = MedicalExamination.query.filter(
+            MedicalExamination.patient_id == patient_id,
+            MedicalExamination.fulfilled == True,
+        ).all()
+        medical_registration = MedicalRegistration.query.get(medical_registration_id)
+        return self.render(
+            "doctor/disease_history.html",
+            medical_examinations=medical_examinations,
+            medical_registration=medical_registration,
+            active_tab="history",
+        )
+
+
 dashboard.add_view(
     EncounterPatientView(
         name="Danh sách ca khám",
@@ -195,3 +255,11 @@ dashboard.add_view(
     )
 )
 
+dashboard.add_view(
+    DiseaseHistoryView(
+        name="Lịch sử bệnh",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="disease-history",
+    )
+)

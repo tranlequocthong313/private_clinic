@@ -33,6 +33,7 @@ class MedicalExaminationForm(FlaskForm):
     medicine_name = StringField("Tên thuốc")
     add_medicine = SubmitField("Thêm")
 
+    draft = SubmitField("Lưu nháp")
     submit = SubmitField("Tạo phiếu khám")
 
     def validate_medicine_type(self, field):
@@ -48,6 +49,9 @@ class MedicalExaminationForm(FlaskForm):
             if self.add_medicine.data:
                 if not self.medicine_name:
                     self.medicine_name.errors.append("Thuốc không được bỏ trống.")
+                    return False
+            elif self.draft.data:
+                if not (self.diagnosis.data or self.medicines.data):
                     return False
             elif self.submit.data:
                 if not self.diagnosis.data:
