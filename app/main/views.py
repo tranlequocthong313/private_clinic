@@ -5,7 +5,6 @@ from sqlalchemy import func, or_, desc, case
 from . import main
 from .forms import MedicalRegisterForm
 from ..decorators import confirmed_required, roles_required
-from ..dashboard_categories import dashboard_categories
 from ..models import AccountRole, MedicalRegistration, User, MedicalRegistrationStatus
 from .. import db
 from ..auth.views import register_handler
@@ -39,11 +38,6 @@ def medical_register():
         register_medical(form)
         return redirect(url_for("main.medical_register"))
     return render_template("medical_register.html", form=form)
-
-
-@main.app_context_processor
-def inject_category():
-    return dict(category=dashboard_categories.get(current_user.role.value, []))
 
 
 def register_medical(form):
