@@ -5,6 +5,7 @@ from sqlalchemy import or_
 from . import api
 from ..decorators import roles_required
 from ..models import (
+    MedicalExamination,
     AccountRole,
     Medicine,
     AppointmentSchedule,

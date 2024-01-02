@@ -42,7 +42,7 @@ class MedicalRegisterForm(FlaskForm):
     def __init__(self):
         super(MedicalRegisterForm, self).__init__()
         doctors = User.query.filter(User.role == AccountRole.DOCTOR).all()
-        if not current_user.is_nurse():
+        if not current_user.is_nurse:
             self.name.data = current_user.name
             self.gender.data = current_user.gender
             self.phone_number.data = current_user.phone_number

@@ -100,18 +100,23 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User {self.name}>"
 
+    @property
     def is_admin(self):
         return self.role == AccountRole.ADMIN
 
+    @property
     def is_patient(self):
         return self.role == AccountRole.PATIENT
 
+    @property
     def is_doctor(self):
         return self.role == AccountRole.DOCTOR
 
+    @property
     def is_nurse(self):
         return self.role == AccountRole.NURSE
 
+    @property
     def is_cashier(self):
         return self.role == AccountRole.CASHIER
 
@@ -122,6 +127,10 @@ class User(UserMixin, db.Model):
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
+
+    @property
+    def contact(self):
+        return self.phone_number if self.phone_number else self.email
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -218,17 +227,16 @@ class MedicalExamination(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
-    diagnosis = Column(UnicodeText, nullable=False)
+    diagnosis = Column(UnicodeText)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     medical_registration_id = Column(
         Integer, ForeignKey("medical_registrations.id"), nullable=False
     )
     fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
-    medicines = relationship(
-        "Medicine",
-        secondary="medical_examination_details",
-        backref="medicine_examination",
+    medical_examination_details = relationship(
+        "MedicalExaminationDetail",
+        backref="medical_examination",
         lazy=True,
     )
 
@@ -262,6 +270,7 @@ class MedicalRegistrationStatus(enum.Enum):
     CANCELED = "Canceled"
     ARRIVED = "Arrived"
     IN_PROGRESS = "In progress"
+    UNPAID = "Unpaid"
     COMPLETED = "Completed"
 
 
@@ -280,6 +289,9 @@ class MedicalRegistration(db.Model):
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     appointment_schedule_id = Column(
         Integer, ForeignKey(AppointmentSchedule.id), nullable=True
+    )
+    medical_examination = relationship(
+        "MedicalExamination", backref="medical_registration", lazy=True
     )
 
     def not_verified(self):
@@ -344,6 +356,11 @@ class Medicine(db.Model):
     medicine_unit_id = Column(Integer, ForeignKey(MedicineUnit.id), nullable=False)
     medicine_types = relationship(
         "Medicine_MedicineType", backref="medicine", lazy=True
+    )
+    medical_examination_details = relationship(
+        "MedicalExaminationDetail",
+        backref="medicine",
+        lazy=True,
     )
 
     def __str__(self):

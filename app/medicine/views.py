@@ -13,7 +13,7 @@ from ..dashboard import ProtectedView, dashboard
 class MedicineView(ProtectedView):
     def is_accessible(self):
         return current_user.is_authenticated and (
-            current_user.is_doctor() or current_user.is_nurse()
+            current_user.is_doctor or current_user.is_nurse
         )
 
     @expose("/", methods=["GET", "POST"])
