@@ -198,16 +198,19 @@ class AppointmentSchedule(db.Model):
         return str(self.id)
 
 
-medical_examination_detail = db.Table(
-    "medical_examination_detail",
-    db.Column("id", db.Integer, primary_key=True, autoincrement=True),
-    db.Column(
-        "medical_examination_id", db.Integer, db.ForeignKey("medical_examinations.id")
-    ),
-    db.Column("medicine_id", db.String(50), db.ForeignKey("medicines.id")),
-    db.Column("quantity", db.Integer, nullable=False),
-    db.Column("dosage", UnicodeText, nullable=False),
-)
+class MedicalExaminationDetail(db.Model):
+    __tablename__ = "medical_examination_details"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    medical_examination_id = Column(
+        Integer, ForeignKey("medical_examinations.id"), nullable=False
+    )
+    medicine_id = Column(String(50), ForeignKey("medicines.id"), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    dosage = Column(UnicodeText, nullable=False)
+
+    def __str__(self):
+        return str(self.id)
 
 
 class MedicalExamination(db.Model):
@@ -215,19 +218,22 @@ class MedicalExamination(db.Model):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
-    symptom = Column(UnicodeText, nullable=False)
     diagnosis = Column(UnicodeText, nullable=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    medical_registration_id = Column(
+        Integer, ForeignKey("medical_registrations.id"), nullable=False
+    )
+    fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
     medicines = relationship(
         "Medicine",
-        secondary=medical_examination_detail,
+        secondary="medical_examination_details",
         backref="medicine_examination",
         lazy=True,
     )
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Bill(db.Model):
@@ -245,12 +251,7 @@ class Bill(db.Model):
     policy = Column(String(50), ForeignKey(Policy.id), nullable=False)
 
     def __str__(self):
-        return self.id
-
-
-class TimeToVisit(enum.Enum):
-    MORNING = "Morning"
-    AFTERNOON = "Afternoon"
+        return str(self.id)
 
 
 class MedicalRegistrationStatus(enum.Enum):
@@ -303,7 +304,7 @@ class MedicalRegistration(db.Model):
         return self.status == MedicalRegistrationStatus.COMPLETED
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class MedicineUnit(db.Model):

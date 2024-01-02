@@ -123,7 +123,7 @@ class StatsView(ProtectedView):
 
 dashboard = Admin(
     app,
-    name="Admin",
+    name="Dashboard",
     template_mode="bootstrap4",
     endpoint="dashboard",
     url="/dashboard",

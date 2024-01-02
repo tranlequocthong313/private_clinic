@@ -25,34 +25,62 @@ class LoginForm(FlaskForm):
         ],
         render_kw={"placeholder": "Email hoac so dien thoai"},
     )
-    password = PasswordField("Password", validators=[DataRequired()])
-    remember_me = BooleanField("Keep me logged in")
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Mật khẩu"},
+    )
+    remember_me = BooleanField("Duy trì đăng nhập")
     submit = SubmitField("Đăng nhập")
 
 
 class RegistrationForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
+    name = StringField(
+        "Name",
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Họ tên"},
+    )
     email = EmailField(
         "Email",
+        render_kw={"placeholder": "Email"},
     )
     phone_number = StringField(
         "Phone number",
+        render_kw={"placeholder": "Số điện thoại"},
     )
-    address = StringField("Address", validators=[DataRequired()])
+    address = StringField(
+        "Address",
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Địa chỉ"},
+    )
     gender = SelectField(
-        "Gender", choices=[(choice.name, choice.value) for choice in Gender]
+        "Gender",
+        choices=[(choice.name, choice.value) for choice in Gender],
+        render_kw={"placeholder": "Giới tính"},
     )
     date_of_birth = DateField(
-        "Date_of_birth", validators=[DataRequired()], format="%Y-%m-%d"
+        "Date_of_birth",
+        validators=[DataRequired()],
+        format="%Y-%m-%d",
+        render_kw={"placeholder": "Ngày sinh"},
     )
     password = PasswordField(
         "Password",
         validators=[
             DataRequired(),
-            EqualTo("password2", message="Passwords must match."),
+            Length(min=8, max=32),
         ],
+        render_kw={"placeholder": "Mật khẩu"},
     )
-    password2 = PasswordField("Confirm password", validators=[DataRequired()])
+    password2 = PasswordField(
+        "Confirm password",
+        validators=[
+            DataRequired(),
+            Length(min=8, max=32),
+            EqualTo("password", message="Passwords must match."),
+        ],
+        render_kw={"placeholder": "Nhập lại mật khẩu"},
+    )
 
     submit = SubmitField("Đăng ký")
 

@@ -1,20 +1,13 @@
 <header>
-    <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='css/style.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <nav class="navbar navbar-expand-md fixed-top ">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">
             <img src="https://res.cloudinary.com/dgsii3nt1/image/upload/v1701079653/LOGO_ao7prq.png"
-                 style="width: 60px;" alt="TÂM ĐỨC"/>
+                style="width: 60px;" alt="TÂM ĐỨC" />
         </a>
         </a>
-        <button class="navbar-toggler"
-                type="button"
-                data-toggle="collapse"
-                data-target="#navbarCollapse"
-                aria-controls="navbarCollapse"
-                aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+            aria-controls="navbarCollapse" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -50,7 +43,8 @@
             {% endif %}
 
             <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                    data-bs-toggle="dropdown">
                     <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=25) }}">
                 </a>
                 <ul class="dropdown-menu" style='left: -105px'>
