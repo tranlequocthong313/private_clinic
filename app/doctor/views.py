@@ -8,6 +8,7 @@ from .forms import MedicalExaminationForm
 from ..main.forms import SearchingMedicalRegistrationForm
 from .. import db
 from ..decorators import roles_required
+
 from ..models import (
     Medicine,
     MedicineType,
@@ -193,3 +194,4 @@ dashboard.add_view(
         endpoint="medical-examination",
     )
 )
+

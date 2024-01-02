@@ -221,9 +221,6 @@ class MedicalExamination(db.Model):
     diagnosis = Column(UnicodeText, nullable=False)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    medical_registration_id = Column(
-        Integer, ForeignKey("medical_registrations.id"), nullable=False
-    )
     fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
     medicines = relationship(
         "Medicine",
