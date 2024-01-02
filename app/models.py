@@ -366,6 +366,12 @@ class Medicine(db.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def types(self):
+        return ", ".join(
+            [medicine_type.medicine_type.name for medicine_type in self.medicine_types]
+        )
+
 
 class Medicine_MedicineType(db.Model):
     __tablename__ = "medicine_medicinetype"

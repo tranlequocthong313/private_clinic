@@ -6,7 +6,7 @@ from sqlalchemy import or_
 from . import medicine
 from .forms import SearchingMedicineForm
 from ..decorators import roles_required
-from ..models import AccountRole, Medicine
+from ..models import AccountRole, Medicine, MedicalRegistration
 from ..dashboard import ProtectedView, dashboard
 
 
@@ -18,33 +18,36 @@ class MedicineView(ProtectedView):
 
     @expose("/", methods=["GET", "POST"])
     def index(self):
+        medical_registration_id = request.args.get("mid", type=int)
+        medical_registration = MedicalRegistration.query.get(medical_registration_id)
         form = SearchingMedicineForm()
+        if not form.keyword.data:
+            form.keyword.data = ""
         medicines = None
         pagination = None
-        if form.validate_on_submit():
-            page = request.args.get("page", 1, type=int)
-            pagination = (
-                Medicine.query.filter(
-                    or_(
-                        Medicine.id == form.id.data,
-                        Medicine.name == form.name.data,
-                    ),
-                )
-                .order_by(Medicine.created_at.desc())
-                .paginate(
-                    page=page,
-                    per_page=current_app.config["ITEMS_PER_PAGE"],
-                    error_out=False,
-                )
+        page = request.args.get("page", 1, type=int)
+        pagination = (
+            Medicine.query.filter(
+                or_(
+                    Medicine.name.like(f"%{form.keyword.data}%"),
+                    Medicine.id.like(f"%{form.keyword.data}%"),
+                ),
             )
-            medicines = pagination.items
-        form.id.data = ""
-        form.name.data = ""
+            .order_by(Medicine.name)
+            .paginate(
+                page=page,
+                per_page=current_app.config["ITEMS_PER_PAGE"],
+                error_out=False,
+            )
+        )
+        medicines = pagination.items
         return self.render(
-            "medicine/list_medicines.html",
+            "medicine/search_medicines.html",
             form=form,
             medicines=medicines,
             pagination=pagination,
+            active_tab="searching",
+            medical_registration=medical_registration,
         )
 
 

@@ -20,30 +20,28 @@ class PatientView(ProtectedView):
         form = SearchingPatientForm()
         patients = None
         pagination = None
-        if form.validate_on_submit():
-            page = request.args.get("page", 1, type=int)
-            pagination = (
-                User.query.filter(
-                    User.role == AccountRole.PATIENT,
-                    or_(
-                        User.id == form.id.data,
-                        User.email == form.email.data,
-                        User.phone_number == form.phone_number.data,
-                    ),
-                )
-                .order_by(User.created_at.desc())
-                .paginate(
-                    page=page,
-                    per_page=current_app.config["ITEMS_PER_PAGE"],
-                    error_out=False,
-                )
+        page = request.args.get("page", 1, type=int)
+        if not form.keyword.data:
+            form.keyword.data = ""
+        pagination = (
+            User.query.filter(
+                or_(
+                    User.id == form.keyword.data,
+                    User.name.like(f"%{form.keyword.data}%"),
+                    User.email.like(f"%{form.keyword.data}%"),
+                    User.phone_number.like(f"%{form.keyword.data}%"),
+                ),
             )
-            patients = pagination.items
-        form.id.data = ""
-        form.email.data = ""
-        form.phone_number.data = ""
+            .order_by(User.name)
+            .paginate(
+                page=page,
+                per_page=current_app.config["ITEMS_PER_PAGE"],
+                error_out=False,
+            )
+        )
+        patients = pagination.items
         return self.render(
-            "patient/list_patients.html",
+            "patient/search_patients.html",
             form=form,
             patients=patients,
             pagination=pagination,

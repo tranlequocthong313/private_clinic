@@ -1,32 +1,3 @@
-async function getMedicine() {
-    const name = document.querySelector("input[name='medicine-name']").value
-    const quantity = document.querySelector("input[name='medicine-quantity']").value
-    const dosage = document.querySelector("input[name='medicine-dosage']").value
-    return fetch(`/api/medicines`, {
-        method: "POST",
-        body: JSON.stringify({
-            name,
-            quantity,
-            dosage
-        }),
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-        .then(res => {
-            if (!res.ok && res.status === 400) {
-                throw new Error(`Không tìm thấy thuốc`)
-            }
-            return res.json()
-        })
-        .then(data => {
-            return data
-        })
-        .catch(e => {
-            alert(e.message)
-        })
-}
-
 var isOpening = true
 var mainBodyClasses = ""
 function openNav() {

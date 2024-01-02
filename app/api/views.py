@@ -32,52 +32,31 @@ def get_medicines_by_type(type_name):
         return [m.medicine for m in medicines]
 
 
-@api.route("/medicines", methods=["POST", "GET"])
+@api.route("/medicines", methods=["GET"])
 @login_required
-@roles_required([AccountRole.DOCTOR, AccountRole.NURSE])
-def list_medicines():
-    if request.method == "POST":
-        body = request.get_json()
-        medicine = Medicine.query.filter_by(name=body.get("name")).first()
-
-        if medicine:
-            return jsonify(
-                {
-                    "id": medicine.id,
-                    "name": medicine.name,
-                    "unit": medicine.medicine_unit.name,
-                    "quantity": body.get("quantity"),
-                    "dosage": body.get("dosage"),
-                }
-            )
-        else:
-            response = jsonify(
-                {"error": "bad request", "message": "Medicine not found"}
-            )
-            response.status_code = 400
-            return response
-    else:
-        type_name = request.args.get("type")
-        try:
-            medicines = get_medicines_by_type(type_name)
-            return jsonify(
-                {
-                    "medicines": [
-                        {
-                            "id": m.id,
-                            "name": m.name,
-                            "quantity": m.quantity,
-                            "price": m.price,
-                            "description": m.description,
-                            "unit": m.medicine_unit.name,
-                        }
-                        for m in medicines
-                    ],
-                    "message": "Lấy thuốc thành công.",
-                }
-            )
-        except Exception as e:
-            return jsonify({"message": str(e)})
+@roles_required([AccountRole.DOCTOR])
+def search_medicines():
+    type_name = request.args.get("type")
+    try:
+        medicines = get_medicines_by_type(type_name)
+        return jsonify(
+            {
+                "medicines": [
+                    {
+                        "id": m.id,
+                        "name": m.name,
+                        "quantity": m.quantity,
+                        "price": m.price,
+                        "description": m.description,
+                        "unit": m.medicine_unit.name,
+                    }
+                    for m in medicines
+                ],
+                "message": "Lấy thuốc thành công.",
+            }
+        )
+    except Exception as e:
+        return jsonify({"message": str(e)})
 
 
 @api.route("/appointment-schedule", methods=["POST"])

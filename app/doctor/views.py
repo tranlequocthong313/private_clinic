@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
 from flask_admin import expose
 from datetime import datetime, date
@@ -6,6 +6,7 @@ from sqlalchemy import or_
 
 from .forms import MedicalExaminationForm
 from ..main.forms import SearchingMedicalRegistrationForm
+from ..medicine.forms import SearchingMedicineForm
 from .. import db
 from ..decorators import roles_required
 from ..models import (
@@ -179,7 +180,6 @@ class EncounterPatientView(DoctorView):
     def index(self):
         form = SearchingMedicalRegistrationForm()
         page = request.args.get("page", 1, type=int)
-        per_page = 10
         appointment = AppointmentSchedule.query.filter(
             AppointmentSchedule.date == date.today()
         ).first()
@@ -202,7 +202,11 @@ class EncounterPatientView(DoctorView):
                         User.phone_number.like(f"%{form.search.data}%"),
                     )
                 )
-            pagination = q.paginate(page=page, per_page=per_page, error_out=False)
+            pagination = q.paginate(
+                page=page,
+                per_page=current_app.config["ITEMS_PER_PAGE"],
+                error_out=False,
+            )
 
         return self.render(
             "medical_registrations.html",
