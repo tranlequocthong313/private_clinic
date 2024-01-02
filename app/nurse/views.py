@@ -26,7 +26,7 @@ from ..main.views import register_medical
 
 class NurseView(ProtectedView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_nurse()
+        return current_user.is_authenticated and current_user.is_nurse
 
 
 class MedicalRegisterView(NurseView):

@@ -23,7 +23,7 @@ from app.models import (
 
 class ProtectedView(BaseView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin()
+        return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("main.index"))

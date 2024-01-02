@@ -48,7 +48,7 @@ def inject_category():
 
 def register_medical(form):
     patient_id = None
-    if current_user.is_patient():
+    if current_user.is_patient:
         patient_id = current_user.id
     else:
         user = User.query.filter(

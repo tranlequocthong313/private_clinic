@@ -11,7 +11,7 @@ from ..dashboard import ProtectedView, dashboard
 
 class CashierView(ProtectedView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_cashier()
+        return current_user.is_authenticated and current_user.is_cashier
 
 
 class PayBillView(CashierView):
