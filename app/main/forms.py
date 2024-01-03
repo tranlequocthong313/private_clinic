@@ -44,12 +44,12 @@ class MedicalRegisterForm(FlaskForm):
         doctors = User.query.filter(User.role == AccountRole.DOCTOR).all()
         if not current_user.is_nurse:
             self.name.data = current_user.name
-            self.gender.data = current_user.gender
+            self.gender.data = current_user.gender.value
             self.phone_number.data = current_user.phone_number
             self.email.data = current_user.email
             self.date_of_birth.data = current_user.date_of_birth
             self.address.data = current_user.address
-        self.date_of_visit.data = date.today()
+       #self.date_of_visit.data = date.today()
         self.doctor.choices = [(d.id, d.name) for d in doctors]
 
     def validate_date_of_visit(self, field):
@@ -92,6 +92,7 @@ class MedicalRegisterForm(FlaskForm):
                 and self.start_time.data < datetime.now().time()
             ):
                 self.start_time.errors.append("Hãy đăng ký giờ này vào ngày khác.")
+                print(self.date_of_visit.data == date.today(),self.date_of_visit.data,date.today())
                 return False
             return True
 

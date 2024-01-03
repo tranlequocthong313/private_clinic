@@ -6,8 +6,11 @@
 {% from 'bootstrap4/form.html' import render_form %}
 {% import '_macros.html' as macros %}
 {% block body %}
+{% if current_user.is_patient %}
+{{macros.flash_messages()}}
+{% endif %}
 <div class="section-padding section-dark">
-  <div class="col-md-4">
+  <div class="col-md-4" style="margin-top:10%">
     {{ render_form(form) }}
     <br />
   </div>

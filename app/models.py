@@ -231,6 +231,7 @@ class MedicalExamination(db.Model):
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
+    medical_registration_id = Column(Integer, ForeignKey("medical_registrations.id"), nullable=False)
     medical_examination_details = relationship(
         "MedicalExaminationDetail",
         backref="medical_examination",

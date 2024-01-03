@@ -250,7 +250,7 @@ dashboard.add_view(
     MedicalExaminationView(
         name="Lập phiếu khám",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-user-doctor",
         endpoint="medical-examination",
     )
 )
@@ -259,7 +259,7 @@ dashboard.add_view(
     DiseaseHistoryView(
         name="Lịch sử bệnh",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-solid fa-book-medical",
         endpoint="disease-history",
     )
 )

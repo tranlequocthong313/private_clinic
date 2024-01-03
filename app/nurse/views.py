@@ -127,7 +127,7 @@ dashboard.add_view(
     AppointmentScheduleView(
         name="Lập danh sách khám bệnh",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value=" fa-user-nurse",
         endpoint="appointment-schedule",
     )
 )
@@ -135,7 +135,7 @@ dashboard.add_view(
     MedicalRegistrationView(
         name="Danh sách ca khám",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-address-book",
         endpoint="medical-registrations",
     )
 )
@@ -143,7 +143,7 @@ dashboard.add_view(
     MedicalRegisterView(
         name="Đăng ký khám bệnh",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value=" fa-pen-to-square",
         endpoint="medical-register",
     )
 )
