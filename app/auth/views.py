@@ -2,12 +2,13 @@ from flask import render_template, redirect, request, url_for, flash
 from flask_login import login_user, login_required, current_user, logout_user
 from sqlalchemy import or_
 from re import search
+
+
 from . import auth
 from ..models import User
 from ..email import send_email
-from ..sms import send_sms
-from .forms import LoginForm, RegistrationForm
-
+from ..sms import send_sms, send_otp
+from .forms import LoginForm, RegistrationForm, VerifyOTPForm
 from .. import db
 
 
@@ -15,7 +16,10 @@ from .. import db
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for("main.index"))
-    return render_template("auth/unconfirmed.html")
+    if current_user.phone_number:
+        return redirect(url_for("auth.send_otp_confirmation"))
+    else:
+        return redirect(url_for("auth.send_mail_confirmation"))
 
 
 @auth.route("/login", methods=["GET", "POST"])
@@ -36,28 +40,15 @@ def login():
             if next is None or not next.startswith("/"):
                 next = url_for("main.index")
             return redirect(next)
-        flash("Invalid email or password.", category="danger")
+        flash("Email hoặc mật khẩu không đúng.", category="danger")
     return render_template("auth/login.html", form=form)
 
 
 def register_handler(user):
     if not user.email and not user.phone_number:
-        raise Exception("Must provide email or phone number.")
+        raise Exception("Phải cung cấp email hoặc số điện thoại.")
     db.session.add(user)
     db.session.commit()
-    token = user.generate_confirmation_token()
-    if user.email:
-        send_email(
-            user.email,
-            "Confirm Your Account",
-            "auth/email/confirm_email",
-            user=user,
-            token=token,
-        )
-    if user.phone_number:
-        send_sms(
-            user.phone_number, url_for("auth.confirm", token=token, _external=True)
-        )
     return user
 
 
@@ -82,9 +73,44 @@ def register():
             print(e)
             flash(e, category="danger")
             return redirect(url_for("auth.login"))
-        flash("A confirmation email has been sent to you by email.", category="info")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.verify_otp"))
     return render_template("auth/register.html", form=form)
+
+
+@auth.route("/verify-otp", methods=["GET", "POST"])
+@login_required
+def verify_otp():
+    if current_user.confirmed:
+        return redirect(url_for("main.index"))
+    if not current_user.phone_number:
+        return redirect(url_for("auth.send_mail_confirmation"))
+    form = VerifyOTPForm()
+    if form.validate_on_submit():
+        otp = ""
+        for i in range(1, 7):
+            otp += str(form[f"number_{i}"].data)
+        print("OTP", otp)
+        verified = current_user.verify_otp(otp)
+        if verified:
+            current_user.confirmed = True
+            db.session.commit()
+            flash("Xác thực tài khoản thành công.", category="success")
+            return redirect(url_for("auth.verify_otp"))
+        else:
+            flash("Mã OTP không hợp lệ.", category="danger")
+    return render_template("auth/otp.html", form=form)
+
+
+@auth.route("/otp")
+@login_required
+def send_otp_confirmation():
+    if current_user.phone_number:
+        send_otp(to=current_user.phone_number)
+        flash(
+            "Một mã OTP vừa được gửi cho bạn. Xin vùi lòng kiểm tra điện thoại.",
+            category="info",
+        )
+    return redirect(url_for(".verify_otp"))
 
 
 @auth.route("/confirm/<token>")
@@ -94,34 +120,30 @@ def confirm(token):
         return redirect(url_for("main.index"))
     if current_user.confirm(token):
         db.session.commit()
-        flash("You have confirmed your account. Thanks!")
+        flash("Bạn đã xác thực tài khoản thành công.", category="success")
     else:
-        flash("The confirmation link is invalid or has expired.", category="danger")
+        flash("Link xác thực không hợp lệ hoặc đã quá hạn.", category="danger")
     return redirect(url_for("main.index"))
 
 
 @auth.route("/confirm")
 @login_required
-def resend_confirmation():
+def send_mail_confirmation():
+    if not current_user.email:
+        return redirect(url_for("auth.send_otp_confirmation"))
     token = current_user.generate_confirmation_token()
-    if current_user.email:
-        send_email(
-            current_user.email,
-            "Confirm Your Account",
-            "auth/email/confirm_email",
-            user=current_user,
-            token=token,
-        )
-        flash(
-            "A new confirmation email has been sent to you by email.", category="info"
-        )
-    if current_user.phone_number:
-        send_sms(
-            current_user.phone_number,
-            url_for("auth.confirm", token=token, _external=True),
-        )
-        flash("A new confirmation sms has been sent to you by sms.", category="info")
-    return redirect(url_for("main.index"))
+    send_email(
+        current_user.email,
+        "Confirm Your Account",
+        "auth/email/confirm_email",
+        user=current_user,
+        token=token,
+    )
+    flash(
+        "Một email xác thực tài khoản vừa được gửi cho bạn. Xin vui lòng kiểm tra hòm thư.",
+        category="info",
+    )
+    return render_template("auth/unconfirmed.html")
 
 
 @auth.route("/logout")

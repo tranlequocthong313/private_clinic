@@ -40,6 +40,7 @@ class DevelopmentConfig(Config):
     TWILIO_SID = os.getenv("TWILIO_SID")
     TWILIO_TOKEN = os.getenv("TWILIO_TOKEN")
     TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
+    TWILIO_SERVICE_SID = os.getenv("TWILIO_SERVICE_SID")
 
 
 config = {"development": DevelopmentConfig, "default": DevelopmentConfig}
