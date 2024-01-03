@@ -24,9 +24,16 @@
 </head>
 
 <body>
+    {% import '_macros.html' as macros %}
+
     {% include 'nav.html' %}
+
     <main role="main">
         {% block body %}
+        <div class="mt-5">
+            {{macros.flash_messages()}}
+        </div>
+
         <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">

@@ -1,0 +1,118 @@
+{% extends "landing_page.html" %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% from 'bootstrap4/form.html' import render_field %}
+{% import '_macros.html' as macros %}
+{% from '_formhelper.html' import render_field %}
+{% block body %}
+
+<section class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark" style="
+    min-height: 100vh;
+    background-size: cover;
+    background-image: url(https://png.pngtree.com/thumb_back/fw800/back_our/20190621/ourmid/pngtree-molecular-structure-illustration-medical-blue-gradient-background-image_199094.jpg);
+  ">
+  <section class="container-fluid">
+    <div class="row justify-content-center align-items-center d-flex-row text-center h-100">
+      <div class="col-12 col-md-4 col-lg-3 h-50">
+        <div class="card shadow">
+          <div class="card-body mx-auto">
+            <h3 class="card-title mt-3 text-center text-info">Xác thực OTP</h3>
+            <p class="text-center">Mã OTP của bạn được gửi qua SMS</p>
+
+            <form method="post">
+              <div class="otp-field mb-4">
+                {{form.csrf_token}}
+
+                {{form.number_1}}
+                {{form.number_2(disabled=true)}}
+                {{form.number_3(disabled=true)}}
+                {{form.number_4(disabled=true)}}
+                {{form.number_5(disabled=true)}}
+                {{form.number_6(disabled=true)}}
+              </div>
+
+              {{form.submit(class='btn btn-primary mb-3')}}
+              <p class="text-muted mb-0">
+                Chưa nhận được mã?
+                <a href="{{url_for('auth.send_otp_confirmation')}}">Gửi lại mã</a>
+              </p>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<script>
+  const inputs = document.querySelectorAll(".otp-field > input[type='number']")
+  const button = document.querySelector(".btn")
+
+  window.addEventListener("load", () => inputs[0].focus())
+  button.setAttribute("disabled", "disabled")
+
+  inputs[0].addEventListener("paste", function (event) {
+    event.preventDefault()
+
+    const pastedValue = (event.clipboardData || window.clipboardData).getData(
+      "text"
+    )
+    const otpLength = inputs.length
+
+    for (let i = 0; i < otpLength; i++) {
+      if (i < pastedValue.length) {
+        inputs[i].value = pastedValue[i]
+        inputs[i].removeAttribute("disabled")
+        inputs[i].focus
+      } else {
+        inputs[i].value = "" // Clear any remaining inputs
+        inputs[i].focus
+      }
+    }
+  })
+
+  inputs.forEach((input, index1) => {
+    input.addEventListener("keyup", (e) => {
+      const currentInput = input
+      const nextInput = input.nextElementSibling
+      const prevInput = input.previousElementSibling
+
+      if (currentInput.value.length > 1) {
+        currentInput.value = ""
+        return
+      }
+
+      if (
+        nextInput &&
+        nextInput.hasAttribute("disabled") &&
+        currentInput.value !== ""
+      ) {
+        nextInput.removeAttribute("disabled")
+        nextInput.focus()
+      }
+
+      if (e.key === "Backspace") {
+        inputs.forEach((input, index2) => {
+          if (index1 <= index2 && prevInput) {
+            input.setAttribute("disabled", true)
+            input.value = ""
+            prevInput.focus()
+          }
+        })
+      }
+
+      button.classList.remove("active")
+      button.setAttribute("disabled", "disabled")
+
+      const inputsNo = inputs.length
+      if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
+        button.classList.add("active")
+        button.removeAttribute("disabled")
+
+        return
+      }
+    })
+  });
+</script>
+
+{% endblock %}
