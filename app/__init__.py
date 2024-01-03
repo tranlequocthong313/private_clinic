@@ -10,6 +10,7 @@ from twilio.rest import Client
 import pdfkit
 
 from config import config
+from .utils import format_money
 
 db = SQLAlchemy()
 mail = Mail()
@@ -22,6 +23,7 @@ sms_client = Client(os.getenv("TWILIO_SID"), os.getenv("TWILIO_TOKEN"))
 def create_app(*args, **kwargs):
     app = Flask(__name__)
     app.config.from_object(config[kwargs.get("config_name", "default")])
+    app.jinja_env.globals.update(format_money=format_money)
 
     bootstrap.init_app(app)
     db.init_app(app)

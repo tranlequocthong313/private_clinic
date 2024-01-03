@@ -20,6 +20,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{quote(db_username)}:{quote(db_password)}@{quote(db_host)}:{quote(db_port)}/{quote(db_name)}?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_RECORD_QUERIES = True
 
     CLOUDINARY_NAME = os.getenv("CLOUDINARY_NAME")
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")

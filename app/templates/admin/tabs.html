@@ -1,0 +1,15 @@
+{%macro tabs(active_tab='revenue')%}
+<ul class="nav nav-tabs d-flex justify-content-between py-2">
+    <div class="nav-item d-flex">
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'revenue' %} active {% endif %}"
+                href='{{url_for("stats.index")}}'>Doanh thu và tần suất khám</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if active_tab == 'medicine' %} active {% endif %}"
+                href='{{url_for("medicine-stats.index")}}'>Tần suất sử dụng thuốc</a>
+        </li>
+    </div>
+</ul>
+
+{%endmacro%}

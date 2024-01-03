@@ -9,6 +9,7 @@ from flask import redirect, url_for, request, render_template
 from flask_admin import AdminIndexView, BaseView
 from . import db
 from manage import app
+from sqlalchemy import extract
 
 from app.models import (
     Medicine,
@@ -118,7 +119,76 @@ class Medicine_MedicineTypeModelView(CustomModelView):
 class StatsView(ProtectedView):
     @expose("/")
     def index(self):
-        return self.render("admin/stats.html")
+        date_object = datetime.strptime(
+            request.args.get("month", f"{date.today().year}-{date.today().month}"),
+            "%Y-%m",
+        )
+        year = date_object.year
+        month = date_object.month
+        stats = (
+            db.session.query(
+                extract("day", Bill.created_at).label("day"),
+                func.sum(Bill.amount).label("total_revenue"),
+                func.count().label("total_examinations"),
+            )
+            .filter(
+                Bill.fulfilled == True,
+                extract("month", Bill.created_at) == month,
+                extract("year", Bill.created_at) == year,
+            )
+            .group_by("day")
+            .order_by("day")
+            .all()
+        )
+        return self.render(
+            "admin/stats.html",
+            stats=stats,
+            month=month if month > 9 else f"0{month}",
+            year=year,
+            total_revenue_of_the_month=sum([stat[1] for stat in stats]),
+            total_examinations_of_the_month=sum([stat[2] for stat in stats]),
+            active_tab="revenue",
+        )
+
+
+class MedicineStatsView(ProtectedView):
+    def is_visible(self):
+        return False
+
+    @expose("/")
+    def index(self):
+        date_object = datetime.strptime(
+            request.args.get("month", f"{date.today().year}-{date.today().month}"),
+            "%Y-%m",
+        )
+        year = date_object.year
+        month = date_object.month
+        stats = (
+            db.session.query(
+                Medicine.name,
+                MedicineUnit.name,
+                Medicine.quantity,
+                func.sum(MedicalExaminationDetail.quantity).label("total_quantity"),
+            )
+            .join(MedicineUnit)
+            .join(MedicalExaminationDetail)
+            .join(MedicalExamination)
+            .filter(
+                extract("month", MedicalExamination.created_at) == month,
+                extract("year", MedicalExamination.created_at) == year,
+                MedicalExamination.fulfilled == True,
+            )
+            .group_by(Medicine.name)
+            .all()
+        )
+
+        return self.render(
+            "admin/medicine_stats.html",
+            stats=stats,
+            month=month if month > 9 else f"0{month}",
+            year=year,
+            active_tab="medicine",
+        )
 
 
 dashboard = Admin(
@@ -190,6 +260,14 @@ dashboard.add_view(
         menu_icon_type="fa",
         menu_icon_value="fa-users",
         endpoint="stats",
+    )
+)
+dashboard.add_view(
+    MedicineStatsView(
+        name="Thống kê tần suất sử dụng thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="medicine-stats",
     )
 )
 

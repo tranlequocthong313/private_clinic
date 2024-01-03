@@ -9,3 +9,7 @@ def random_password():
     string = lower + upper + numbers + symbols
     password = "".join(random.sample(string, 12))
     return password
+
+
+def format_money(money):
+    return f"{money:,.0f}".replace(",", ".")

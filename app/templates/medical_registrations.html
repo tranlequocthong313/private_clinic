@@ -58,21 +58,29 @@
             onchange="changeStatus('{{ registration.id }}')">
             {% for status in statuses %} {% if status.value ==
             registration.status.value %}
-            <option selected value="{{status.value}}">{{status.name}}</option>
+            <option selected value="{{status.value}}">{{status.value}}</option>
             {% else %}
-            <option value="{{status.value}}">{{status.name}}</option>
+            <option value="{{status.value}}">{{status.value}}</option>
             {% endif %}
             {%endfor %}
           </select>
         </td>
         {% else %}
-        <td>{{registration.status.name}}</td>
+        <td>{{registration.status.value}}</td>
         {% endif %}
         {% if current_user.is_doctor %}
         <td>
-          <a href='{{url_for("medical-examination.index", mid=registration.id, pid=registration.patient.id)}}'
+          <a href='{{url_for("medical-examination.index", mid=registration.id)}}'
             class="rounded-circle shadow-4-strong bg-primary p-2">
             <i class="fa-solid fa-stethoscope text-white"></i>
+          </a>
+        </td>
+        {% endif %}
+        {% if current_user.is_cashier %}
+        <td>
+          <a href='{{url_for("pay-bill.index", mid=registration.id)}}'
+            class="rounded-circle shadow-4-strong bg-primary p-2">
+            <i class="fa-solid fa-credit-card text-white"></i>
           </a>
         </td>
         {% endif %}

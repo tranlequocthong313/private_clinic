@@ -256,7 +256,6 @@ class Bill(db.Model):
     medical_examination_id = Column(
         Integer, ForeignKey(MedicalExamination.id), nullable=False
     )
-    policy = Column(String(50), ForeignKey(Policy.id), nullable=False)
 
     def __str__(self):
         return str(self.id)
@@ -294,24 +293,35 @@ class MedicalRegistration(db.Model):
         "MedicalExamination", backref="medical_registration", lazy=True
     )
 
+    @property
     def not_verified(self):
         return self.status == MedicalRegistrationStatus.NOT_VERIFIED
 
+    @property
     def verified(self):
         return self.status == MedicalRegistrationStatus.VERIFIED
 
+    @property
     def staging(self):
         return self.status == MedicalRegistrationStatus.STAGING
 
+    @property
     def scheduled(self):
         return self.status == MedicalRegistrationStatus.SCHEDULED
 
+    @property
     def arrived(self):
         return self.status == MedicalRegistrationStatus.ARRIVED
 
+    @property
     def in_progress(self):
         return self.status == MedicalRegistrationStatus.IN_PROGRESS
 
+    @property
+    def unpaid(self):
+        return self.status == MedicalRegistrationStatus.UNPAID
+
+    @property
     def completed(self):
         return self.status == MedicalRegistrationStatus.COMPLETED
 

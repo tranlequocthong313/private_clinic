@@ -1,15 +1,10 @@
 {% extends "admin/master.html" %}
 {% from 'bootstrap4/form.html' import render_form %}
+{% from '_formhelper.html' import render_field %}
 {% block body %}
 
-<div class="d-flex flex-column align-items-center p-5">
-    <h3 class="d-flex align-items-center gap-5 mb-3">
-        <div class="fs-3 fw-bold">THANH TOÁN HÓA ĐƠN</div>
-        <div style="color: rgb(255, 94, 31);" class="fw-bold fs-4"><span id="price" class="price"></span>
-            VNĐ
-        </div>
-    </h3>
-    <div class="card-body border col-lg-7 p-0">
+<div class="d-flex flex-column align-items-center">
+    <div class="border p-0">
         <p>
             <a class="btn btn-primary p-2 h-100 d-flex align-items-center justify-content-between"
                 data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="true"
@@ -20,49 +15,87 @@
         <div class="collapse show p-3 pt-0" id="collapseExample">
             <div class="row">
                 <div class="col-lg-12">
-                    <form action="" class="form">
+                    <form action="" method='POST' class="form">
+                        {{form.csrf_token}}
+                        <div class='d-flex justify-content-between align-items-center'>
+                            <strong>Ngày khám: {{medical_examination.created_at}}</strong>
+                            <button class="btn btn-danger submit-btn">Xuất PDF</button>
+                        </div>
                         <div class="row">
                             <div class="col-6 mt-3">
                                 <div class="form__div">
-                                    <label for="name" class="form__label">HỌ TÊN</label>
-                                    <span style="color:red">(*)</span>
-                                    <input type="text" id="name" class="form-control" placeholder="Họ và tên">
+                                    {{render_field(form.name, readonly=true, value=patient.name, class='form-control')}}
                                 </div>
                             </div>
 
                             <div class="col-6 mt-3">
                                 <div class="form__div">
-                                    <label for="mm-yy" class="form__label"> NGÀY KHÁM </label>
-                                    <span style="color:red">(*)</span>
-                                    <input type="date" id="mm-yy" class="form-control" placeholder="XX /XX / XXXX">
+                                    {{render_field(form.contact, readonly=true, value=patient.contact,
+                                    class='form-control')}}
                                 </div>
                             </div>
 
-                            <div class="col-6 mt-3">
+                            <div class="col-12 mt-3">
                                 <div class="form__div">
-                                    <label class="form__label">TIỀN KHÁM</label>
-                                    <span style="color:red">(*)</span>
-                                    <input type="text" id="text" class="form-control" placeholder="VND">
+                                    {{render_field(form.examination_fee, readonly=true,
+                                    value=examination_fee_policy ~ ' ' ~ 'VND' , class='form-control')}}
                                 </div>
                             </div>
 
-                            <div class="col-6 mt-3">
+                            <div class="col-12 mt-3">
                                 <div class="form__div">
-                                    <label class="form__label">TIỀN THUỐC</label>
-                                    <input type="text" id="" class="form-control" placeholder="VND">
+                                    {{render_field(form.medicine_fee, readonly=true,
+                                    value=medicine_fee ~ ' ' ~ 'VND' , class='form-control')}}
+                                </div>
+                            </div>
+
+                            <div class="container-fluid mt-4 text-center">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row mb-3">
+                                                    <div class="col-1 font-weight-bold">STT</div>
+                                                    <div class="col-3 font-weight-bold">Thuốc</div>
+                                                    <div class="col-3 font-weight-bold">Đơn vị</div>
+                                                    <div class="col-3 font-weight-bold">Giá</div>
+                                                    <div class="col-2 font-weight-bold">Số lượng</div>
+                                                </div>
+
+                                                {% if medical_examination.medical_examination_details %}
+                                                {% for detail in medical_examination.medical_examination_details %}
+                                                <div class="row mb-2">
+                                                    <div class="col-1">{{loop.index}}</div>
+                                                    <div class="col-3">{{detail.medicine.name}}</div>
+                                                    <div class="col-3">{{detail.medicine.medicine_unit.name}}</div>
+                                                    <div class="col-3">{{format_money(detail.medicine.price)}} VND</div>
+                                                    <div class="col-2">{{detail.quantity}}</div>
+                                                </div>
+                                                {% endfor %}
+                                                {% else %}
+                                                <div class="row">
+                                                    <div class="col-12">Không có đơn thuốc nào.</div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
 
                             <div class="col-12 mt-3">
                                 <div class="form__div">
-                                    <label for="total" class="form__label">TỔNG TIỀN</label>
-                                    <input type="text" id="total" class="form-control" placeholder="VND">
+                                    {{render_field(form.sum_fee, readonly=true,
+                                    value=sum_fee ~ ' ' ~ 'VND' ,
+                                    class='form-control')}}
                                 </div>
                             </div>
+                            {% if medical_examination.medical_registration.unpaid %}
                             <div class="col-12">
-                                <button id="submit-btn" class="mt-4 btn btn-primary w-100">Thanh toán ngay</button>
+                                {{form.submit(class="mt-4 btn btn-primary w-100")}}
                             </div>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
