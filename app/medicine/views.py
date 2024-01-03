@@ -3,7 +3,6 @@ from flask_login import login_required, current_user
 from flask_admin import expose
 from sqlalchemy import or_
 
-from . import medicine
 from .forms import SearchingMedicineForm
 from ..decorators import roles_required
 from ..models import AccountRole, Medicine, MedicalRegistration
@@ -29,8 +28,8 @@ class MedicineView(ProtectedView):
         pagination = (
             Medicine.query.filter(
                 or_(
-                    Medicine.name.like(f"%{form.keyword.data}%"),
-                    Medicine.id.like(f"%{form.keyword.data}%"),
+                    Medicine.name.contains(form.keyword.data),
+                    Medicine.id.contains(form.keyword.data),
                 ),
             )
             .order_by(Medicine.name)

@@ -75,7 +75,7 @@ def schedule():
 
     for r in registrations:
         r = MedicalRegistration.query.get(r.id)
-        if r.staging():
+        if r.staging:
             r.status = MedicalRegistrationStatus.SCHEDULED
             if r.patient.phone_number:
                 send_sms(r.patient.phone_number, "Lịch khám của bạn là")

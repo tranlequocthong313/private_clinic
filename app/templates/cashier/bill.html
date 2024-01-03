@@ -1,8 +1,49 @@
-{% extends "admin/master.html" %}
+{% extends 'admin/master.html' %}
 {% from 'bootstrap4/form.html' import render_form %}
-{% block body %}
-<div>
-    <h1>Bill</h1>
+{% import '_macros.html' as macros %}
 
+{% block body %}
+
+{{render_form(form)}}
+
+<ul class='mt-4'>
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th scope='col'>Id</th>
+                <th scope='col'>Mã phiếu khám</th>
+                <th scope='col'>Mã bệnh nhân</th>
+                <th scope='col'>Tổng tiền</th>
+                <th scope='col'>Người lập</th>
+                <th scope='col'>Đã trả</th>
+                <th scope='col'>Ngày tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if bills %}
+            {% for b in bills %}
+            <tr>
+                <th scope='row'>{{b.id}}</th>
+                <td>{{b.medical_examination_id}}</td>
+                <td>{{b.patient_id}}</td>
+                <td>{{format_money(b.amount)}} VND</td>
+                <td>{{b.cashier.name}}</td>
+                <td>{{b.fulfilled}}</td>
+                <td>{{b.created_at}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan='9'>Hóa đơn không tồn tại.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</ul>
+
+{% if bills %}
+<div class="pagination">
+    {{macros.pagination_widget(pagination, '.index')}}
 </div>
+{% endif %}
 {% endblock %}

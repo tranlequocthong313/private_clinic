@@ -4,6 +4,7 @@ from flask_admin import expose
 from datetime import datetime, date
 from sqlalchemy import or_
 
+from ..patient.views import ListPatientView
 from .forms import MedicalExaminationForm
 from ..main.forms import SearchingMedicalRegistrationForm
 from ..medicine.forms import SearchingMedicineForm
@@ -50,11 +51,9 @@ class MedicalExaminationView(DoctorView):
         form = MedicalExaminationForm()
 
         medical_registration_id = request.args.get("mid", type=int)
-        patient_id = request.args.get("pid", type=int)
-        if not medical_registration_id or not patient_id:
+        if not medical_registration_id:
             return redirect(url_for("encounter-patient.index"))
 
-        patient = User.query.get(patient_id)
         medical_registration = MedicalRegistration.query.get(medical_registration_id)
         medical_examination = MedicalExamination.query.filter(
             MedicalExamination.medical_registration_id == medical_registration_id
@@ -65,6 +64,7 @@ class MedicalExaminationView(DoctorView):
             or not medical_examination.fulfilled
         ):
             medical_registration.status = MedicalRegistrationStatus.IN_PROGRESS
+            db.session.commit()
         if medical_examination:
             if not form.diagnosis.data:
                 form.diagnosis.data = medical_examination.diagnosis
@@ -155,7 +155,6 @@ class MedicalExaminationView(DoctorView):
         return self.render(
             "doctor/medical_examination.html",
             form=form,
-            patient=patient,
             medical_registration=medical_registration,
             dosages=self.dosages,
             medicine_types=medicine_types,
@@ -169,54 +168,21 @@ class MedicalExaminationView(DoctorView):
         )
 
 
-class EncounterPatientView(DoctorView):
-    doctor_concerned_statuses = [
+class EncounterPatientView(ListPatientView, DoctorView):
+    def is_accessible(self):
+        return DoctorView().is_accessible()
+
+    statuses = [
         MedicalRegistrationStatus.ARRIVED,
         MedicalRegistrationStatus.IN_PROGRESS,
         MedicalRegistrationStatus.COMPLETED,
     ]
 
-    @expose("/", methods=["GET", "POST"])
-    def index(self):
-        form = SearchingMedicalRegistrationForm()
-        page = request.args.get("page", 1, type=int)
-        appointment = AppointmentSchedule.query.filter(
-            AppointmentSchedule.date == date.today()
-        ).first()
-        policy = Policy.query.get("so-benh-nhan")
-        pagination = None
-        total_registered_count = 0
-        if appointment:
-            q = MedicalRegistration.query.filter(
-                MedicalRegistration.appointment_schedule_id == appointment.id,
-                MedicalRegistration.doctor_id == current_user.id,
-                MedicalRegistration.status.in_(self.doctor_concerned_statuses),
-            )
-            total_registered_count = q.count()
-            if form.validate_on_submit():
-                q = q.join(User, MedicalRegistration.patient_id == User.id).filter(
-                    or_(
-                        User.id == form.search.data,
-                        User.name.like(f"%{form.search.data}%"),
-                        User.email.like(f"%{form.search.data}%"),
-                        User.phone_number.like(f"%{form.search.data}%"),
-                    )
-                )
-            pagination = q.paginate(
-                page=page,
-                per_page=current_app.config["ITEMS_PER_PAGE"],
-                error_out=False,
-            )
-
-        return self.render(
-            "medical_registrations.html",
-            policy=policy,
-            registrations=pagination.items if pagination else None,
-            total_registered_count=total_registered_count,
-            pagination=pagination,
-            statuses=self.doctor_concerned_statuses,
-            date=date.today(),
-            form=form,
+    def filter(self, appointment):
+        return MedicalRegistration.query.filter(
+            MedicalRegistration.appointment_schedule_id == appointment.id,
+            MedicalRegistration.doctor_id == current_user.id,
+            MedicalRegistration.status.in_(self.statuses),
         )
 
 
@@ -228,11 +194,13 @@ class DiseaseHistoryView(DoctorView):
     def index(self):
         medical_registration_id = request.args.get("mid", type=int)
         patient_id = request.args.get("pid", type=int)
+        medical_registration = MedicalRegistration.query.get(medical_registration_id)
+        if medical_registration:
+            patient_id = medical_registration.patient.id
         medical_examinations = MedicalExamination.query.filter(
             MedicalExamination.patient_id == patient_id,
             MedicalExamination.fulfilled == True,
         ).all()
-        medical_registration = MedicalRegistration.query.get(medical_registration_id)
         return self.render(
             "doctor/disease_history.html",
             medical_examinations=medical_examinations,
