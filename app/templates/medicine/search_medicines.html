@@ -1,0 +1,58 @@
+{% extends 'admin/master.html' %}
+{% from 'doctor/tabs.html' import tabs %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import '_macros.html' as macros %}
+
+{% block body %}
+
+{% if medical_registration %}
+{{ tabs(medical_registration, active_tab) }}
+{% endif %}
+
+{{render_form(form)}}
+
+<ul class='mt-4'>
+  <table class="table text-center">
+    <thead>
+      <tr>
+        <th scope='col'>Id</th>
+        <th scope='col'>Tên</th>
+        <th scope='col'>Số lượng</th>
+        <th scope='col'>NSX</th>
+        <th scope='col'>HSD</th>
+        <th scope='col'>Giá</th>
+        <th scope='col'>Mô tả</th>
+        <th scope='col'>Đơn vị</th>
+        <th scope='col'>Loại</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if medicines %}
+      {% for m in medicines %}
+      <tr>
+        <th scope='row'>{{m.id}}</th>
+        <td>{{m.name}}</td>
+        <td>{{m.quantity}}</td>
+        <td>{{m.manufacturing_date}}</td>
+        <td>{{m.expiry_date}}</td>
+        <td>{{format_money(m.price)}} VND</td>
+        <td>{{m.description}}</td>
+        <td>{{m.medicine_unit.name}}</td>
+        <td>{{m.types}}</td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan='9'>Thuốc không tồn tại.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</ul>
+
+{% if medicines %}
+<div class="pagination">
+  {{macros.pagination_widget(pagination, '.index')}}
+</div>
+{% endif %}
+{% endblock %}

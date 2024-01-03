@@ -1,11 +1,11 @@
 {% extends 'admin/master.html' %}
 {% from 'admin/tabs.html' import tabs %}
-
 {% block body %}
 <div class='mb-5'>
   {{tabs(active_tab)}}
 
-  <form action="{{url_for('stats.index')}}" class='form w-100 mt-4 d-flex align-items-center justify-content-end'>
+  <form action="{{url_for('medicine-stats.index')}}"
+    class='form w-100 mt-4 d-flex align-items-center justify-content-end'>
     <div class='d-flex'>
       <input value='{{year}}-{{month}}' type="month" id="month" name="month" class='form-control' />
     </div>
@@ -15,33 +15,28 @@
   <div class='mt-2'>
     <table class="table text-center">
       <tr>
-        <th colspan='5'>BÁO CÁO DOANH THU THEO THÁNG</th>
+        <th colspan='5'>BÁO CÁO SỬ DỤNG THUỐC</th>
       </tr>
       <tr>
         <th colspan='5'>Tháng: {{month}}/{{year}}</th>
       </tr>
       <tr>
         <th>STT</th>
-        <th>Ngày</th>
-        <th>Số bệnh nhân</th>
-        <th>Doanh thu</th>
-        <th>Tỷ lệ</th>
+        <th>Thuốc</th>
+        <th>Đơn vị tính</th>
+        <th>Số lượng</th>
+        <th>Số lần dùng</th>
       </tr>
       {% if stats %}
       {% for s in stats %}
       <tr>
         <th scope='row'>{{loop.index}}</th>
-        <td>{{s[0]}}/{{month}}/{{year}}</td>
+        <td>{{s[0]}}</td>
+        <td>{{s[1]}}</td>
         <td>{{s[2]}}</td>
-        <td>{{format_money(s[1])}} VND</td>
-        <td>{{(s[2] / total_examinations_of_the_month) * 100}}%</td>
+        <td>{{s[3]}}</td>
       </tr>
       {% endfor %}
-      <tr class='text-right'>
-        <th colspan='5'>
-          <h5>Tổng doanh thu: {{format_money(total_revenue_of_the_month)}} VND</h5>
-        </th>
-      </tr>
       {% else %}
       <tr>
         <td colspan='5'>Không có dữ liệu trong tháng.</td>
@@ -62,33 +57,21 @@
 <script>
   const ctx = document.getElementById('myChart')
 
-  function getDaysInMonth(month, year) {
-    month = +month
-    year = +year
-    month -= 1
-    var date = new Date(year, month, 1)
-    var days = []
-    while (date.getMonth() === month) {
-      days.push((new Date(date)).toLocaleDateString('vn-VN'))
-      date.setDate(date.getDate() + 1)
-    }
-    return days
-  }
-
-  const days = getDaysInMonth('{{month}}', '{{year}}')
-  const data = Array(days.length).fill(0)
+  const labels = []
+  const data = []
 
   {% for stat in stats %}
-  data[{{ stat[0] }} - 1] = ({{ stat[1]}})
+  labels.push('{{stat[0]}}')
+  data.push('{{stat[3]}}')
   {% endfor %}
 
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: days,
+      labels,
       datasets: [
         {
-          label: 'Doanh thu',
+          label: 'Tần suất sử dụng thuốc',
           data,
           borderWidth: 1,
           backgroundColor: ['#275182']

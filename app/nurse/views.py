@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from flask_admin import expose
 from sqlalchemy import func, or_, desc, case, asc
 from datetime import date, datetime
 
+from ..patient.views import ListPatientView
 from .forms import AppointmentDateForm
 from ..main.forms import MedicalRegisterForm, SearchingMedicalRegistrationForm
 from ..decorators import roles_required
@@ -55,7 +56,7 @@ class AppointmentScheduleView(NurseView):
         has_staging = False
         if appointment.first():
             for r in appointment.first().medical_registrations:
-                if r.staging():
+                if r.staging:
                     has_staging = True
                     break
 
@@ -76,50 +77,20 @@ class AppointmentScheduleView(NurseView):
         )
 
 
-class MedicalRegistrationView(NurseView):
-    nurse_concerned_statuses = [
+class MedicalRegistrationView(ListPatientView, NurseView):
+    def is_accessible(self):
+        return NurseView().is_accessible()
+
+    statuses = [
         MedicalRegistrationStatus.SCHEDULED,
         MedicalRegistrationStatus.ARRIVED,
         MedicalRegistrationStatus.CANCELED,
     ]
 
-    @expose("/", methods=["GET", "POST"])
-    def index(self):
-        form = SearchingMedicalRegistrationForm()
-        page = request.args.get("page", 1, type=int)
-        per_page = 10
-        appointment = AppointmentSchedule.query.filter(
-            AppointmentSchedule.date == date.today()
-        ).first()
-        policy = Policy.query.get("so-benh-nhan")
-        pagination = None
-        total_registered_count = 0
-        if appointment:
-            q = MedicalRegistration.query.filter(
-                MedicalRegistration.appointment_schedule_id == appointment.id,
-                MedicalRegistration.status.in_(self.nurse_concerned_statuses),
-            )
-            total_registered_count = q.count()
-            if form.validate_on_submit():
-                q = q.join(User, MedicalRegistration.patient_id == User.id).filter(
-                    or_(
-                        User.id == form.search.data,
-                        User.name.like(f"%{form.search.data}%"),
-                        User.email.like(f"%{form.search.data}%"),
-                        User.phone_number.like(f"%{form.search.data}%"),
-                    )
-                )
-            pagination = q.paginate(page=page, per_page=per_page, error_out=False)
-
-        return self.render(
-            "medical_registrations.html",
-            policy=policy,
-            registrations=pagination.items if pagination else None,
-            total_registered_count=total_registered_count,
-            pagination=pagination,
-            statuses=self.nurse_concerned_statuses,
-            date=date.today(),
-            form=form,
+    def filter(self, appointment):
+        return MedicalRegistration.query.filter(
+            MedicalRegistration.appointment_schedule_id == appointment.id,
+            MedicalRegistration.status.in_(self.statuses),
         )
 
 

@@ -1,0 +1,50 @@
+{% extends 'admin/master.html' %}
+{% from 'doctor/tabs.html' import tabs %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% import '_macros.html' as macros %}
+
+{% block body %}
+
+{{render_form(form)}}
+
+<ul class='mt-4'>
+  <table class="table text-center">
+    <thead>
+      <tr>
+        <th scope='col'>Id</th>
+        <th scope='col'>Tên</th>
+        <th scope='col'>Liên lạc</th>
+        <th scope='col'>Giới tính</th>
+        <th scope='col'>Ngày sinh</th>
+        <th scope='col'>Địa chỉ</th>
+        <th scope='col'></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if patients %}
+      {% for p in patients %}
+      <tr>
+        <th scope='row'>{{p.id}}</th>
+        <td>{{p.name}}</td>
+        <td>{{p.contact}}</td>
+        <td>{{p.gender.value}}</td>
+        <td>{{p.date_of_birth}}</td>
+        <td>{{p.address}}</td>
+        <td><a href="{{url_for('disease-history.index', pid=p.id)}}">Xem lịch sử khám</a></td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan='9'>Bệnh nhân không tồn tại.</td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</ul>
+
+{% if patients %}
+<div class="pagination">
+  {{macros.pagination_widget(pagination, '.index')}}
+</div>
+{% endif %}
+{% endblock %}

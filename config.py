@@ -5,7 +5,7 @@ from urllib.parse import quote
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SALT = os.getenv("SALT")
-    ITEMS_PER_PAGE = os.getenv("ITEMS_PER_PAGE")
+    ITEMS_PER_PAGE = int(os.getenv("ITEMS_PER_PAGE", 10))
 
 
 class DevelopmentConfig(Config):
@@ -20,6 +20,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{quote(db_username)}:{quote(db_password)}@{quote(db_host)}:{quote(db_port)}/{quote(db_name)}?charset=utf8mb4"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    SQLALCHEMY_RECORD_QUERIES = True
 
     CLOUDINARY_NAME = os.getenv("CLOUDINARY_NAME")
     CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
@@ -33,7 +34,7 @@ class DevelopmentConfig(Config):
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
     MAIL_SUBJECT_PREFIX = "[Phòng khám]"
-    MAIL_SENDER = f"Hệ thống <{os.getenv('MAIL_SENDER')}>"
+    MAIL_SENDER = f"Phòng khám <{os.getenv('MAIL_SENDER')}>"
     ADMIN = os.getenv("ADMIN")
 
     TWILIO_SID = os.getenv("TWILIO_SID")

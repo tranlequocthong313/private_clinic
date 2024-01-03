@@ -1,14 +1,16 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template, make_response, Response
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap4
 from twilio.rest import Client
+import pdfkit
 
 from config import config
+from .utils import format_money
 
 db = SQLAlchemy()
 mail = Mail()
@@ -21,6 +23,7 @@ sms_client = Client(os.getenv("TWILIO_SID"), os.getenv("TWILIO_TOKEN"))
 def create_app(*args, **kwargs):
     app = Flask(__name__)
     app.config.from_object(config[kwargs.get("config_name", "default")])
+    app.jinja_env.globals.update(format_money=format_money)
 
     bootstrap.init_app(app)
     db.init_app(app)
@@ -39,5 +42,26 @@ def create_app(*args, **kwargs):
     from .api import api as api_blueprint
 
     app.register_blueprint(api_blueprint, url_prefix="/api")
+
+    # @app.get("/pdf")
+    # def pdf():
+    #     wkhtmltopdf_path = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
+    #     pdf = None
+    #     try:
+    #         config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
+    #         rendered = render_template("test.html")
+    #         pdf = pdfkit.from_string(
+    #             rendered,
+    #             False,
+    #             configuration=config,
+    #         )
+    #         print(pdf)
+    #     except OSError:
+    #         print("#not present in PATH")
+
+    #     response = make_response(pdf)
+    #     response.headers["Content-Type"] = "application/pdf"
+    #     response.headers["Content-Disposition"] = "attachment; filename=output.pdf"
+    #     return response
 
     return app
