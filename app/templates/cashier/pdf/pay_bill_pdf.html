@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Hóa Đơn Thanh Toán</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mx-auto my-0" style='max-width: 1200px; position: relative;'>
+        <div class="p-5 mt-5" style='border: 1px solid #ddd; background: #fff'>
+            <div class="d-flex align-items-center">
+                <img src="https://res.cloudinary.com/dgsii3nt1/image/upload/v1701079653/LOGO_ao7prq.png" alt="Logo"
+                    class="mr-5" style='width: 80px; height: 80px'>
+                <div class="company-info">
+                    <h2 class='mb-1' style='font-size: 1.5em;'>PHÒNG KHÁM TÂM ĐỨC</h2>
+                    <p class='m-0'>Nhơn Đức - Nhà Bè- TP HCM | Số điện thoại: 0228812345</p>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <h1 class='font-weight-bold text-center mb-5'>HÓA ĐƠN THANH TOÁN</h1>
+
+                <div class="row mb-5">
+                    <div class="col-6">
+                        <p><strong>Mã hóa đơn:</strong> {{bill.id}}</p>
+                        <p><strong>Ngày khám:</strong> {{medical_examination.created_at}}</p>
+                        <p><strong>Tiền khám:</strong> {{format_money(examination_fee)}} VND</p>
+                    </div>
+                    <div style="col-6">
+                        <p><strong>Họ Tên:</strong> {{patient.name}}</p>
+                        <p><strong>Liên lạc:</strong> {{patient.contact}}</p>
+                        <p><strong>Địa chỉ:</strong> {% if patient.address %}{{patient.address}}{% else %} Trống {%
+                            endif %}</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 w-100" style='border-collapse: collapse;'>
+                    <table class='table text-center w-100'>
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Thuốc</th>
+                                <th>Đơn vị</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                                <th>Số lượng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if medical_examination.medical_examination_details %}
+                            {% for detail in medical_examination.medical_examination_details %}
+                            <tr>
+                                <th scope='row'>{{loop.index}}</th>
+                                <td>{{detail.medicine.name}}</td>
+                                <td>{{detail.medicine.medicine_unit.name}}</td>
+                                <td>{{format_money(detail.medicine.price)}} VND</td>
+                                <td>{{format_money((detail.medicine.price / detail.medicine.quantity) *
+                                    detail.quantity)}} VND</td>
+                                <td>{{detail.quantity}}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>Không có thuốc cho hóa đơn này.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-5">
+                    <p class="text-left"><strong>Tổng tiền:</strong> {{format_money(total_amount)}} VND</p>
+                </div>
+            </div>
+
+            <div class='text-right mr-5 mt-5' style='margin-bottom: 150px;'>
+                <h5>Chữ ký</h5>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

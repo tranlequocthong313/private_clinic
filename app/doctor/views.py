@@ -1,9 +1,21 @@
-from flask import render_template, redirect, url_for, request, flash, current_app
+import os
+from io import BytesIO
+from flask import (
+    render_template,
+    send_file,
+    redirect,
+    url_for,
+    request,
+    flash,
+    current_app,
+    make_response,
+)
 from flask_login import login_required, current_user
 from flask_admin import expose
 from datetime import datetime, date
 from sqlalchemy import or_
 
+from ..pdf import make_pdf_from_html
 from ..patient.views import ListPatientView
 from .forms import MedicalExaminationForm
 from ..main.forms import SearchingMedicalRegistrationForm
@@ -110,6 +122,7 @@ class MedicalExaminationView(DoctorView):
             if not medical_examination:
                 medical_examination = MedicalExamination(
                     diagnosis=form.diagnosis.data,
+                    advice=form.advice.data,
                     patient_id=medical_registration.patient.id,
                     doctor_id=current_user.id,
                     medical_registration_id=medical_registration.id,
@@ -121,6 +134,7 @@ class MedicalExaminationView(DoctorView):
                     MedicalExaminationDetail.medical_examination_id
                     == medical_examination.id
                 ).delete()
+                medical_examination.advice = form.advice.data
                 medical_examination.diagnosis = form.diagnosis.data
                 medical_examination.fulfilled = form.submit.data
             db.session.commit()
@@ -209,6 +223,43 @@ class DiseaseHistoryView(DoctorView):
         )
 
 
+class ExportMedicalExaminationPDFView(DoctorView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        medical_examination_id = request.args.get("mei", type=int)
+        if not medical_examination_id:
+            flash("Có lỗi xảy ra.", category="danger")
+            return redirect(url_for("medical-examination.index"))
+        medical_examination = MedicalExamination.query.get(medical_examination_id)
+        if not medical_examination.fulfilled:
+            flash("Có lỗi xảy ra.", category="danger")
+            return redirect(url_for("medical-examination.index"))
+        pdf = make_pdf_from_html(
+            "doctor/pdf/medical_examination_pdf.html",
+            medical_examination=medical_examination,
+            medical_registration=medical_examination.medical_registration,
+            patient=medical_examination.medical_registration.patient,
+        )
+        filename = f"medical_examination_{date.today()}.pdf"
+        pdf_path = os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename)
+        with open(pdf_path, "wb") as temp_file:
+            temp_file.write(pdf)
+        bytes_from_file = None
+        with open(pdf_path, "rb") as f:
+            bytes_from_file = bytearray(f.read())
+        res = send_file(
+            BytesIO(bytes_from_file),
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf",
+        )
+        os.remove(os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename))
+        return res
+
+
 dashboard.add_view(
     EncounterPatientView(
         name="Danh sách ca khám",
@@ -233,5 +284,14 @@ dashboard.add_view(
         menu_icon_type="fa",
         menu_icon_value="fa-users",
         endpoint="disease-history",
+    )
+)
+
+dashboard.add_view(
+    ExportMedicalExaminationPDFView(
+        name="Xuất phiếu khám",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="export-medical-examination-pdf",
     )
 )

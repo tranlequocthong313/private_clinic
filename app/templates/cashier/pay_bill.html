@@ -19,7 +19,11 @@
                         {{form.csrf_token}}
                         <div class='d-flex justify-content-between align-items-center'>
                             <strong>Ngày khám: {{medical_examination.created_at}}</strong>
-                            <button class="btn btn-danger submit-btn">Xuất PDF</button>
+                            {% if bill %}
+                            <a class="btn btn-danger" href='{{url_for("export-bill-pdf.index", bid=bill.id)}}'>Xuất
+                                PDF
+                            </a>
+                            {% endif %}
                         </div>
                         <div class="row">
                             <div class="col-6 mt-3">
@@ -57,9 +61,10 @@
                                                 <div class="row mb-3">
                                                     <div class="col-1 font-weight-bold">STT</div>
                                                     <div class="col-3 font-weight-bold">Thuốc</div>
-                                                    <div class="col-3 font-weight-bold">Đơn vị</div>
-                                                    <div class="col-3 font-weight-bold">Giá</div>
-                                                    <div class="col-2 font-weight-bold">Số lượng</div>
+                                                    <div class="col-1 font-weight-bold">Đơn vị</div>
+                                                    <div class="col-3 font-weight-bold">Đơn giá</div>
+                                                    <div class="col-3 font-weight-bold">Thành tiền</div>
+                                                    <div class="col-1 font-weight-bold">Số lượng</div>
                                                 </div>
 
                                                 {% if medical_examination.medical_examination_details %}
@@ -67,9 +72,11 @@
                                                 <div class="row mb-2">
                                                     <div class="col-1">{{loop.index}}</div>
                                                     <div class="col-3">{{detail.medicine.name}}</div>
-                                                    <div class="col-3">{{detail.medicine.medicine_unit.name}}</div>
+                                                    <div class="col-1">{{detail.medicine.medicine_unit.name}}</div>
                                                     <div class="col-3">{{format_money(detail.medicine.price)}} VND</div>
-                                                    <div class="col-2">{{detail.quantity}}</div>
+                                                    <div class="col-3">{{format_money((detail.medicine.price /
+                                                        detail.medicine.quantity) * detail.quantity)}} VND</div>
+                                                    <div class="col-1">{{detail.quantity}}</div>
                                                 </div>
                                                 {% endfor %}
                                                 {% else %}
@@ -91,7 +98,7 @@
                                     class='form-control')}}
                                 </div>
                             </div>
-                            {% if medical_examination.medical_registration.unpaid %}
+                            {% if not bill %}
                             <div class="col-12">
                                 {{form.submit(class="mt-4 btn btn-primary w-100")}}
                             </div>

@@ -236,6 +236,7 @@ class MedicalExamination(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_at = Column(DateTime, server_default=func.now())
     diagnosis = Column(UnicodeText)
+    advice = Column(UnicodeText)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     medical_registration_id = Column(
@@ -247,6 +248,7 @@ class MedicalExamination(db.Model):
         backref="medical_examination",
         lazy=True,
     )
+    bill = relationship("Bill", backref="medical_examination", lazy=True)
 
     def __str__(self):
         return str(self.id)

@@ -31,6 +31,9 @@ def create_app(*args, **kwargs):
     login_manager.init_app(app)
     Migrate(app, db, compare_type=True)
 
+    if not os.path.exists(app.config.get("UPLOAD_FOLDER")):
+        os.makedirs(app.config.get("UPLOAD_FOLDER"))
+
     from .main import main as main_blueprint
 
     app.register_blueprint(main_blueprint)
@@ -42,26 +45,5 @@ def create_app(*args, **kwargs):
     from .api import api as api_blueprint
 
     app.register_blueprint(api_blueprint, url_prefix="/api")
-
-    # @app.get("/pdf")
-    # def pdf():
-    #     wkhtmltopdf_path = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
-    #     pdf = None
-    #     try:
-    #         config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
-    #         rendered = render_template("test.html")
-    #         pdf = pdfkit.from_string(
-    #             rendered,
-    #             False,
-    #             configuration=config,
-    #         )
-    #         print(pdf)
-    #     except OSError:
-    #         print("#not present in PATH")
-
-    #     response = make_response(pdf)
-    #     response.headers["Content-Type"] = "application/pdf"
-    #     response.headers["Content-Disposition"] = "attachment; filename=output.pdf"
-    #     return response
 
     return app
