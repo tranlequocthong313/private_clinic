@@ -35,8 +35,9 @@ class MedicalRegisterView(NurseView):
     def index(self):
         form = MedicalRegisterForm()
         if form.validate_on_submit():
-            register_medical(form)
-            return redirect(url_for(".index"))
+            success = register_medical(form)
+            if success:
+                return redirect(url_for(".index"))
         return self.render("medical_register.html", form=form)
 
 
