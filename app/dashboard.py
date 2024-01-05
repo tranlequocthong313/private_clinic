@@ -22,7 +22,7 @@ from app.models import (
 )
 
 
-class ProtectedView(BaseView):
+class DashboardView(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
 
@@ -31,10 +31,10 @@ class ProtectedView(BaseView):
 
     @expose("/")
     def index(self):
-        return super(ProtectedView, self).index_view()
+        return super(DashboardView, self).index_view()
 
 
-class CustomModelView(ProtectedView, ModelView):
+class CustomModelView(DashboardView, ModelView):
     column_display_pk = True
     column_hide_backrefs = False
     can_export = True
@@ -116,7 +116,7 @@ class Medicine_MedicineTypeModelView(CustomModelView):
     form_columns = ["medicine", "medicine_type"]
 
 
-class StatsView(ProtectedView):
+class StatsView(DashboardView):
     @expose("/")
     def index(self):
         date_object = datetime.strptime(
@@ -151,7 +151,7 @@ class StatsView(ProtectedView):
         )
 
 
-class MedicineStatsView(ProtectedView):
+class MedicineStatsView(DashboardView):
     def is_visible(self):
         return False
 
@@ -189,6 +189,112 @@ class MedicineStatsView(ProtectedView):
             year=year,
             active_tab="medicine",
         )
+
+
+class ExportStatsPDFView(DashboardView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        date_object = datetime.strptime(
+            request.args.get("month", f"{date.today().year}-{date.today().month}"),
+            "%Y-%m",
+        )
+        year = date_object.year
+        month = date_object.month
+        stats = (
+            db.session.query(
+                extract("day", Bill.created_at).label("day"),
+                func.sum(Bill.amount).label("total_revenue"),
+                func.count().label("total_examinations"),
+            )
+            .filter(
+                Bill.fulfilled == True,
+                extract("month", Bill.created_at) == month,
+                extract("year", Bill.created_at) == year,
+            )
+            .group_by("day")
+            .order_by("day")
+            .all()
+        )
+        pdf = make_pdf_from_html(
+            "admin/pdf/stats_pdf.html",
+            stats=stats,
+            month=month if month > 9 else f"0{month}",
+            year=year,
+            total_revenue_of_the_month=sum([stat[1] for stat in stats]),
+            total_examinations_of_the_month=sum([stat[2] for stat in stats]),
+        )
+        filename = f"stats_{month}-{year}.pdf"
+        pdf_path = os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename)
+        with open(pdf_path, "wb") as temp_file:
+            temp_file.write(pdf)
+        bytes_from_file = None
+        with open(pdf_path, "rb") as f:
+            bytes_from_file = bytearray(f.read())
+        res = send_file(
+            BytesIO(bytes_from_file),
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf",
+        )
+        os.remove(os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename))
+        print(res)
+        return res
+
+
+class ExportMedicineStatsPDFView(DashboardView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        date_object = datetime.strptime(
+            request.args.get("month", f"{date.today().year}-{date.today().month}"),
+            "%Y-%m",
+        )
+        year = date_object.year
+        month = date_object.month
+        stats = (
+            db.session.query(
+                Medicine.name,
+                MedicineUnit.name,
+                Medicine.quantity,
+                func.sum(MedicalExaminationDetail.quantity).label("total_quantity"),
+            )
+            .join(MedicineUnit)
+            .join(MedicalExaminationDetail)
+            .join(MedicalExamination)
+            .filter(
+                extract("month", MedicalExamination.created_at) == month,
+                extract("year", MedicalExamination.created_at) == year,
+                MedicalExamination.fulfilled == True,
+            )
+            .group_by(Medicine.name)
+            .all()
+        )
+        pdf = make_pdf_from_html(
+            "admin/pdf/medicine_stats_pdf.html",
+            stats=stats,
+            month=month if month > 9 else f"0{month}",
+            year=year,
+        )
+        filename = f"medicine_stats_{month}-{year}.pdf"
+        pdf_path = os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename)
+        with open(pdf_path, "wb") as temp_file:
+            temp_file.write(pdf)
+        bytes_from_file = None
+        with open(pdf_path, "rb") as f:
+            bytes_from_file = bytearray(f.read())
+        res = send_file(
+            BytesIO(bytes_from_file),
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf",
+        )
+        os.remove(os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename))
+        return res
 
 
 dashboard = Admin(
@@ -268,6 +374,22 @@ dashboard.add_view(
         menu_icon_type="fa",
         menu_icon_value="fa-users",
         endpoint="medicine-stats",
+    )
+)
+dashboard.add_view(
+    ExportStatsPDFView(
+        name="Xuất thống kê doanh thu và tần suất khám",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="export-revenue-pdf",
+    )
+)
+dashboard.add_view(
+    ExportMedicineStatsPDFView(
+        name="Xuất thống kê tần suất sử dụng thuốc",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="export-medicine-stats-pdf",
     )
 )
 

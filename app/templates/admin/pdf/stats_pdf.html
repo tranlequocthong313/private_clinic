@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class='mb-5'>
+        <div class='mt-2'>
+            <table class="table text-center">
+                <tr>
+                    <th colspan='5'>BÁO CÁO DOANH THU THEO THÁNG</th>
+                </tr>
+                <tr>
+                    <th colspan='5'>Tháng: {{month}}/{{year}}</th>
+                </tr>
+                <tr>
+                    <th>STT</th>
+                    <th>Ngày</th>
+                    <th>Số bệnh nhân</th>
+                    <th>Doanh thu</th>
+                    <th>Tỷ lệ</th>
+                </tr>
+                {% if stats %}
+                {% for s in stats %}
+                <tr>
+                    <th scope='row'>{{loop.index}}</th>
+                    <td>{{s[0]}}/{{month}}/{{year}}</td>
+                    <td>{{s[2]}}</td>
+                    <td>{{format_money(s[1])}} VND</td>
+                    <td>{{(s[2] / total_examinations_of_the_month)|round(2) * 100}}%</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan='5'>Không có dữ liệu trong tháng.</td>
+                </tr>
+                {% endif %}
+            </table>
+            <div class='text-left mt-5'>
+                <h5>Tổng doanh thu: {{format_money(total_revenue_of_the_month)}} VND</h5>
+            </div>
+        </div>
+        <div class='mt-5'>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('myChart')
+
+        function getDaysInMonth(month, year) {
+            month = +month
+            year = +year
+            month -= 1
+            var date = new Date(year, month, 1)
+            var days = []
+            while (date.getMonth() === month) {
+                days.push((new Date(date)).toLocaleDateString('vn-VN'))
+                date.setDate(date.getDate() + 1)
+            }
+            return days
+        }
+
+        const days = getDaysInMonth('{{month}}', '{{year}}')
+        const data = Array(days.length).fill(0)
+
+        {% for stat in stats %}
+        data[{{ stat[0] }} - 1] = ({{ stat[1]}})
+        {% endfor %}
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Doanh thu',
+                        data,
+                        borderWidth: 1,
+                        backgroundColor: ['#275182']
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            },
+        })
+    </script>
+</body>
+
+</html>
