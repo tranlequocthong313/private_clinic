@@ -1,0 +1,13 @@
+Hi {{patient.name}},
+
+Chào mừng bạn đến với Phòng Khám Tâm Đức. Chúng tôi đã sắp xếp lịch hẹn khám bệnh cho bạn.
+
+Thông tin chi tiết như sau:
+- Ngày khám: {{appointment.date}}
+- Giờ khám: {{registration.start_time}}
+
+Đây là một bước quan trọng để duy trì sức khỏe của bạn. Vui lòng đến đúng giờ và mang theo các giấy tờ cần thiết.
+
+Nếu bạn có bất kỳ câu hỏi hoặc cần sự hỗ trợ, vui lòng liên hệ chúng tôi qua số điện thoại 0228812345.
+
+Chúc bạn một ngày khỏe mạnh!

@@ -1,4 +1,12 @@
-from flask import render_template, request, current_app, jsonify, session, make_response
+from flask import (
+    render_template,
+    request,
+    current_app,
+    jsonify,
+    session,
+    make_response,
+    render_template_string,
+)
 from flask_login import login_required, current_user
 from sqlalchemy import or_
 
@@ -78,13 +86,21 @@ def schedule():
         if r.staging:
             r.status = MedicalRegistrationStatus.SCHEDULED
             if r.patient.phone_number:
-                send_sms(r.patient.phone_number, "Lịch khám của bạn là")
+                send_sms(
+                    r.patient.phone_number,
+                    "nurse/sms/appointment_sms",
+                    patient=r.patient,
+                    registration=r,
+                    appointment=r.appointment_schedule,
+                )
             if r.patient.email:
                 send_email(
                     r.patient.email,
-                    "Lịch khám",
+                    "Lịch hẹn khám",
                     "nurse/email/appointment_email",
-                    user=r.patient,
+                    patient=r.patient,
+                    registration=r,
+                    appointment=r.appointment_schedule,
                 )
     db.session.commit()
     return jsonify(

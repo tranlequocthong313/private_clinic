@@ -1,0 +1,13 @@
+Hi {{patient.name}},
+
+Chào mừng bạn đến với Phòng Khám Tâm Đức. Chúng tôi đã tạo tài khoản phòng khám cho bạn.
+
+Thông tin đăng nhập của bạn như sau:
+- Tài khoản: {{patient.phone_number}}
+- Mật khẩu: {{password}}
+
+Đây là thông tin quan trọng để bạn có thể truy cập vào hệ thống của chúng tôi. Vui lòng giữ thông tin này cẩn thận và không chia sẻ với người khác.
+
+Nếu bạn có bất kỳ câu hỏi hoặc cần sự hỗ trợ, vui lòng liên hệ chúng tôi qua số điện thoại 0228812345.
+
+Chúc bạn một ngày tốt lành!

@@ -208,7 +208,7 @@ class AppointmentSchedule(db.Model):
     date = Column(Date, nullable=False, unique=True)
     nurse_id = Column(Integer, ForeignKey(User.id), nullable=False)
     medical_registrations = relationship(
-        "MedicalRegistration", backref="appoitment_schedule", lazy=True
+        "MedicalRegistration", backref="appointment_schedule", lazy=True
     )
 
     def __str__(self):

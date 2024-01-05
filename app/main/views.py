@@ -70,15 +70,17 @@ def register_medical(form):
                 if user.email:
                     send_email(
                         user.email,
-                        "Account",
+                        "Tài khoản phòng khám",
                         "auth/email/account_email",
-                        user=user,
+                        patient=user,
                         password=password,
                     )
                 if user.phone_number:
                     send_sms(
                         user.phone_number,
-                        f"Account: Phone number: {user.phone_number}, Password: {password}",
+                        "auth/sms/account_sms",
+                        patient=user,
+                        password=password,
                     )
             except Exception as e:
                 flash(e, category="danger")
