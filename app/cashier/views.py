@@ -74,6 +74,7 @@ class PayBillView(CashierView):
             db.session.add(bill)
             db.session.commit()
             flash("Thanh toán hóa đơn thành công.", category="success")
+            return redirect(url_for("pay-bill.index", mid=medical_registration_id))
         return self.render(
             "cashier/pay_bill.html",
             form=form,
