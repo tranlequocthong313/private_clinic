@@ -89,15 +89,14 @@ def verify_otp():
         otp = ""
         for i in range(1, 7):
             otp += str(form[f"number_{i}"].data)
-        print("OTP", otp)
         verified = current_user.verify_otp(otp)
         if verified:
             current_user.confirmed = True
             db.session.commit()
             flash("Xác thực tài khoản thành công.", category="success")
-            return redirect(url_for("auth.verify_otp"))
         else:
             flash("Mã OTP không hợp lệ.", category="danger")
+        return redirect(url_for("auth.verify_otp"))
     return render_template("auth/otp.html", form=form)
 
 

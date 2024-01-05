@@ -6,7 +6,14 @@ from datetime import date
 
 from .forms import SearchingPatientForm
 from ..decorators import roles_required, confirmed_required
-from ..models import AccountRole, User, AppointmentSchedule, MedicalRegistration, Policy
+from ..models import (
+    AccountRole,
+    User,
+    AppointmentSchedule,
+    MedicalRegistration,
+    Policy,
+    MedicalExamination,
+)
 from ..dashboard import DashboardView, dashboard
 from ..main.forms import SearchingMedicalRegistrationForm
 
@@ -92,6 +99,39 @@ class ListPatientView(PatientView):
             date=date.today(),
             form=form,
         )
+
+
+class DiseaseHistoryView(PatientView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET", "POST"])
+    def index(self):
+        medical_registration_id = request.args.get("mid", type=int)
+        patient_id = request.args.get("pid", type=int)
+        medical_registration = MedicalRegistration.query.get(medical_registration_id)
+        if medical_registration:
+            patient_id = medical_registration.patient.id
+        medical_examinations = MedicalExamination.query.filter(
+            MedicalExamination.patient_id == patient_id,
+            MedicalExamination.fulfilled == True,
+        ).all()
+        return self.render(
+            "disease_history.html",
+            medical_examinations=medical_examinations,
+            medical_registration=medical_registration,
+            active_tab="history",
+        )
+
+
+dashboard.add_view(
+    DiseaseHistoryView(
+        name="Lịch sử bệnh",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="disease-history",
+    )
+)
 
 
 dashboard.add_view(
