@@ -80,6 +80,8 @@ class MedicalExaminationView(DoctorView):
         if medical_examination:
             if not form.diagnosis.data:
                 form.diagnosis.data = medical_examination.diagnosis
+            if not form.advice.data:
+                form.advice.data = medical_examination.advice
             if not form.medicines.data:
                 for detail in medical_examination.medical_examination_details:
                     form.medicines.append_entry(
@@ -156,6 +158,9 @@ class MedicalExaminationView(DoctorView):
                 message = "Lưu nháp thành công"
                 category = "info"
             flash(message, category)
+            return redirect(
+                url_for("medical-examination.index", mid=medical_registration_id)
+            )
 
         medicines = []
         medicine_types = MedicineType.query.all()
@@ -165,6 +170,7 @@ class MedicalExaminationView(DoctorView):
             medicines = get_medicines_by_type(form.medicine_type.data)
         except Exception as e:
             print(str(e))
+            flash(str(e), category="danger")
 
         return self.render(
             "doctor/medical_examination.html",
@@ -189,6 +195,7 @@ class EncounterPatientView(ListPatientView, DoctorView):
     statuses = [
         MedicalRegistrationStatus.ARRIVED,
         MedicalRegistrationStatus.IN_PROGRESS,
+        MedicalRegistrationStatus.UNPAID,
         MedicalRegistrationStatus.COMPLETED,
     ]
 
@@ -197,29 +204,6 @@ class EncounterPatientView(ListPatientView, DoctorView):
             MedicalRegistration.appointment_schedule_id == appointment.id,
             MedicalRegistration.doctor_id == current_user.id,
             MedicalRegistration.status.in_(self.statuses),
-        )
-
-
-class DiseaseHistoryView(DoctorView):
-    def is_visible(self):
-        return False
-
-    @expose("/", methods=["GET", "POST"])
-    def index(self):
-        medical_registration_id = request.args.get("mid", type=int)
-        patient_id = request.args.get("pid", type=int)
-        medical_registration = MedicalRegistration.query.get(medical_registration_id)
-        if medical_registration:
-            patient_id = medical_registration.patient.id
-        medical_examinations = MedicalExamination.query.filter(
-            MedicalExamination.patient_id == patient_id,
-            MedicalExamination.fulfilled == True,
-        ).all()
-        return self.render(
-            "doctor/disease_history.html",
-            medical_examinations=medical_examinations,
-            medical_registration=medical_registration,
-            active_tab="history",
         )
 
 
@@ -278,14 +262,6 @@ dashboard.add_view(
     )
 )
 
-dashboard.add_view(
-    DiseaseHistoryView(
-        name="Lịch sử bệnh",
-        menu_icon_type="fa",
-        menu_icon_value="fa-users",
-        endpoint="disease-history",
-    )
-)
 
 dashboard.add_view(
     ExportMedicalExaminationPDFView(
