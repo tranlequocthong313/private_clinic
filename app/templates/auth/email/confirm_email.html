@@ -1,13 +1,96 @@
-<p>Thân gửi {{ user.name }},</p>
-<p>Chào mừng bạn đã đến với <b>Phòng khám</b> của chúng tôi</p>
-<p>
-  Để xác thực tài khoản của bạn, hãy nhấn vào:
-  <a href="{{url_for('auth.confirm', token=token, _external=True)}}">đường dẫn dưới đây</a>.
-</p>
-<p>
-  Alternatively, you can paste the following link in your browser's address bar:
-</p>
-<p>{{ url_for('auth.confirm', token=token, _external=True) }}</p>
-<p>Thân,</p>
-<p>Phòng khám</p>
-<p><small>Note: replies to this email address are not monitored.</small></p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Xác Nhận Tài Khoản</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .header {
+      border: 1px solid #ddd;
+      background: #fff;
+      padding: 5rem;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+    }
+
+    .company-info h2 {
+      font-size: 1.5em;
+      margin-bottom: 0.5rem;
+    }
+
+    .company-info p {
+      margin: 0;
+    }
+
+    .content {
+      margin-top: 5rem;
+      text-align: left;
+    }
+
+    .content p {
+      margin-bottom: 1rem;
+    }
+
+    .content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .content ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div style="display: flex; align-items: center;">
+        <img src="https://res.cloudinary.com/dgsii3nt1/image/upload/v1701079653/LOGO_ao7prq.png" alt="Logo"
+          class="logo">
+        <div class="company-info">
+          <h2>PHÒNG KHÁM TÂM ĐỨC</h2>
+          <p>Nhơn Đức - Nhà Bè- TP HCM | Số điện thoại: 0228812345</p>
+        </div>
+      </div>
+
+      <div class="content">
+        <p>Xin chào {{user.name}},</p>
+        <p>Cảm ơn bạn đã đăng ký tài khoản tại Phòng Khám Tâm Đức. Để hoàn tất quá trình đăng ký, vui lòng xác
+          nhận địa chỉ email của bạn bằng cách nhấn vào liên kết dưới đây:</p>
+        <p><a class="button" href="{{url_for('auth.confirm', token=token, _external=True)}}">Xác Nhận Tài Khoản</a></p>
+        <p>Nếu bạn không thực hiện đăng ký, vui lòng bỏ qua email này.</p>
+        <p>Trân trọng,</p>
+        <p>Phòng Khám Tâm Đức</p>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

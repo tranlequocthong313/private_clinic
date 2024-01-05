@@ -131,11 +131,10 @@
   </table>
 
   {% if can_create %}
-  <div class="form-floating text-center d-flex" style="padding-left: 79%">
-    <button class="btn btn-warning ml-2" onclick="createAppointmentSchedule('{{date}}')">
+  <div class="w-100 text-right">
+    <button class="btn btn-warning" onclick="createAppointmentSchedule('{{date}}')">
       Lập danh sách
     </button>
-    <button class="btn btn-danger ml-2">Xuất pdf</button>
   </div>
   {%endif%}
 </div>

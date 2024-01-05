@@ -133,7 +133,7 @@ def send_mail_confirmation():
     token = current_user.generate_confirmation_token()
     send_email(
         current_user.email,
-        "Confirm Your Account",
+        "Xác nhận email",
         "auth/email/confirm_email",
         user=current_user,
         token=token,

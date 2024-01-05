@@ -12,7 +12,7 @@
     </div>
     <input type='submit' class='btn btn-primary submit-btn ml-2' value='Đồng ý' />
     <div class='d-flex justify-content-end ml-2'>
-      <a href='{{url_for("export-revenue-pdf.index")}}' onclick='exportPDF(this)' class="btn btn-dangers">Xuất PDF</a>
+      <a href='{{url_for("export-revenue-pdf.index")}}' onclick='exportPDF(this)' class="btn btn-danger">Xuất PDF</a>
     </div>
   </form>
   {% endif %}
@@ -63,7 +63,7 @@
 <script>
   function exportPDF(e) {
     const date = document.getElementById('month').value
-    e.setAttribute('href', e.getAttribute('href') + `?month=${date}`)
+    e.setAttribute('href', {{ url_for('export-revenue-pdf.index') }} + `?month=${date}`)
   }
 
   const ctx = document.getElementById('myChart')

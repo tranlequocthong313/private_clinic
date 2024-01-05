@@ -44,11 +44,12 @@ class MedicalRegisterForm(FlaskForm):
         if not current_user.is_nurse:
             self.name.data = current_user.name
             self.gender.data = current_user.gender.value
-            self.phone_number.data = current_user.phone_number
-            self.email.data = current_user.email
+            if current_user.phone_number:
+                self.phone_number.data = current_user.phone_number
+            if current_user.email:
+                self.email.data = current_user.email
             self.date_of_birth.data = current_user.date_of_birth
             self.address.data = current_user.address
-        self.date_of_visit.data = date.today()
         self.doctor.choices = [(d.id, d.name) for d in doctors]
 
     def validate_date_of_visit(self, field):
