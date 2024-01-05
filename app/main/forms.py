@@ -36,8 +36,7 @@ class MedicalRegisterForm(FlaskForm):
     )
     doctor = SelectField("Bac si kham")
     symptom = StringField("Trieu chung")
-    callable_time = StringField("Thoi gian co the goi")
-    submit = SubmitField("Dang ky")
+    submit = SubmitField("Dang ky kham benh")
 
     def __init__(self):
         super(MedicalRegisterForm, self).__init__()

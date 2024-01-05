@@ -213,7 +213,7 @@ dashboard.add_view(
     EncounterPatientView(
         name="Danh sách ca khám",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-book-medical",
         endpoint="encounter-patient",
     )
 )
