@@ -58,6 +58,7 @@ class PayBillView(CashierView):
             )
             db.session.add(bill)
             db.session.commit()
+            flash("Thanh toán hóa đơn thành công.", category="success")
         return self.render(
             "cashier/pay_bill.html",
             form=form,

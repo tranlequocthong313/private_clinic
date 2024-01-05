@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
     PasswordField,
+    IntegerField,
     BooleanField,
     SubmitField,
     DateField,
@@ -12,6 +13,16 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 from re import search
 
 from ..models import User, Gender
+
+
+class VerifyOTPForm(FlaskForm):
+    number_1 = IntegerField()
+    number_2 = IntegerField()
+    number_3 = IntegerField()
+    number_4 = IntegerField()
+    number_5 = IntegerField()
+    number_6 = IntegerField()
+    submit = SubmitField("Xác thực")
 
 
 class LoginForm(FlaskForm):

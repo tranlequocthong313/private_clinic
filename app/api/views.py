@@ -123,7 +123,7 @@ def add_to_schedule(id):
 def delete_from_schedule(id):
     registration = MedicalRegistration.query.get(id)
     registration.appointment_schedule_id = None
-    registration.status = MedicalRegistrationStatus.VERIFIED
+    registration.status = MedicalRegistrationStatus.REGISTERED
     db.session.commit()
 
     return jsonify(

@@ -103,7 +103,7 @@ def register_medical(form):
             break
 
     if registered:
-        flash("Da co nguoi dang ky bac si vao thoi gian nay!", category="danger")
+        flash("Đã có người đăng ký bác sĩ vào thời gian này.", category="danger")
     else:
         registration = MedicalRegistration(
             symptom=form.symptom.data,
@@ -111,9 +111,7 @@ def register_medical(form):
             start_time=form.start_time.data,
             patient_id=patient_id,
             doctor_id=form.doctor.data,
-            status=MedicalRegistrationStatus.VERIFIED,  # For dev purposes, this must be replaced by actual verification (otp, link...)
         )
         db.session.add(registration)
         db.session.commit()
-
         flash("Đăng ký thành công.", category="success")

@@ -23,6 +23,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 
 from . import db, login_manager
+from . import sms_client
 
 
 @login_manager.user_loader
@@ -151,6 +152,13 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    def verify_otp(self, otp_code):
+        otp_verification_check = sms_client.verify.v2.services(
+            current_app.config.get("TWILIO_SERVICE_SID")
+        ).verification_checks.create(to=f"+84{self.phone_number}", code=otp_code)
+        print(otp_verification_check.status)
+        return otp_verification_check is not None
+
     def gravatar(self, size=100, default="identicon", rating="g"):
         if request.is_secure:
             url = "https://secure.gravatar.com/avatar"
@@ -260,9 +268,8 @@ class Bill(db.Model):
 
 
 class MedicalRegistrationStatus(enum.Enum):
-    NOT_VERIFIED = "Not verified"
-    VERIFIED = "Verified"
-    STAGING = "staging"
+    REGISTERED = "Registered"
+    STAGING = "Staging"
     SCHEDULED = "Scheduled"
     CANCELED = "Canceled"
     ARRIVED = "Arrived"
@@ -280,7 +287,7 @@ class MedicalRegistration(db.Model):
     date_of_visit = Column(Date, nullable=False)
     start_time = Column(Time)
     status = Column(
-        Enum(MedicalRegistrationStatus), default=MedicalRegistrationStatus.NOT_VERIFIED
+        Enum(MedicalRegistrationStatus), default=MedicalRegistrationStatus.REGISTERED
     )
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
@@ -292,12 +299,8 @@ class MedicalRegistration(db.Model):
     )
 
     @property
-    def not_verified(self):
-        return self.status == MedicalRegistrationStatus.NOT_VERIFIED
-
-    @property
-    def verified(self):
-        return self.status == MedicalRegistrationStatus.VERIFIED
+    def registered(self):
+        return self.status == MedicalRegistrationStatus.REGISTERED
 
     @property
     def staging(self):

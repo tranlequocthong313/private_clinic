@@ -49,7 +49,7 @@ class AppointmentScheduleView(NurseView):
         policy = Policy.query.get("so-benh-nhan")
         medical_registrations = medical_registrations.filter(
             func.date(MedicalRegistration.date_of_visit) <= form.date.data,
-            MedicalRegistration.status == MedicalRegistrationStatus.VERIFIED,
+            MedicalRegistration.status == MedicalRegistrationStatus.REGISTERED,
         ).order_by(MedicalRegistration.date_of_visit)
         appointment = appointment.filter(AppointmentSchedule.date == form.date.data)
 
