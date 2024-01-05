@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class='mt-2'>
+        <table class="table text-center">
+            <tr>
+                <th colspan='5'>BÁO CÁO SỬ DỤNG THUỐC</th>
+            </tr>
+            <tr>
+                <th colspan='5'>Tháng: {{month}}/{{year}}</th>
+            </tr>
+            <tr>
+                <th>STT</th>
+                <th>Thuốc</th>
+                <th>Đơn vị tính</th>
+                <th>Số lượng</th>
+                <th>Số lần dùng</th>
+            </tr>
+            {% if stats %}
+            {% for s in stats %}
+            <tr>
+                <th scope='row'>{{loop.index}}</th>
+                <td>{{s[0]}}</td>
+                <td>{{s[1]}}</td>
+                <td>{{s[2]}}</td>
+                <td>{{s[3]}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan='5'>Không có dữ liệu trong tháng.</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class='mt-5'>
+        <canvas id="myChart"></canvas>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('myChart')
+
+        const labels = []
+        const data = []
+
+        {% for stat in stats %}
+        labels.push('{{stat[0]}}')
+        data.push('{{stat[3]}}')
+        {% endfor %}
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: 'Tần suất sử dụng thuốc',
+                        data,
+                        borderWidth: 1,
+                        backgroundColor: ['#275182']
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            },
+        })
+    </script>
+</body>
+
+</html>

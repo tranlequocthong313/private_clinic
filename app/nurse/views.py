@@ -16,7 +16,7 @@ from ..models import (
     Policy,
     MedicalRegistrationStatus,
 )
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 from ..utils import random_password
 from ..auth.views import register_handler
 from ..sms import send_sms
@@ -25,7 +25,7 @@ from .. import db
 from ..main.views import register_medical
 
 
-class NurseView(ProtectedView):
+class NurseView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_nurse
 

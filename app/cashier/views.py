@@ -29,10 +29,10 @@ from ..models import (
     MedicalRegistration,
     Bill,
 )
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 
 
-class CashierView(ProtectedView):
+class CashierView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_cashier
 

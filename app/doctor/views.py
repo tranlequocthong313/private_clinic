@@ -34,11 +34,11 @@ from ..models import (
     Policy,
     MedicalExaminationDetail,
 )
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 from ..api.views import get_medicines_by_type
 
 
-class DoctorView(ProtectedView):
+class DoctorView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_doctor
 
