@@ -35,8 +35,9 @@ def about():
 def medical_register():
     form = MedicalRegisterForm()
     if form.validate_on_submit():
-        register_medical(form)
-        return redirect(url_for("main.medical_register"))
+        success = register_medical(form)
+        if success:
+            return redirect(url_for("main.medical_register"))
     return render_template("medical_register.html", form=form)
 
 
@@ -106,6 +107,7 @@ def register_medical(form):
 
     if registered:
         flash("Đã có người đăng ký bác sĩ vào thời gian này.", category="danger")
+        return False
     else:
         registration = MedicalRegistration(
             symptom=form.symptom.data,
@@ -117,3 +119,4 @@ def register_medical(form):
         db.session.add(registration)
         db.session.commit()
         flash("Đăng ký thành công.", category="success")
+        return True
