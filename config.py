@@ -6,6 +6,7 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     SALT = os.getenv("SALT")
     ITEMS_PER_PAGE = int(os.getenv("ITEMS_PER_PAGE", 10))
+    UPLOAD_FOLDER = "upload"
 
 
 class DevelopmentConfig(Config):

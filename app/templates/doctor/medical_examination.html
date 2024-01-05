@@ -28,11 +28,14 @@
 
 <form method="POST" id="examination-form" novalidate>
   <div class="nav-item float-right">
-    {% if not readonly %}
+    {% if readonly %}
+    <a class='btn btn-danger' href="{{url_for('export-medical-examination-pdf.index', mei=medical_examination.id)}}">
+      Xuất PDF
+    </a>
+    {% else %}
     {{form.submit(form='examination-form', class="btn btn-success submit-btn")}}
     {{form.draft(form='examination-form', class="btn btn-warning submit-btn")}}
     {% endif %}
-    <button class="btn btn-danger submit-btn">Xuất PDF</button>
   </div>
 
   {{ form.csrf_token }}
@@ -129,6 +132,10 @@
       {% endif %}
     </tbody>
   </table>
+
+  <div class="col-lg-12 mt-3">
+    {{render_field(form.advice, class='form-control', rows='4', readonly=readonly)}}
+  </div>
 </form>
 
 <script>

@@ -7,11 +7,11 @@ from datetime import date
 from .forms import SearchingPatientForm
 from ..decorators import roles_required, confirmed_required
 from ..models import AccountRole, User, AppointmentSchedule, MedicalRegistration, Policy
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 from ..main.forms import SearchingMedicalRegistrationForm
 
 
-class PatientView(ProtectedView):
+class PatientView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and (
             current_user.is_doctor or current_user.is_nurse

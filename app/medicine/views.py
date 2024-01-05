@@ -6,10 +6,10 @@ from sqlalchemy import or_
 from .forms import SearchingMedicineForm
 from ..decorators import roles_required
 from ..models import AccountRole, Medicine, MedicalRegistration
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 
 
-class MedicineView(ProtectedView):
+class MedicineView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and (
             current_user.is_doctor or current_user.is_nurse

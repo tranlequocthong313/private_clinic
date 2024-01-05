@@ -26,6 +26,7 @@ class MedicalExaminationForm(FlaskForm):
     name = StringField("Họ tên", validators=[DataRequired()])
     contact = StringField("Liên lạc", validators=[DataRequired()])
     diagnosis = TextAreaField("Chẩn đoán")
+    advice = TextAreaField("Lời dặn")
     symptom = StringField("Triệu chứng")
 
     medicines = FieldList(FormField(MedicineForm), min_entries=0)

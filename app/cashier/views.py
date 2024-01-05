@@ -1,8 +1,20 @@
-from flask import render_template, redirect, url_for, request, flash, current_app
+import os
+from io import BytesIO
+from flask import (
+    render_template,
+    redirect,
+    url_for,
+    request,
+    flash,
+    current_app,
+    send_file,
+)
 from flask_login import login_required, current_user
 from flask_admin import expose
 from sqlalchemy import or_
+from datetime import date
 
+from ..pdf import make_pdf_from_html
 from ..utils import format_money
 from ..patient.views import ListPatientView
 from .forms import PayBillForm, SearchBillForm
@@ -17,10 +29,10 @@ from ..models import (
     MedicalRegistration,
     Bill,
 )
-from ..dashboard import ProtectedView, dashboard
+from ..dashboard import DashboardView, dashboard
 
 
-class CashierView(ProtectedView):
+class CashierView(DashboardView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_cashier
 
@@ -36,10 +48,13 @@ class PayBillView(CashierView):
         medical_examination = MedicalExamination.query.filter(
             MedicalExamination.medical_registration_id == medical_registration_id
         ).first()
-        examination_fee_policy = Policy.query.get("so-tien-kham")
         if not medical_examination:
             flash("Không tìm thấy ca khám.", category="danger")
             return redirect(url_for("farewell-patients.index"))
+        examination_fee_policy = Policy.query.get("so-tien-kham")
+        bill = Bill.query.filter(
+            Bill.medical_examination_id == medical_examination.id
+        ).first()
         examination_fee_policy = examination_fee_policy.value
         medicine_fee = sum(
             (detail.medicine.price / detail.medicine.quantity) * detail.quantity
@@ -62,6 +77,7 @@ class PayBillView(CashierView):
         return self.render(
             "cashier/pay_bill.html",
             form=form,
+            bill=bill,
             patient=medical_examination.medical_registration.patient,
             medical_examination=medical_examination,
             examination_fee_policy=format_money(examination_fee_policy),
@@ -113,6 +129,47 @@ class FarewellView(ListPatientView, CashierView):
         )
 
 
+class ExportBillPDFView(CashierView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        bill_id = request.args.get("bid", type=int)
+        if not bill_id:
+            flash("Có lỗi xảy ra.", category="danger")
+            return redirect(url_for("farewell-patients.index"))
+        bill = Bill.query.get(bill_id)
+        if not bill.fulfilled:
+            flash("Có lỗi xảy ra.", category="danger")
+            return redirect(url_for("farewell-patients.index"))
+        policy = Policy.query.get("so-tien-kham")
+        pdf = make_pdf_from_html(
+            "cashier/pdf/pay_bill_pdf.html",
+            examination_fee=policy.value,
+            total_amount=bill.amount,
+            bill=bill,
+            medical_examination=bill.medical_examination,
+            patient=bill.patient,
+            cashier=bill.cashier,
+        )
+        filename = f"bill_{date.today()}.pdf"
+        pdf_path = os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename)
+        with open(pdf_path, "wb") as temp_file:
+            temp_file.write(pdf)
+        bytes_from_file = None
+        with open(pdf_path, "rb") as f:
+            bytes_from_file = bytearray(f.read())
+        res = send_file(
+            BytesIO(bytes_from_file),
+            as_attachment=True,
+            download_name=filename,
+            mimetype="application/pdf",
+        )
+        os.remove(os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename))
+        return res
+
+
 dashboard.add_view(
     FarewellView(
         name="Danh sách ca khám",
@@ -135,5 +192,13 @@ dashboard.add_view(
         menu_icon_type="fa",
         menu_icon_value=" fa-magnifying-glass",
         endpoint="bills",
+    )
+)
+dashboard.add_view(
+    ExportBillPDFView(
+        name="Xuất hóa đơn",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="export-bill-pdf",
     )
 )
