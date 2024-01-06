@@ -138,7 +138,7 @@ dashboard.add_view(
     PatientView(
         name="Tra cứu bệnh nhân",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-magnifying-glass",
         endpoint="search-patients",
     )
 )

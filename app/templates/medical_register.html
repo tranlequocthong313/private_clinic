@@ -5,14 +5,54 @@
 {% endif %}
 {% from 'bootstrap4/form.html' import render_form %}
 {% import '_macros.html' as macros %}
+{% from '_formhelper.html' import render_field %}
 {% block body %}
 {% if current_user.is_patient %}
 {{macros.flash_messages()}}
 {% endif %}
-<div class="section-padding section-dark">
-  <div class="col-md-4">
-    {{ render_form(form) }}
-    <br />
-  </div>
-</div>
+
+<form novalidate method="POST" style="{%if not current_user.is_nurse%} margin-top:5%; padding:2% {%endif%}">
+    {{form.csrf_token}}
+    <div class="row my-4">
+        <div class="col-lg-6">
+            {{render_field(form.name, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.gender, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.date_of_birth, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.phone_number, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.email, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.address, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.date_of_visit, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.start_time, class='form-control')}}
+        </div>
+    </div>
+    <div class="row row2 mb-4">
+        <div class="col-lg-6">
+            {{render_field(form.doctor, class='form-control')}}
+        </div>
+        <div class="col-lg-6">
+            {{render_field(form.symptom, class='form-control')}}
+        </div>
+        <div class="col-12">
+            {{form.submit(class="mt-4 btn btn-primary w-100")}}
+        </div>
+    </div>
+
+</form>
+<hr/>
+
+
 {% endblock %}

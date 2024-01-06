@@ -245,7 +245,7 @@ dashboard.add_view(
     FarewellView(
         name="Danh sách ca khám",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-book-medical",
         endpoint="farewell-patients",
     )
 )
@@ -269,7 +269,7 @@ dashboard.add_view(
     BillView(
         name="Tra cứu hoá đơn",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value=" fa-magnifying-glass",
         endpoint="bills",
     )
 )

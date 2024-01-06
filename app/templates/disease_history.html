@@ -2,8 +2,8 @@
 {% from 'doctor/tabs.html' import tabs %}
 
 {% block body %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}" xmlns="http://www.w3.org/1999/html" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/doctor.css') }}"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.all.min.js"></script>
 
 {% if medical_registration %}
@@ -12,113 +12,120 @@
 
 <table class="table text-center">
     <thead>
-        <tr>
-            <th scope="col">STT</th>
-            <th scope="col">Ngày khám</th>
-            <th scope="col">Lý do khám</th>
-            <th scope="col"></th>
-        </tr>
+    <tr>
+        <th scope="col">STT</th>
+        <th scope="col">Ngày khám</th>
+        <th scope="col">Lý do khám</th>
+        <th scope="col"></th>
+    </tr>
     </thead>
     <tbody>
-        {% if medical_examinations %}
-        {% for medical_examination in medical_examinations %}
-        <tr>
-            <th scope="row">{{loop.index}}</th>
-            <td>
-                {{medical_examination.created_at}}
-            </td>
-            <td>
-                {{medical_examination.medical_registration.symptom}}
-            </td>
-            <td>
-                <i class="fa-solid fa-eye" data-toggle="modal" data-target="#modal{{loop.index}}"></i>
-            </td>
-
-            <div class="modal fade" id="modal{{loop.index}}" tabindex="-1" role="dialog"
-                aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content p-4">
-                        <h3>Thông tin bệnh nhân</h3>
-                        <div class="d-flex">
-                            <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=150) }}">
-                            <div>
-                                <div>
-                                    <strong>Mã BN:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.id}}</span>
-                                    <strong>Tên BN:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.name}}</span>
-                                </div>
-                                <div>
-                                    <strong>Giới tính:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.gender.value}}</span>
-                                    <strong>Ngày sinh:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.date_of_birth}}</span>
-                                </div>
-                                <div>
-                                    <strong>Liên lạc:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.contact}}</span>
-                                    <strong>Địa chỉ:</strong>
-                                    <span>{{medical_examination.medical_registration.patient.address}}</span>
-                                </div>
-                            </div>
+    {% if medical_examinations %}
+    {% for medical_examination in medical_examinations %}
+    <tr>
+        <th scope="row">{{loop.index}}</th>
+        <td>
+            {{medical_examination.created_at}}
+        </td>
+        <td>
+            {{medical_examination.medical_registration.symptom}}
+        </td>
+        <td>
+            <i class="fa-solid fa-eye" data-toggle="modal" data-target="#modal{{loop.index}}"></i>
+        </td>
+        <div class="modal fade" id="modal{{loop.index}}" tabindex="-1" role="dialog"
+             aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content p-4 ">
+                    <h3>THÔNG TIN BỆNH NHÂN</h3>
+                    <div class="d-flex">
+                        <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=100) }}">
+                        <div class=" col-lg-4">
+                            <strong>Mã Bệnh Nhân:</strong>
+                            <span>{{medical_examination.medical_registration.patient.id}}</span>
+                            <br>
+                            <strong>Tên Bệnh Nhân:</strong>
+                            <span>{{medical_examination.medical_registration.patient.name}}</span>
+                            <br>
+                            <strong>Liên lạc:</strong>
+                            <span>{{medical_examination.medical_registration.patient.contact}}</span>
+                            <br>
                         </div>
-                        <h3>Thông tin khám bệnh</h3>
-                        <div>
-                            <div>
-                                <strong>Ngày khám:</strong><span>{{medical_examination.created_at}}</span>
-                                <strong>Triệu
-                                    chứng:</strong><span>{{medical_examination.medical_registration.symptom}}</span>
-                            </div>
-                            <div>
-                                <strong>Chẩn đoán:</strong><span>{{medical_examination.diagnosis}}</span>
-                            </div>
-                            <div class="container-fluid tex-center">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="row mb-3">
-                                                    <div class="col-1 font-weight-bold">STT</div>
-                                                    <div class="col-3 font-weight-bold">Thuốc</div>
-                                                    <div class="col-2 font-weight-bold">Đơn vị</div>
-                                                    <div class="col-2 font-weight-bold">Số lượng</div>
-                                                    <div class="col-4 font-weight-bold">Cách dùng</div>
-                                                </div>
+                        <div class=" col-lg-6">
+                            <strong>Giới tính:</strong>
+                            <span>{{medical_examination.medical_registration.patient.gender.value}}</span>
+                            <br>
+                            <strong>Địa chỉ:</strong>
+                            <span>{{medical_examination.medical_registration.patient.address}}</span>
+                            <br>
+                            <strong>Ngày sinh:</strong>
+                            <span>{{medical_examination.medical_registration.patient.date_of_birth}}</span>
 
-                                                {% if medical_examination.medical_examination_details %}
-                                                {% for detail in medical_examination.medical_examination_details %}
-                                                <div class="row mb-2">
-                                                    <div class="col-1">{{loop.index}}</div>
-                                                    <div class="col-3">{{detail.medicine.name}}</div>
-                                                    <div class="col-2">{{detail.medicine.medicine_unit.name}}</div>
-                                                    <div class="col-2">{{detail.quantity}}</div>
-                                                    <div class="col-4">{{detail.dosage}}</div>
+                        </div>
+                    </div>
+
+                    <h3>THÔNG TIN KHÁM BỆNH</h3>
+                    <div class="d-flex ml-4">
+                        <div style="col-lg-12; margin-right:25px">
+                            <strong>Ngày khám:</strong>
+                            <span style="font-size:17px">{{medical_examination.created_at}}</span>
+                        </div>
+                        <div style="col-lg-12; margin-right:75px ">
+                            <strong>Chẩn đoán:</strong><span style=";font-size:17px">{{medical_examination.diagnosis}}</span>
+                        </div>
+                         <div style="col-lg-12">
+                            <strong>Triệu chứng:</strong>
+                            <span style="font-size:17px">{{medical_examination.medical_registration.symptom}}</span>
+                        </div>
+                            </div>
+                                <div class="container-fluid tex-center mt-3">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-1 font-weight-bold">STT</div>
+                                                        <div class="col-3 font-weight-bold">THUỐC</div>
+                                                        <div class="col-2 font-weight-bold">ĐƠN VỊ</div>
+                                                        <div class="col-2 font-weight-bold">SỐ LƯỢNG</div>
+                                                        <div class="col-4 font-weight-bold">CÁCH DÙNG</div>
+                                                    </div>
+
+                                                    {% if medical_examination.medical_examination_details %}
+                                                    {% for detail in medical_examination.medical_examination_details %}
+                                                    <div class="row mb-2">
+                                                        <div class="col-1">{{loop.index}}</div>
+                                                        <div class="col-3">{{detail.medicine.name}}</div>
+                                                        <div class="col-2">{{detail.medicine.medicine_unit.name}}</div>
+                                                        <div class="col-2">{{detail.quantity}}</div>
+                                                        <div class="col-4">{{detail.dosage}}</div>
+                                                    </div>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <div class="row">
+                                                        <div class="col-12">Không có đơn thuốc nào.</div>
+                                                    </div>
+                                                    {% endif %}
                                                 </div>
-                                                {% endfor %}
-                                                {% else %}
-                                                <div class="row">
-                                                    <div class="col-12">Không có đơn thuốc nào.</div>
-                                                </div>
-                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
+                                    <hr>
+                                    <div>
+                                        <h4 style="font-style: italic;text-decoration:underline">Lời dặn:</h4><span>{{medical_examination.advice}}</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <strong>Lời dặn:</strong><span>{{medical_examination.advice}}</span>
+
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </tr>
-        {% endfor %}
-        {% else %}
-        <tr>
-            <td colspan="4">Bệnh nhân không có lịch sử khám.</td>
-        </tr>
-        {% endif %}
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan="4">Bệnh nhân không có lịch sử khám.</td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
 {% endblock %}

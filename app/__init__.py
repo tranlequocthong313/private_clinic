@@ -7,7 +7,6 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap4
 from twilio.rest import Client
-import pdfkit
 
 from config import config
 from .utils import format_money

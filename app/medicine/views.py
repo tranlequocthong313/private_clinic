@@ -54,7 +54,7 @@ dashboard.add_view(
     MedicineView(
         name="Tra cứu thuốc",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value=" fa-magnifying-glass",
         endpoint="search-medicines",
     )
 )

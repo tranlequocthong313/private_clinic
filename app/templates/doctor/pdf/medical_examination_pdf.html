@@ -6,57 +6,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+
+
+
+    </style>
 </head>
 
 <body>
-    <div class='text-center'>
-        <h1 class='font-weight-bold'>PHÒNG KHÁM ĐA KHOA TÂM ĐỨC</h1>
-        <h1 class='font-weight-bold'>Phiếu Khám Bệnh</h1>
-    </div>
-
-    <div class='my-5'>
-        <div>
+<div class="mx-auto my-0" style='max-width: 1200px; position: relative;'>
+    <div class="p-5 mt-5" style='border: 1px solid #ddd; background: #fff'>
+        <div class="d-flex align-items-center">
+            <img src="https://res.cloudinary.com/dgsii3nt1/image/upload/v1701079653/LOGO_ao7prq.png" alt="Logo"
+                 class="mr-5" style='width: 80px; height: 80px'>
+            <div class="company-info">
+                <h2 class='mb-1' style='font-size: 1.5em;'>PHÒNG KHÁM TÂM ĐỨC</h2>
+                <p class='m-0'>Nhơn Đức - Nhà Bè- TP HCM | Số điện thoại: 0228812345</p>
+            </div>
+        </div>
+        <h1 class='font-weight-bold text-center'>PHIẾU KHÁM BỆNH</h1>
+        <div style="text-align: center; font-size:20px;font-style: italic">
             <strong>Ngày khám: {{medical_examination.created_at}}</strong>
         </div>
-        <div class="row my-4">
+        <div class="d-flex mt-5">
             <div class="col-6">
-                <strong>Tên BN: {{patient.name}}</strong>
+                <strong style="font-size:20px">Tên Bệnh Nhân: </strong>
+                <span style="font-size:20px">{{patient.name}} </span>
+                <br>
+                <strong style="font-size:20px">Liên lạc: </strong>
+                <span style="font-size:20px">{{patient.contact}} </span>
             </div>
             <div class="col-6">
-                <strong>Liên lạc: {{patient.contact}}</strong>
+                <strong style="font-size:20px">Triệu chứng: </strong>{% if medical_registration.symptom %} <span
+                    style="font-size:20px">{{ medical_registration.symptom
+                    }}</span>{% else
+                %}Trống{% endif %}
+                <br>
+                <strong style="font-size:20px">Chẩn đoán:</strong>
+                <span style="font-size:20px">{{medical_examination.diagnosis}}</span>
             </div>
         </div>
-        <div class="row my-4">
-            <div class="col-6 mt-3">
-                <strong>Triệu chứng: {% if medical_registration.symptom %}{{ medical_registration.symptom }}{% else
-                    %}Trống{% endif %}</strong>
-            </div>
-            <div class="col-6 mt-3">
-                <strong>Chẩn đoán: {{medical_examination.diagnosis}}</strong>
-            </div>
-        </div>
-        <div class='row my-4'>
-            <strong>Lời dặn: {{medical_examination.advice}}</strong>
-        </div>
-    </div>
 
-    <div>
-        <table class="table text-center">
-            <thead>
+        <div class="advice mt-3 ml-2">
+            <h4 style="font-style: italic;text-decoration:underline">Lời dặn:</h4>
+            <span style="font-size:20px">{{medical_examination.advice}}</span>
+        </div>
+        <div class="mt-2 w-100" style='border-collapse: collapse;'>
+            <table class='table text-center w-100'>
+                <thead>
                 <tr>
                     <th scope="col">STT</th>
+                    <th scope="col">Bác sĩ</th>
                     <th scope="col">Thuốc</th>
                     <th scope="col">Đơn vị</th>
                     <th scope="col">Số lượng</th>
                     <th scope="col">Cách dùng</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% if medical_examination.medical_examination_details %}
                 {% for detail in medical_examination.medical_examination_details %}
                 <tr>
                     <th scope="row">{{loop.index}}</th>
+                    <td>
+                        {{medical_examination.doctor}}
+                    </td>
                     <td>
                         {{detail.medicine.name}}
                     </td>
@@ -70,26 +96,30 @@
                         {{detail.dosage}}
                     </td>
                 </tr>
+
                 {% endfor %}
                 {% else %}
                 <tr>
                     <td colspan="9">Chưa có thuốc nào được thêm vào đơn này.</td>
                 </tr>
                 {% endif %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            <div class='font-weight-bold text-right mr-5 mt-5' style='margin-bottom: 150px;'>
+                <h5>Chữ ký</h5>
+            </div>
+        </div>
 
-    </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>
