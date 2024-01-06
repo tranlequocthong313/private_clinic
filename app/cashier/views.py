@@ -12,8 +12,9 @@ from flask import (
 from flask_login import login_required, current_user
 from flask_admin import expose
 from sqlalchemy import or_
-from datetime import date
+from datetime import date, datetime
 
+from ..vnpay import vnpay
 from ..pdf import make_pdf_from_html
 from ..utils import format_money
 from ..patient.views import ListPatientView
@@ -63,18 +64,52 @@ class PayBillView(CashierView):
         if form.validate_on_submit():
             bill = Bill(
                 amount=examination_fee_policy + medicine_fee,
-                fulfilled=True,
+                fulfilled=form.pay_options.data == "cash",
                 patient_id=medical_examination.medical_registration.patient.id,
                 cashier_id=current_user.id,
                 medical_examination_id=medical_examination.id,
             )
-            medical_examination.medical_registration.status = (
-                MedicalRegistrationStatus.COMPLETED
-            )
             db.session.add(bill)
             db.session.commit()
-            flash("Thanh toán hóa đơn thành công.", category="success")
-            return redirect(url_for("pay-bill.index", mid=medical_registration_id))
+            if form.pay_options.data == "cash":
+                medical_examination.medical_registration.status = (
+                    MedicalRegistrationStatus.COMPLETED
+                )
+                db.session.commit()
+                flash("Thanh toán hóa đơn thành công.", category="success")
+                return redirect(url_for("pay-bill.index", mid=medical_registration_id))
+            elif form.pay_options.data == "vnpay":
+                order_type = "billpayment"
+                order_id = bill.id
+                amount = int(bill.amount)
+                order_desc = f"Thanh toán viện phí cho bệnh nhân {bill.patient.name}, với số tiền {format_money(bill.amount)} VND"
+                language = "vn"
+                ipaddr = request.remote_addr
+
+                vnp = vnpay()
+                vnp.requestData["vnp_Version"] = "2.1.0"
+                vnp.requestData["vnp_Command"] = "pay"
+                vnp.requestData["vnp_TmnCode"] = current_app.config.get(
+                    "VNPAY_TMN_CODE"
+                )
+                vnp.requestData["vnp_Amount"] = amount * 100
+                vnp.requestData["vnp_CurrCode"] = "VND"
+                vnp.requestData["vnp_TxnRef"] = order_id
+                vnp.requestData["vnp_OrderInfo"] = order_desc
+                vnp.requestData["vnp_OrderType"] = order_type
+                vnp.requestData["vnp_Locale"] = language
+                vnp.requestData["vnp_CreateDate"] = datetime.now().strftime(
+                    "%Y%m%d%H%M%S"
+                )
+                vnp.requestData["vnp_IpAddr"] = ipaddr
+                vnp.requestData["vnp_ReturnUrl"] = url_for(
+                    "return-payment.index", mid=medical_registration_id, _external=True
+                )
+                vnpay_payment_url = vnp.get_payment_url(
+                    current_app.config.get("VNPAY_PAYMENT_URL"),
+                    current_app.config.get("VNPAY_HASH_SECRET_KEY"),
+                )
+                return redirect(vnpay_payment_url)
         return self.render(
             "cashier/pay_bill.html",
             form=form,
@@ -85,6 +120,42 @@ class PayBillView(CashierView):
             medicine_fee=format_money(medicine_fee),
             sum_fee=format_money(examination_fee_policy + medicine_fee),
         )
+
+
+class ReturnPaymentView(CashierView):
+    def is_visible(self):
+        return False
+
+    @expose("/", methods=["GET"])
+    def index(self):
+        inputData = request.args
+        if inputData:
+            vnp = vnpay()
+            vnp.responseData = inputData.to_dict()
+            order_id = inputData["vnp_TxnRef"]
+            vnp_ResponseCode = inputData["vnp_ResponseCode"]
+            bill = Bill.query.get(order_id)
+            print(order_id, bill)
+            if bill and vnp.validate_response(
+                current_app.config.get("VNPAY_HASH_SECRET_KEY")
+            ):
+                if vnp_ResponseCode == "00":
+                    bill.fulfilled = True
+                    bill.medical_examination.medical_registration.status = (
+                        MedicalRegistrationStatus.COMPLETED
+                    )
+                    db.session.commit()
+                    flash("Thanh toán hóa đơn thành công.", category="success")
+                    return redirect(
+                        url_for(
+                            "pay-bill.index",
+                            mid=bill.medical_examination.medical_registration.id,
+                        )
+                    )
+            flash("Có lỗi xảy ra. Vui lòng thử lại.", category="danger")
+            return redirect(url_for("pay-bill.index", mid=request.args.get("mid")))
+        flash("Có lỗi xảy ra. Vui lòng thử lại.", category="danger")
+        return redirect(url_for("pay-bill.index", mid=request.args.get("mid")))
 
 
 class BillView(CashierView):
@@ -185,6 +256,14 @@ dashboard.add_view(
         menu_icon_type="fa",
         menu_icon_value="fa-users",
         endpoint="pay-bill",
+    )
+)
+dashboard.add_view(
+    ReturnPaymentView(
+        name="Kết quả thanh toán",
+        menu_icon_type="fa",
+        menu_icon_value="fa-users",
+        endpoint="return-payment",
     )
 )
 dashboard.add_view(
