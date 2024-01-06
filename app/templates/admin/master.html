@@ -20,6 +20,7 @@
     {% endblock
     %}
   </title>
+  {% block head %}{% endblock %}
   {% block head_css %}
   <link
     href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default') ), v='4.2.1') }}"
@@ -43,7 +44,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   {% endblock %}
-  {% block head %}{% endblock %}
   {% block head_tail %}
   {%endblock %}
 </head>
@@ -55,9 +55,9 @@
       {% block brand %}
       <a href="{{ admin_view.admin.url }}">{{ current_user.role.value }}</a>
       {% endblock %}
-      <a class='ml-auto' href='#' onclick='openNav()'>
+      {# <a class='ml-auto' href='#' onclick='openNav()'>
         <i class="fa-solid fa-bars"></i>
-      </a>
+      </a> #}
     </div>
 
     <div class="navbar-nav mr-auto pl-4">

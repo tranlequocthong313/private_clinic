@@ -85,3 +85,7 @@ div.pagination {
   border: 1px solid #ced4da;
   margin-bottom: 10px;
 }
+
+.stats-card {
+  background: rgb(39, 81, 130);
+}

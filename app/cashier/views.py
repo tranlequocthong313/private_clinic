@@ -135,7 +135,6 @@ class ReturnPaymentView(CashierView):
             order_id = inputData["vnp_TxnRef"]
             vnp_ResponseCode = inputData["vnp_ResponseCode"]
             bill = Bill.query.get(order_id)
-            print(order_id, bill)
             if bill and vnp.validate_response(
                 current_app.config.get("VNPAY_HASH_SECRET_KEY")
             ):
