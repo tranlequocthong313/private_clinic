@@ -28,7 +28,7 @@
         <th scope="col">Bác sĩ</th>
         {% endif %}
         <th scope="col">Trạng thái</th>
-        {% if current_user.is_doctor %}
+        {% if not current_user.is_nurse %}
         <th scope="col"></th>
         {% endif %}
       </tr>

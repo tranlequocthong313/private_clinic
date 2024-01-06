@@ -25,7 +25,7 @@ from app.models import (
 class HomeView(AdminIndexView):
     def is_accessible(self):
         print("checking", current_user.is_authenticated)
-        return current_user.is_authenticated 
+        return current_user.is_authenticated
 
     def inaccessible_callback(self, name, **kwargs):
         print("failed")
@@ -316,7 +316,6 @@ dashboard = Admin(
     app,
     name="Dashboard",
     template_mode="bootstrap4",
-    # endpoint="dashboard",
     url="/dashboard",
     index_view=HomeView(),
 )

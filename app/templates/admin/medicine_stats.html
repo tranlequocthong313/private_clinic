@@ -58,7 +58,7 @@
 <script>
   function exportPDF(e) {
     const date = document.getElementById('month').value
-    e.setAttribute('href', {{ url_for('export-medicine-stats-pdf.index') }} + `?month=${date}`)
+    e.setAttribute('href', "{{ url_for('export-medicine-stats-pdf.index') }}" + `?month=${date}`)
   }
 
   const ctx = document.getElementById('myChart')
