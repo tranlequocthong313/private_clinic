@@ -32,7 +32,6 @@ Flask-Mail==0.9.1
 Flask-Migrate==4.0.5
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
-flask_weasyprint==1.1.0
 fonttools==4.47.0
 ForgeryPy==0.1
 frozenlist==1.4.0
