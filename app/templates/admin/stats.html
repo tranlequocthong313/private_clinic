@@ -49,7 +49,7 @@
       {% endif %}
     </table>
     <div class='text-left mt-5'>
-      <h5>Tổng doanh thu: {{format_money(total_revenue_of_the_month)}} VND</h5>
+      <h5><strong>Tổng doanh thu:</strong> {{format_money(total_revenue_of_the_month)}} VND</h5>
     </div>
   </div>
   <div class='mt-5'>
@@ -63,7 +63,7 @@
 <script>
   function exportPDF(e) {
     const date = document.getElementById('month').value
-    e.setAttribute('href', {{ url_for('export-revenue-pdf.index') }} + `?month=${date}`)
+    e.setAttribute('href', "{{ url_for('export-revenue-pdf.index') }}" + `?month=${date}`)
   }
 
   const ctx = document.getElementById('myChart')
