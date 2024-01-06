@@ -22,12 +22,27 @@ from app.models import (
 )
 
 
+class HomeView(AdminIndexView):
+    def is_accessible(self):
+        print("checking", current_user.is_authenticated)
+        return current_user.is_authenticated 
+
+    def inaccessible_callback(self, name, **kwargs):
+        print("failed")
+        return redirect(url_for("auth.login"))
+
+    @expose("/")
+    def index(self):
+        return self.render("admin/index.html")
+
+
 class DashboardView(BaseView):
     def is_accessible(self):
+        print("checking", current_user.is_authenticated)
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("admin.index"))
 
     @expose("/")
     def index(self):
@@ -301,8 +316,9 @@ dashboard = Admin(
     app,
     name="Dashboard",
     template_mode="bootstrap4",
-    endpoint="dashboard",
+    # endpoint="dashboard",
     url="/dashboard",
+    index_view=HomeView(),
 )
 
 dashboard.add_view(
