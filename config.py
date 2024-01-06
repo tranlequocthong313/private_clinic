@@ -43,5 +43,10 @@ class DevelopmentConfig(Config):
     TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
     TWILIO_SERVICE_SID = os.getenv("TWILIO_SERVICE_SID")
 
+    VNPAY_PAYMENT_URL = os.getenv("VNPAY_PAYMENT_URL")
+    VNPAY_API_URL = os.getenv("VNPAY_API_URL")
+    VNPAY_TMN_CODE = os.getenv("VNPAY_TMN_CODE")
+    VNPAY_HASH_SECRET_KEY = os.getenv("VNPAY_HASH_SECRET_KEY")
+
 
 config = {"development": DevelopmentConfig, "default": DevelopmentConfig}

@@ -27,7 +27,7 @@ class DashboardView(BaseView):
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for("main.index"))
+        return redirect(url_for("auth.login"))
 
     @expose("/")
     def index(self):

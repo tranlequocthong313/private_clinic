@@ -74,3 +74,18 @@ div.pagination {
 .resend {
   font-size: 12px;
 }
+
+#pay_options {
+  list-style: none;
+}
+
+#pay_options li {
+  padding: 14px;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  margin-bottom: 10px;
+}
+
+.stats-card {
+  background: rgb(39, 81, 130);
+}

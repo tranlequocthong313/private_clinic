@@ -98,9 +98,10 @@
                                     class='form-control')}}
                                 </div>
                             </div>
-                            {% if not bill %}
-                            <div class="col-12">
-                                {{form.submit(class="mt-4 btn btn-primary w-100")}}
+                            {% if not bill or not bill.fulfilled %}
+                            <div class="col-12 mt-4 ">
+                                {{form.pay_options}}
+                                {{form.submit(class="btn btn-primary w-100")}}
                             </div>
                             {% endif %}
                         </div>

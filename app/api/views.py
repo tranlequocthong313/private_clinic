@@ -1,4 +1,6 @@
 from flask import (
+    url_for,
+    redirect,
     render_template,
     request,
     current_app,
@@ -6,13 +8,16 @@ from flask import (
     session,
     make_response,
     render_template_string,
+    flash,
 )
 from flask_login import login_required, current_user
 from sqlalchemy import or_
 
+from ..vnpay import vnpay
 from . import api
 from ..decorators import roles_required
 from ..models import (
+    Bill,
     MedicalExamination,
     AccountRole,
     Medicine,
