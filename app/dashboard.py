@@ -335,7 +335,7 @@ dashboard.add_view(
         db.session,
         name="Chính sách",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-book",
     )
 )
 dashboard.add_view(
@@ -344,7 +344,7 @@ dashboard.add_view(
         db.session,
         name="Thuốc",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-capsules",
         endpoint="medicines",
     )
 )
@@ -354,7 +354,7 @@ dashboard.add_view(
         db.session,
         name="Đơn vị thuốc",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-prescription-bottle",
     )
 )
 dashboard.add_view(
@@ -363,7 +363,7 @@ dashboard.add_view(
         db.session,
         name="Loại thuốc",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-syringe",
     )
 )
 dashboard.add_view(
@@ -372,38 +372,32 @@ dashboard.add_view(
         db.session,
         name="Thuốc thuộc Loại thuốc",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-pills",
     )
 )
 dashboard.add_view(
     StatsView(
         name="Thống kê",
         menu_icon_type="fa",
-        menu_icon_value="fa-users",
+        menu_icon_value="fa-chart-simple",
         endpoint="stats",
     )
 )
 dashboard.add_view(
     MedicineStatsView(
         name="Thống kê tần suất sử dụng thuốc",
-        menu_icon_type="fa",
-        menu_icon_value="fa-users",
         endpoint="medicine-stats",
     )
 )
 dashboard.add_view(
     ExportStatsPDFView(
         name="Xuất thống kê doanh thu và tần suất khám",
-        menu_icon_type="fa",
-        menu_icon_value="fa-users",
         endpoint="export-revenue-pdf",
     )
 )
 dashboard.add_view(
     ExportMedicineStatsPDFView(
         name="Xuất thống kê tần suất sử dụng thuốc",
-        menu_icon_type="fa",
-        menu_icon_value="fa-users",
         endpoint="export-medicine-stats-pdf",
     )
 )
