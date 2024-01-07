@@ -8,6 +8,7 @@ from .forms import SearchingPatientForm
 from ..decorators import roles_required, confirmed_required
 from ..models import (
     AccountRole,
+    PolicyType,
     User,
     AppointmentSchedule,
     MedicalRegistration,
@@ -68,7 +69,7 @@ class ListPatientView(PatientView):
         appointment = AppointmentSchedule.query.filter(
             AppointmentSchedule.date == date.today()
         ).first()
-        policy = Policy.query.get("so-benh-nhan")
+        policy = Policy.query.filter(Policy.type == PolicyType.NUMBER_OF_PATIENTS).first()
         pagination = None
         total_registered_count = 0
         if appointment:

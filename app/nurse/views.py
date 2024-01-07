@@ -9,6 +9,7 @@ from .forms import AppointmentDateForm
 from ..main.forms import MedicalRegisterForm, SearchingMedicalRegistrationForm
 from ..decorators import roles_required
 from ..models import (
+    PolicyType,
     AccountRole,
     User,
     MedicalRegistration,
@@ -47,7 +48,7 @@ class AppointmentScheduleView(NurseView):
         form = AppointmentDateForm()
         medical_registrations = MedicalRegistration.query
         appointment = AppointmentSchedule.query
-        policy = Policy.query.get("so-benh-nhan")
+        policy = Policy.query.filter(Policy.type == PolicyType.NUMBER_OF_PATIENTS).first()
         medical_registrations = medical_registrations.filter(
             func.date(MedicalRegistration.date_of_visit) <= form.date.data,
             MedicalRegistration.status == MedicalRegistrationStatus.REGISTERED,

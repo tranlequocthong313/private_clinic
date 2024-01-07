@@ -57,7 +57,7 @@ class CustomModelView(DashboardView, ModelView):
 
 
 class PolicyModelView(CustomModelView):
-    form_columns = ["id", "name", "value"]
+    form_columns = ["name", "value", "type"]
 
 
 class UserModelView(CustomModelView):
