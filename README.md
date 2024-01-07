@@ -24,16 +24,16 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
 
 4. **Truy Cập vào Môi Trường Ảo:**
 
-   - **Windows:**
+- **Windows:**
 
-     ```bash
-     .\venv\Scripts\activate
-     ```
+   ```bash
+   .\venv\Scripts\activate
+   ```
 
-   - **Bash:**
-     ```bash
-     source venv/Scripts/activate
-     ```
+- **Bash:**
+   ```bash
+   source venv/Scripts/activate
+   ```
 
 5. **Cài đặt thư viện:**
 
@@ -41,17 +41,25 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    pip install -r requirements.txt
    ```
 
-6. **Tạo CSDL MYSQL:**
+6. **Tải và cài đặt phần mềm wkhtmltopdf và thêm vào PATH của máy:**
 
-   **_NOTE:_** Có thể dùng MySQL Workbench
+   **Chú ý** Chỉ thực hiện bước này nếu có sử dụng chức năng **Xuất PDF**
+
+   ```bash
+   https://wkhtmltopdf.org/downloads.html
+   ```
+
+7. **Tạo CSDL MYSQL:**
+
+   **Chú ý:** Có thể dùng MySQL Workbench
 
    ```bash
    CREATE DATABASE clinic CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
    ```
 
-7. **Tạo file .env và thêm vào các biến môi trường**
+8. **Tạo file .env và thêm vào các biến môi trường tương ứng với các biến trong file config.py**
 
-8. **Tạo các bảng cho CSDL:**
+9. **Tạo các bảng cho CSDL:**
 
    ```bash
    flask db migrate
@@ -61,10 +69,10 @@ Ngày nay, với sự phát triển không ngừng của công nghệ thông tin
    flask db upgrade
    ```
 
-9. **Chạy ứng dụng:**
+10. **Chạy ứng dụng:**
 
-   ```bash
-   python manage.py
-   ```
+      ```bash
+      python manage.py
+      ```
 
   
