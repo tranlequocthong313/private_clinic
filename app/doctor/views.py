@@ -68,7 +68,7 @@ class MedicalExaminationView(DoctorView):
 
         medical_registration = MedicalRegistration.query.get(medical_registration_id)
         medical_examination = MedicalExamination.query.filter(
-            MedicalExamination.medical_registration_id == medical_registration_id
+            MedicalExamination.id == medical_registration_id
         ).first()
         if (
             medical_registration
@@ -123,11 +123,11 @@ class MedicalExaminationView(DoctorView):
         elif form.validate_on_submit() and validating:
             if not medical_examination:
                 medical_examination = MedicalExamination(
+                    id=medical_registration.id,
                     diagnosis=form.diagnosis.data,
                     advice=form.advice.data,
                     patient_id=medical_registration.patient.id,
                     doctor_id=current_user.id,
-                    medical_registration_id=medical_registration.id,
                     fulfilled=form.submit.data,
                 )
                 db.session.add(medical_examination)
