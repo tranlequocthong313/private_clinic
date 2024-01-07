@@ -88,7 +88,7 @@ class User(UserMixin, db.Model):
         lazy=True,
         foreign_keys="MedicalRegistration.patient_id",
     )
-    medical = relationship(
+    indicated_medical_registers = relationship(
         "MedicalRegistration",
         backref="doctor",
         lazy=True,
@@ -186,12 +186,18 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class PolicyType(enum.Enum):
+    EXAMINATION_FEE = "Examination Fee"
+    NUMBER_OF_PATIENTS = "Number of Patients"
+
+
 class Policy(db.Model):
     __tablename__ = "policies"
 
-    id = Column(String(50), primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(UnicodeText, nullable=False)
     value = Column(Integer, nullable=False)
+    type = Column(Enum(PolicyType))
 
     def __str__(self):
         return self.name
@@ -240,7 +246,9 @@ class MedicalExamination(db.Model):
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
-    medical_registration_id = Column(Integer, ForeignKey("medical_registrations.id"), nullable=False)
+    medical_registration_id = Column(
+        Integer, ForeignKey("medical_registrations.id"), nullable=False
+    )
     medical_examination_details = relationship(
         "MedicalExaminationDetail",
         backref="medical_examination",

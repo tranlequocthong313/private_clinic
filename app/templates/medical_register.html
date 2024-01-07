@@ -7,11 +7,11 @@
 {% import '_macros.html' as macros %}
 {% from '_formhelper.html' import render_field %}
 {% block body %}
-{% if current_user.is_patient %}
-{{macros.flash_messages()}}
-{% endif %}
-
 <form novalidate method="POST" style="{%if not current_user.is_nurse%} margin-top:5%; padding:2% {%endif%}">
+    {% if not current_user.is_nurse %}
+    {{macros.flash_messages()}}
+    {% endif %}
+
     {{form.csrf_token}}
     <div class="row my-4">
         <div class="col-lg-6">
@@ -52,7 +52,7 @@
     </div>
 
 </form>
-<hr/>
+<hr />
 
 
 {% endblock %}

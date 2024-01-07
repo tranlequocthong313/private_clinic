@@ -182,11 +182,3 @@ def change_medical_registration_status(id):
             "message": "Thay đổi trạng thái ca khám thành công",
         }
     )
-
-
-@api.route("/policies/<id>", methods=["GET"])
-@login_required
-@roles_required([AccountRole.NURSE])
-def get_policies(id):
-    policy = Policy.query.get(id)
-    return jsonify({"value": policy.value})

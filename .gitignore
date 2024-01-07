@@ -162,3 +162,5 @@ cython_debug/
 .vscode
 run.sh
 test.sh
+
+.VSCodeCounter

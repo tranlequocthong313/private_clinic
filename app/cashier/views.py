@@ -22,6 +22,7 @@ from .forms import PayBillForm, SearchBillForm
 from .. import db
 from ..decorators import roles_required
 from ..models import (
+    PolicyType,
     Policy,
     AccountRole,
     MedicalExamination,
@@ -52,7 +53,7 @@ class PayBillView(CashierView):
         if not medical_examination:
             flash("Không tìm thấy ca khám.", category="danger")
             return redirect(url_for("farewell-patients.index"))
-        examination_fee_policy = Policy.query.get("so-tien-kham")
+        examination_fee_policy = Policy.query.filter(Policy.type == PolicyType.EXAMINATION_FEE).first()
         bill = Bill.query.filter(
             Bill.medical_examination_id == medical_examination.id
         ).first()
@@ -214,7 +215,7 @@ class ExportBillPDFView(CashierView):
         if not bill.fulfilled:
             flash("Có lỗi xảy ra.", category="danger")
             return redirect(url_for("farewell-patients.index"))
-        policy = Policy.query.get("so-tien-kham")
+        policy = Policy.query.filter(Policy.type == PolicyType.EXAMINATION_FEE).first()
         pdf = make_pdf_from_html(
             "cashier/pdf/pay_bill_pdf.html",
             examination_fee=policy.value,
