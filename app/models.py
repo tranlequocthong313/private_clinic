@@ -238,16 +238,13 @@ class MedicalExaminationDetail(db.Model):
 class MedicalExamination(db.Model):
     __tablename__ = "medical_examinations"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey("medical_registrations.id"), primary_key=True)
     created_at = Column(DateTime, server_default=func.now())
     diagnosis = Column(UnicodeText)
     advice = Column(UnicodeText)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
-    medical_registration_id = Column(
-        Integer, ForeignKey("medical_registrations.id"), nullable=False, unique=True
-    )
+    fulfilled = Column(Boolean, default=False)  
     medical_examination_details = relationship(
         "MedicalExaminationDetail",
         backref="medical_examination",
@@ -262,15 +259,12 @@ class MedicalExamination(db.Model):
 class Bill(db.Model):
     __tablename__ = "bills"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, ForeignKey(MedicalExamination.id), primary_key=True)
     amount = Column(Double, nullable=False)
     fulfilled = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     cashier_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    medical_examination_id = Column(
-        Integer, ForeignKey(MedicalExamination.id), nullable=False, unique=True
-    )
 
     def __str__(self):
         return str(self.id)

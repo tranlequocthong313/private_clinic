@@ -48,14 +48,14 @@ class PayBillView(CashierView):
         form = PayBillForm()
         medical_registration_id = request.args.get("mid", type=int)
         medical_examination = MedicalExamination.query.filter(
-            MedicalExamination.medical_registration_id == medical_registration_id
+            MedicalExamination.id == medical_registration_id
         ).first()
         if not medical_examination:
             flash("Không tìm thấy ca khám.", category="danger")
             return redirect(url_for("farewell-patients.index"))
         examination_fee_policy = Policy.query.filter(Policy.type == PolicyType.EXAMINATION_FEE).first()
         bill = Bill.query.filter(
-            Bill.medical_examination_id == medical_examination.id
+            Bill.id == medical_examination.id
         ).first()
         examination_fee_policy = examination_fee_policy.value
         medicine_fee = sum(
@@ -64,11 +64,11 @@ class PayBillView(CashierView):
         )
         if form.validate_on_submit():
             bill = Bill(
+                id=medical_examination.id,
                 amount=examination_fee_policy + medicine_fee,
                 fulfilled=form.pay_options.data == "cash",
                 patient_id=medical_examination.medical_registration.patient.id,
                 cashier_id=current_user.id,
-                medical_examination_id=medical_examination.id,
             )
             db.session.add(bill)
             db.session.commit()
