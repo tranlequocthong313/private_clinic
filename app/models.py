@@ -246,14 +246,14 @@ class MedicalExamination(db.Model):
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
     fulfilled = Column(Boolean, default=False)  # True = Fulfilled, False = Draft
     medical_registration_id = Column(
-        Integer, ForeignKey("medical_registrations.id"), nullable=False
+        Integer, ForeignKey("medical_registrations.id"), nullable=False, unique=True
     )
     medical_examination_details = relationship(
         "MedicalExaminationDetail",
         backref="medical_examination",
         lazy=True,
     )
-    bill = relationship("Bill", backref="medical_examination", lazy=True)
+    bill = relationship("Bill", backref="medical_examination", lazy=True, uselist=False)
 
     def __str__(self):
         return str(self.id)
@@ -269,7 +269,7 @@ class Bill(db.Model):
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     cashier_id = Column(Integer, ForeignKey(User.id), nullable=False)
     medical_examination_id = Column(
-        Integer, ForeignKey(MedicalExamination.id), nullable=False
+        Integer, ForeignKey(MedicalExamination.id), nullable=False, unique=True
     )
 
     def __str__(self):
@@ -304,7 +304,7 @@ class MedicalRegistration(db.Model):
         Integer, ForeignKey(AppointmentSchedule.id), nullable=True
     )
     medical_examination = relationship(
-        "MedicalExamination", backref="medical_registration", lazy=True
+        "MedicalExamination", backref="medical_registration", lazy=True, uselist=False
     )
 
     @property
