@@ -156,7 +156,6 @@ class User(UserMixin, db.Model):
         otp_verification_check = sms_client.verify.v2.services(
             current_app.config.get("TWILIO_SERVICE_SID")
         ).verification_checks.create(to=f"+84{self.phone_number}", code=otp_code)
-        print(otp_verification_check.status)
         return otp_verification_check is not None
 
     def gravatar(self, size=100, default="identicon", rating="g"):

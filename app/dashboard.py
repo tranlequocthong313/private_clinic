@@ -24,11 +24,9 @@ from app.models import (
 
 class HomeView(AdminIndexView):
     def is_accessible(self):
-        print("checking", current_user.is_authenticated)
         return current_user.is_authenticated
 
     def inaccessible_callback(self, name, **kwargs):
-        print("failed")
         return redirect(url_for("auth.login"))
 
     @expose("/")
@@ -38,7 +36,6 @@ class HomeView(AdminIndexView):
 
 class DashboardView(BaseView):
     def is_accessible(self):
-        print("checking", current_user.is_authenticated)
         return current_user.is_authenticated and current_user.is_admin
 
     def inaccessible_callback(self, name, **kwargs):
@@ -89,7 +86,7 @@ class UserModelView(CustomModelView):
 
 class MedicineUnitModelView(CustomModelView):
     column_list = ["id", "name"]
-    form_columns = ["id", "name"]
+    form_columns = ["name"]
 
 
 class MedicineModelView(CustomModelView):
@@ -255,7 +252,6 @@ class ExportStatsPDFView(DashboardView):
             mimetype="application/pdf",
         )
         os.remove(os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename))
-        print(res)
         return res
 
 
