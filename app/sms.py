@@ -9,8 +9,6 @@ def send_async_otp(app, to):
             verification = sms_client.verify.v2.services(
                 current_app.config.get("TWILIO_SERVICE_SID")
             ).verifications.create(to=f"+84{to}", channel="sms")
-            print(verification.sid)
-            print(verification.status)
         except Exception as e:
             print(f"Twilio Error: {e}")
 
