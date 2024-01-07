@@ -63,19 +63,21 @@ class PayBillView(CashierView):
             for detail in medical_examination.medical_examination_details
         )
         if form.validate_on_submit():
-            bill = Bill(
-                id=medical_examination.id,
-                amount=examination_fee_policy + medicine_fee,
-                fulfilled=form.pay_options.data == "cash",
-                patient_id=medical_examination.medical_registration.patient.id,
-                cashier_id=current_user.id,
-            )
-            db.session.add(bill)
-            db.session.commit()
+            if not bill:
+                bill = Bill(
+                    id=medical_examination.id,
+                    amount=examination_fee_policy + medicine_fee,
+                    fulfilled=form.pay_options.data == "cash",
+                    patient_id=medical_examination.medical_registration.patient.id,
+                    cashier_id=current_user.id,
+                )
+                db.session.add(bill)
+                db.session.commit()
             if form.pay_options.data == "cash":
                 medical_examination.medical_registration.status = (
                     MedicalRegistrationStatus.COMPLETED
                 )
+                bill.fulfilled = True;
                 db.session.commit()
                 flash("Thanh toán hóa đơn thành công.", category="success")
                 return redirect(url_for("pay-bill.index", mid=medical_registration_id))

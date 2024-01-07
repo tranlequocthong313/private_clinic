@@ -67,7 +67,7 @@
   <nav class="navbar sticky-top flex-md-nowrap p-0 ">
     <div class='navbar-brand col-sm-3 col-md-2 mr-0 d-flex'>
       {% block brand %}
-      <a href="{{ admin_view.admin.url }}">{{ current_user.role.value }}</a>
+      <a href="/admin/">{{ current_user.role.value }}</a>
       {% endblock %}
       {# <a class='ml-auto' href='#' onclick='openNav()'>
         <i class="fa-solid fa-bars"></i>
