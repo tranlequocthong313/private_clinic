@@ -27,17 +27,17 @@ class VerifyOTPForm(FlaskForm):
 
 class LoginForm(FlaskForm):
     email_phone = StringField(
-        "Email hoac so dien thoai",
+        "Email hoặc số điện thoại",
         validators=[
             Regexp(
                 r"^(?:\d{10}|\w+@\w+\.\w{2,3})$",
-                message="Enter a valid email or phone number.",
+                message="Nhập một email hoặc số điện thoại hợp lệ.",
             ),
         ],
-        render_kw={"placeholder": "Email hoac so dien thoai"},
+        render_kw={"placeholder": "Email hoặc số điện thoại"},
     )
     password = PasswordField(
-        "Password",
+        "Mật khẩu",
         validators=[DataRequired()],
         render_kw={"placeholder": "Mật khẩu"},
     )
@@ -47,7 +47,7 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     name = StringField(
-        "Name",
+        "Họ tên",
         validators=[DataRequired()],
         render_kw={"placeholder": "Họ tên"},
     )
@@ -56,27 +56,27 @@ class RegistrationForm(FlaskForm):
         render_kw={"placeholder": "Email"},
     )
     phone_number = StringField(
-        "Phone number",
+        "Số điện thoại",
         render_kw={"placeholder": "Số điện thoại"},
     )
     address = StringField(
-        "Address",
+        "Địa chỉ",
         validators=[DataRequired()],
         render_kw={"placeholder": "Địa chỉ"},
     )
     gender = SelectField(
-        "Gender",
+        "Giới tính",
         choices=[(choice.name, choice.value) for choice in Gender],
         render_kw={"placeholder": "Giới tính"},
     )
     date_of_birth = DateField(
-        "Date_of_birth",
+        "Ngày sinh",
         validators=[DataRequired()],
         format="%Y-%m-%d",
         render_kw={"placeholder": "Ngày sinh"},
     )
     password = PasswordField(
-        "Password",
+        "Mật khẩu",
         validators=[
             DataRequired(),
             Length(min=8, max=32),
@@ -84,11 +84,11 @@ class RegistrationForm(FlaskForm):
         render_kw={"placeholder": "Mật khẩu"},
     )
     password2 = PasswordField(
-        "Confirm password",
+        "Nhập lại mật khẩu",
         validators=[
             DataRequired(),
             Length(min=8, max=32),
-            EqualTo("password", message="Passwords must match."),
+            EqualTo("password", message="Mật khẩu không khớp"),
         ],
         render_kw={"placeholder": "Nhập lại mật khẩu"},
     )
@@ -106,8 +106,10 @@ class RegistrationForm(FlaskForm):
     def validate(self, extra_validators=None):
         if super().validate(extra_validators):
             if not (self.email.data or self.phone_number.data):
-                self.email.errors.append("Enter email or phone number.")
-                self.phone_number.errors.append("Enter email or phone number.")
+                self.email.errors.append("Nhập một email hoặc số điện thoại hợp lệ.")
+                self.phone_number.errors.append(
+                    "Nhập một email hoặc số điện thoại hợp lệ."
+                )
                 return False
             else:
                 email_matches = search(
@@ -118,8 +120,12 @@ class RegistrationForm(FlaskForm):
                     r"(84|0[3|5|7|8|9])+([0-9]{8})\b", self.phone_number.data.lower()
                 )
                 if not (email_matches or phone_matches):
-                    self.email.errors.append("Enter email or phone number.")
-                    self.phone_number.errors.append("Enter email or phone number.")
+                    self.email.errors.append(
+                        "Nhập một email hoặc số điện thoại hợp lệ."
+                    )
+                    self.phone_number.errors.append(
+                        "Nhập một email hoặc số điện thoại hợp lệ."
+                    )
                 return True
 
         return False
