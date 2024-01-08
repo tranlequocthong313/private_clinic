@@ -72,8 +72,7 @@ def register():
         except Exception as e:
             print(e)
             flash(e, category="danger")
-            return redirect(url_for("auth.login"))
-        return redirect(url_for("auth.verify_otp"))
+        return redirect(url_for("auth.login"))
     return render_template("auth/register.html", form=form)
 
 
