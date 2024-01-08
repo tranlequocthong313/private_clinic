@@ -18,25 +18,25 @@ from ..models import Gender, User, AccountRole
 
 
 class MedicalRegisterForm(FlaskForm):
-    name = StringField("Ho va ten", validators=[DataRequired()])
+    name = StringField("Họ và tên", validators=[DataRequired()])
     gender = SelectField(
-        "Gioi tinh",
+        "Giới tính",
         choices=[g.value for g in (Gender)],
     )
     date_of_birth = DateField(
-        "Ngay sinh",
+        "Ngày sinh",
     )
-    phone_number = StringField("So dien thoai")
+    phone_number = StringField("Số điện thoại")
     email = EmailField("Email")
-    address = StringField("Dia chi")
-    date_of_visit = DateField("Ngay hen", validators=[DataRequired()])
+    address = StringField("Địa chỉ")
+    date_of_visit = DateField("Ngày hẹn", validators=[DataRequired()])
     start_time = TimeField(
-        "Gio tiep nhan (Sáng: 6h - 11h30, Chiều: 13h - 20h):",
+        "Giờ tiếp nhận (Sáng: 6h - 11h30, Chiều: 13h - 20h):",
         validators=[DataRequired()],
     )
-    doctor = SelectField("Bac si kham")
-    symptom = StringField("Trieu chung")
-    submit = SubmitField("Dang ky")
+    doctor = SelectField("Bác sĩ khám")
+    symptom = StringField("Triệu chứng")
+    submit = SubmitField("Đăng ký")
 
     def __init__(self):
         super(MedicalRegisterForm, self).__init__()
@@ -59,8 +59,10 @@ class MedicalRegisterForm(FlaskForm):
     def validate(self, extra_validators=None):
         if super().validate(extra_validators):
             if not (self.email.data or self.phone_number.data):
-                self.email.errors.append("Enter email or phone number.")
-                self.phone_number.errors.append("Enter email or phone number.")
+                self.email.errors.append("Nhập một email hoặc số điện thoại hợp lệ.")
+                self.phone_number.errors.append(
+                    "Nhập một email hoặc số điện thoại hợp lệ."
+                )
                 return False
             else:
                 email_matches = search(
@@ -71,8 +73,12 @@ class MedicalRegisterForm(FlaskForm):
                     r"(84|0[3|5|7|8|9])+([0-9]{8})\b", self.phone_number.data.lower()
                 )
                 if not (email_matches or phone_matches):
-                    self.email.errors.append("Enter email or phone number.")
-                    self.phone_number.errors.append("Enter email or phone number.")
+                    self.email.errors.append(
+                        "Nhập một email hoặc số điện thoại hợp lệ."
+                    )
+                    self.phone_number.errors.append(
+                        "Nhập một email hoặc số điện thoại hợp lệ."
+                    )
                     return False
 
             morning_start = (datetime.strptime("06:00:00", "%H:%M:%S")).time()
@@ -99,5 +105,5 @@ class MedicalRegisterForm(FlaskForm):
 
 
 class SearchingMedicalRegistrationForm(FlaskForm):
-    search = StringField("Tim kiem benh nhan")
-    submit = SubmitField("Tim kiem")
+    search = StringField("Tìm kiếm bệnh nhân")
+    submit = SubmitField("Tìm kiếm")

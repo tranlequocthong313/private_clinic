@@ -13,5 +13,5 @@ from ..models import MedicalRegistrationStatus
 
 
 class AppointmentDateForm(FlaskForm):
-    date = DateField("Ngay kham", validators=[DataRequired()], default=date.today())
-    submit = SubmitField("Dong y")
+    date = DateField("Ngày khám", validators=[DataRequired()], default=date.today())
+    submit = SubmitField("Đồng ý")

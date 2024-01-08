@@ -159,6 +159,7 @@ class User(UserMixin, db.Model):
         return otp_verification_check is not None
 
     def gravatar(self, size=100, default="identicon", rating="g"):
+        hash = ""
         if request.is_secure:
             url = "https://secure.gravatar.com/avatar"
         else:
@@ -244,7 +245,7 @@ class MedicalExamination(db.Model):
     advice = Column(UnicodeText)
     patient_id = Column(Integer, ForeignKey(User.id), nullable=False)
     doctor_id = Column(Integer, ForeignKey(User.id), nullable=False)
-    fulfilled = Column(Boolean, default=False)  
+    fulfilled = Column(Boolean, default=False)
     medical_examination_details = relationship(
         "MedicalExaminationDetail",
         backref="medical_examination",
