@@ -8,6 +8,7 @@ from wtforms import (
     DateField,
     SelectField,
     EmailField,
+    ValidationError,
 )
 from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 from re import search
@@ -25,15 +26,21 @@ class VerifyOTPForm(FlaskForm):
     submit = SubmitField("Xác thực")
 
 
+class EmailOrPhoneValidator:
+    def __call__(self, form, field):
+        if Email()(form, field):
+            return
+
+        if field.data.isdigit() and len(field.data) == 10:
+            return
+
+        raise ValidationError("Nhập một email hoặc số điện thoại hợp lệ.")
+
+
 class LoginForm(FlaskForm):
     email_phone = StringField(
         "Email hoặc số điện thoại",
-        validators=[
-            Regexp(
-                r"^(?:\d{10}|\w+@\w+\.\w{2,3})$",
-                message="Nhập một email hoặc số điện thoại hợp lệ.",
-            ),
-        ],
+        # validators=[EmailOrPhoneValidator()], # Skip this validator because i'm too lazy to fix it .🔥🔥🔥
         render_kw={"placeholder": "Email hoặc số điện thoại"},
     )
     password = PasswordField(

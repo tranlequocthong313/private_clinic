@@ -1,8 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
+from app.dashboard import *
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import os
 from app import create_app, db
 import cloudinary
@@ -18,4 +23,9 @@ cloudinary.config(
 from app.dashboard import *
 
 if __name__ == "__main__":
-    app.run(port=5555)
+    from app.models import create_default_data
+
+    with app.app_context():
+        create_default_data()
+
+    app.run(port=5555, debug=True)
