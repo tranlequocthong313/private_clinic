@@ -1,36 +1,21 @@
 from flask import (
-    url_for,
-    redirect,
-    render_template,
-    request,
-    current_app,
     jsonify,
-    session,
-    make_response,
-    render_template_string,
-    flash,
+    request,
 )
-from flask_login import login_required, current_user
-from sqlalchemy import or_
+from flask_login import current_user, login_required
 
-from ..vnpay import vnpay
-from . import api
+from .. import db
 from ..decorators import roles_required
+from ..email import send_email
 from ..models import (
-    Bill,
-    MedicalExamination,
     AccountRole,
-    Medicine,
     AppointmentSchedule,
     MedicalRegistration,
-    Policy,
     MedicalRegistrationStatus,
-    Medicine_MedicineType,
     MedicineType,
 )
-from .. import db
 from ..sms import send_sms
-from ..email import send_email
+from . import api
 
 
 def get_medicines_by_type(type_name):
@@ -40,9 +25,8 @@ def get_medicines_by_type(type_name):
 
     if not medicine_type.medicines:
         raise Exception("Loại thuốc này không có thuốc nào.")
-    else:
-        medicines = medicine_type.medicines
-        return [m.medicine for m in medicines]
+    medicines = medicine_type.medicines
+    return [m.medicine for m in medicines]
 
 
 @api.route("/medicines", methods=["GET"])
@@ -182,3 +166,4 @@ def change_medical_registration_status(id):
             "message": "Thay đổi trạng thái ca khám thành công",
         }
     )
+

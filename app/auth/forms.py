@@ -1,19 +1,20 @@
-from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    PasswordField,
-    IntegerField,
-    BooleanField,
-    SubmitField,
-    DateField,
-    SelectField,
-    EmailField,
-    ValidationError,
-)
-from wtforms.validators import DataRequired, Length, Email, EqualTo, Regexp
 from re import search
 
-from ..models import User, Gender
+from flask_wtf import FlaskForm
+from wtforms import (
+    BooleanField,
+    DateField,
+    EmailField,
+    IntegerField,
+    PasswordField,
+    SelectField,
+    StringField,
+    SubmitField,
+    ValidationError,
+)
+from wtforms.validators import DataRequired, Email, EqualTo, Length
+
+from ..models import Gender, User
 
 
 class VerifyOTPForm(FlaskForm):
@@ -40,7 +41,7 @@ class EmailOrPhoneValidator:
 class LoginForm(FlaskForm):
     email_phone = StringField(
         "Email hoặc số điện thoại",
-        # validators=[EmailOrPhoneValidator()], # Skip this validator because i'm too lazy to fix it .🔥🔥🔥
+        # validators=[EmailOrPhoneValidator()], #  HACK: Skip this validator because I'm too lazy to fix it .🔥🔥🔥
         render_kw={"placeholder": "Email hoặc số điện thoại"},
     )
     password = PasswordField(
@@ -52,7 +53,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Đăng nhập")
 
 
-class RegistrationForm(FlaskForm):
+class RegisterAccountForm(FlaskForm):
     name = StringField(
         "Họ tên",
         validators=[DataRequired()],

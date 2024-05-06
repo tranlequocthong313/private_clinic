@@ -1,16 +1,16 @@
-from flask import render_template, request, current_app
-from flask_login import login_required, current_user
+from flask import current_app, request
 from flask_admin import expose
+from flask_login import current_user
 from sqlalchemy import or_
 
-from .forms import SearchingMedicineForm
-from ..decorators import roles_required
-from ..models import AccountRole, Medicine, MedicalRegistration
 from ..dashboard import DashboardView, dashboard
+from ..models import MedicalRegistration, Medicine
+from .forms import SearchingMedicineForm
 
 
 class MedicineView(DashboardView):
     def is_accessible(self):
+        # Only doctors or nurses can use this searching medicines feature
         return current_user.is_authenticated and (
             current_user.is_doctor or current_user.is_nurse
         )

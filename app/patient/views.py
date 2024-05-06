@@ -1,26 +1,26 @@
-from flask import render_template, request, current_app
-from flask_login import login_required, current_user
-from flask_admin import expose
-from sqlalchemy import or_
 from datetime import date
 
-from .forms import SearchingPatientForm
-from ..decorators import roles_required, confirmed_required
-from ..models import (
-    AccountRole,
-    PolicyType,
-    User,
-    AppointmentSchedule,
-    MedicalRegistration,
-    Policy,
-    MedicalExamination,
-)
+from flask import current_app, request
+from flask_admin import expose
+from flask_login import current_user
+from sqlalchemy import or_
+
 from ..dashboard import DashboardView, dashboard
 from ..main.forms import SearchingMedicalRegistrationForm
+from ..models import (
+    AppointmentSchedule,
+    MedicalExamination,
+    MedicalRegistration,
+    Policy,
+    PolicyType,
+    User,
+)
+from .forms import SearchingPatientForm
 
 
 class PatientView(DashboardView):
     def is_accessible(self):
+        # Only doctors or nurses can use this searching medicines feature
         return current_user.is_authenticated and (
             current_user.is_doctor or current_user.is_nurse
         )
@@ -33,21 +33,17 @@ class PatientView(DashboardView):
         page = request.args.get("page", 1, type=int)
         if not form.keyword.data:
             form.keyword.data = ""
-        pagination = (
-            User.query.filter(
-                or_(
-                    User.id == form.keyword.data,
-                    User.name.contains(form.keyword.data),
-                    User.email.contains(form.keyword.data),
-                    User.phone_number.contains(form.keyword.data),
-                ),
-            )
-            .order_by(User.name)
-            .paginate(
-                page=page,
-                per_page=current_app.config["ITEMS_PER_PAGE"],
-                error_out=False,
-            )
+        pagination = User.query.filter(
+            or_(
+                User.id == form.keyword.data,
+                User.name.contains(form.keyword.data),
+                User.email.contains(form.keyword.data),
+                User.phone_number.contains(form.keyword.data),
+            ),
+        ).paginate(
+            page=page,
+            per_page=current_app.config["ITEMS_PER_PAGE"],
+            error_out=False,
         )
         patients = pagination.items
         return self.render(
@@ -59,6 +55,8 @@ class PatientView(DashboardView):
 
 
 class ListPatientView(PatientView):
+    statuses = []
+
     def filter(self, appointment):
         pass
 
@@ -69,7 +67,9 @@ class ListPatientView(PatientView):
         appointment = AppointmentSchedule.query.filter(
             AppointmentSchedule.date == date.today()
         ).first()
-        policy = Policy.query.filter(Policy.type == PolicyType.NUMBER_OF_PATIENTS).first()
+        policy = Policy.query.filter(
+            Policy.type == PolicyType.NUMBER_OF_PATIENTS
+        ).first()
         pagination = None
         total_registered_count = 0
         if appointment:
@@ -115,7 +115,7 @@ class DiseaseHistoryView(PatientView):
             patient_id = medical_registration.patient.id
         medical_examinations = MedicalExamination.query.filter(
             MedicalExamination.patient_id == patient_id,
-            MedicalExamination.fulfilled == True,
+            MedicalExamination.fulfilled,
         ).all()
         return self.render(
             "disease_history.html",

@@ -2,25 +2,24 @@ import sys
 
 sys.path.append("..")
 
-from flask_admin import Admin, expose
-from flask_login import current_user
+from flask import redirect, request, url_for
+from flask_admin import Admin, AdminIndexView, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
-from flask import redirect, url_for, request, render_template
-from flask_admin import AdminIndexView, BaseView
-from . import db
-from manage import app
+from flask_login import current_user
 from sqlalchemy import extract
 
 from app.models import (
+    Bill,
     Medicine,
+    Medicine_MedicineType,
     MedicineType,
     MedicineUnit,
-    Medicine_MedicineType,
     Policy,
     User,
-    AccountRole,
-    Bill,
 )
+from manage import app
+
+from . import db
 
 
 class HomeView(AdminIndexView):
@@ -160,8 +159,8 @@ class StatsView(DashboardView):
             stats=stats,
             month=month if month > 9 else f"0{month}",
             year=year,
-            total_revenue_of_the_month=sum([stat[1] for stat in stats]),
-            total_examinations_of_the_month=sum([stat[2] for stat in stats]),
+            total_revenue_of_the_month=sum(stat[1] for stat in stats),
+            total_examinations_of_the_month=sum(stat[2] for stat in stats),
             active_tab="revenue",
         )
 
@@ -238,8 +237,8 @@ class ExportStatsPDFView(DashboardView):
             stats=stats,
             month=month if month > 9 else f"0{month}",
             year=year,
-            total_revenue_of_the_month=sum([stat[1] for stat in stats]),
-            total_examinations_of_the_month=sum([stat[2] for stat in stats]),
+            total_revenue_of_the_month=sum(stat[1] for stat in stats),
+            total_examinations_of_the_month=sum(stat[2] for stat in stats),
         )
         filename = f"stats_{month}-{year}.pdf"
         pdf_path = os.path.join(current_app.config.get("UPLOAD_FOLDER"), filename)
@@ -402,8 +401,8 @@ dashboard.add_view(
     )
 )
 
-from .doctor.views import *
-from .nurse.views import *
 from .cashier.views import *
-from .patient.views import *
+from .doctor.views import *
 from .medicine.views import *
+from .nurse.views import *
+from .patient.views import *

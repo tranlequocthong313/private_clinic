@@ -1,17 +1,18 @@
-from flask import render_template, session, flash, redirect, url_for
-from flask_login import login_required, current_user
-from sqlalchemy import func, or_, desc, case
+from datetime import datetime, timedelta
 
-from . import main
-from .forms import MedicalRegisterForm
-from ..decorators import confirmed_required, roles_required
-from ..models import AccountRole, MedicalRegistration, User, MedicalRegistrationStatus
+from flask import flash, redirect, render_template, url_for
+from flask_login import current_user, login_required
+from sqlalchemy import or_
+
 from .. import db
 from ..auth.views import register_handler
-from ..utils import random_password
-from ..sms import send_sms
+from ..decorators import confirmed_required
 from ..email import send_email
-from datetime import datetime, timedelta
+from ..models import MedicalRegistration, User
+from ..sms import send_sms
+from ..utils import random_password
+from . import main
+from .forms import MedicalRegisterForm
 
 
 @main.route("/")
@@ -35,59 +36,48 @@ def about():
 def medical_register():
     form = MedicalRegisterForm()
     if form.validate_on_submit():
-        success = register_medical(form)
-        if success:
+        if _ := register_medical(form):
             return redirect(url_for("main.medical_register"))
     return render_template("medical_register.html", form=form)
 
 
-def register_medical(form):
-    patient_id = None
-    if current_user.is_patient:
-        patient_id = current_user.id
-    else:
-        user = User.query.filter(
-            or_(
-                User.phone_number == form.phone_number.data,
-                User.email == form.email.data,
-            )
-        ).first()
-        if not user:
-            password = random_password()
-            user = User(
-                name=form.name.data,
+def create_new_account(form, patient_id) -> None:
+    password = random_password()
+    user = User(
+        name=form.name.data,
+        password=password,
+        date_of_birth=form.date_of_birth.data,
+        gender=form.gender.data,
+        address=form.address.data,
+        email=form.email.data or None,
+        phone_number=form.phone_number.data or None,
+    )
+    try:
+        user = register_handler(
+            user,
+        )
+        patient_id = user.id
+        if user.email:
+            send_email(
+                user.email,
+                "Tài khoản phòng khám",
+                "auth/email/account_email",
+                patient=user,
                 password=password,
-                date_of_birth=form.date_of_birth.data,
-                gender=form.gender.data,
-                address=form.address.data,
-                email=form.email.data if form.email.data else None,
-                phone_number=form.phone_number.data if form.phone_number.data else None,
             )
-            try:
-                user = register_handler(
-                    user,
-                )
-                patient_id = user.id
-                if user.email:
-                    send_email(
-                        user.email,
-                        "Tài khoản phòng khám",
-                        "auth/email/account_email",
-                        patient=user,
-                        password=password,
-                    )
-                if user.phone_number:
-                    send_sms(
-                        user.phone_number,
-                        "auth/sms/account_sms",
-                        patient=user,
-                        password=password,
-                    )
-            except Exception as e:
-                flash(e, category="danger")
-        else:
-            patient_id = user.id
+        elif user.phone_number:
+            send_sms(
+                user.phone_number,
+                "auth/sms/account_sms",
+                patient=user,
+                password=password,
+            )
+    except Exception as e:
+        flash(e, category="danger")
+    return patient_id
 
+
+def doctor_is_available(form) -> None:
     registered = False
     for r in MedicalRegistration.query.filter(
         MedicalRegistration.date_of_visit == form.date_of_visit.data,
@@ -104,8 +94,25 @@ def register_medical(form):
         if start_time < current_end_time and r.start_time < end_time:
             registered = True
             break
+    return not registered
 
-    if registered:
+
+def register_medical(form):
+    patient_id = None
+    if current_user.is_patient:
+        patient_id = current_user.id
+    elif user := User.query.filter(
+        or_(
+            User.phone_number == form.phone_number.data,
+            User.email == form.email.data,
+        )
+    ).first():
+        patient_id = user.id
+
+    else:
+        patient_id = create_new_account(form, patient_id)
+
+    if not doctor_is_available(form):
         flash("Đã có người đăng ký bác sĩ vào thời gian này.", category="danger")
         return False
     else:

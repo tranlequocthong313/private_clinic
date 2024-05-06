@@ -1,25 +1,24 @@
-from flask import render_template, redirect, request, url_for, flash
-from flask_login import login_user, login_required, current_user, logout_user
+from flask import flash, redirect, render_template, request, url_for
+from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy import or_
-from re import search
 
-
-from . import auth
-from ..models import User
-from ..email import send_email
-from ..sms import send_sms, send_otp
-from .forms import LoginForm, RegistrationForm, VerifyOTPForm
 from .. import db
+from ..email import send_email
+from ..models import User
+from ..sms import send_otp
+from . import auth
+from .forms import LoginForm, RegisterAccountForm, VerifyOTPForm
 
 
 @auth.route("/unconfirmed")
 def unconfirmed():
     if current_user.is_anonymous or current_user.confirmed:
         return redirect(url_for("main.index"))
-    if current_user.phone_number:
-        return redirect(url_for("auth.send_otp_confirmation"))
-    else:
+    # INFO: send mail or phone number to verify user's account
+    if current_user.email:
         return redirect(url_for("auth.send_mail_confirmation"))
+    else:
+        return redirect(url_for("auth.send_otp_confirmation"))
 
 
 @auth.route("/login", methods=["GET", "POST"])
@@ -56,7 +55,7 @@ def register_handler(user):
 def register():
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
-    form = RegistrationForm()
+    form = RegisterAccountForm()
     if form.validate_on_submit():
         user = User(
             name=form.name.data,
@@ -64,8 +63,8 @@ def register():
             date_of_birth=form.date_of_birth.data,
             address=form.address.data,
             gender=form.gender.data,
-            email=form.email.data if form.email.data else None,
-            phone_number=form.phone_number.data if form.phone_number.data else None,
+            email=form.email.data or None,
+            phone_number=form.phone_number.data or None,
         )
         try:
             user = register_handler(user)
@@ -76,30 +75,9 @@ def register():
     return render_template("auth/register.html", form=form)
 
 
-@auth.route("/verify-otp", methods=["GET", "POST"])
-@login_required
-def verify_otp():
-    if current_user.confirmed:
-        return redirect(url_for("main.index"))
-    if not current_user.phone_number:
-        return redirect(url_for("auth.send_mail_confirmation"))
-    form = VerifyOTPForm()
-    if form.validate_on_submit():
-        otp = ""
-        for i in range(1, 7):
-            otp += str(form[f"number_{i}"].data)
-        verified = current_user.verify_otp(otp)
-        if verified:
-            current_user.confirmed = True
-            db.session.commit()
-            flash("Xác thực tài khoản thành công.", category="success")
-        else:
-            flash("Mã OTP không hợp lệ.", category="danger")
-        return redirect(url_for("auth.verify_otp"))
-    return render_template("auth/otp.html", form=form)
-
-
-@auth.route("/otp")
+#######################
+#### VERIFY BY OTP ####
+#######################
 @login_required
 def send_otp_confirmation():
     if current_user.phone_number:
@@ -111,19 +89,29 @@ def send_otp_confirmation():
     return redirect(url_for(".verify_otp"))
 
 
-@auth.route("/confirm/<token>")
+@auth.route("/verify-otp", methods=["GET", "POST"])
 @login_required
-def confirm(token):
+def verify_otp():
     if current_user.confirmed:
         return redirect(url_for("main.index"))
-    if current_user.confirm(token):
-        db.session.commit()
-        flash("Bạn đã xác thực tài khoản thành công.", category="success")
-    else:
-        flash("Link xác thực không hợp lệ hoặc đã quá hạn.", category="danger")
-    return redirect(url_for("main.index"))
+    if not current_user.phone_number:
+        return redirect(url_for("auth.send_mail_confirmation"))
+    form = VerifyOTPForm()
+    if form.validate_on_submit():
+        otp = "".join(str(form[f"number_{i}"].data) for i in range(1, 7))
+        if current_user.verify_otp(otp):
+            current_user.confirmed = True
+            db.session.commit()
+            flash("Xác thực tài khoản thành công.", category="success")
+        else:
+            flash("Mã OTP không hợp lệ.", category="danger")
+        return redirect(url_for("auth.verify_otp"))
+    return render_template("auth/otp.html", form=form)
 
 
+#######################
+### VERIFY BY EMAIL ###
+#######################
 @auth.route("/confirm")
 @login_required
 def send_mail_confirmation():
@@ -142,6 +130,19 @@ def send_mail_confirmation():
         category="info",
     )
     return render_template("auth/unconfirmed.html")
+
+
+@auth.route("/confirm/<token>")
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for("main.index"))
+    if current_user.confirm(token):
+        db.session.commit()
+        flash("Bạn đã xác thực tài khoản thành công.", category="success")
+    else:
+        flash("Link xác thực không hợp lệ hoặc đã quá hạn.", category="danger")
+    return redirect(url_for("main.index"))
 
 
 @auth.route("/logout")

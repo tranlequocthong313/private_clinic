@@ -1,14 +1,12 @@
 {% extends 'landing_page.html' %}
 {% block body %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/404.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error.css') }}" />
 <div class="full-center" id="main">
   <h1 class="mr-3 pr-3 align-top border-right inline-block align-content-center">
-    404
+    {{ status_code }}
   </h1>
   <div class="inline-block align-middle">
-    <h2 class="font-weight-normal lead" id="desc">
-      The page you requested was not found.
-    </h2>
+    <h2 class="font-weight-normal lead" id="desc">{{ error_message }}</h2>
   </div>
 </div>
 {% endblock %}

@@ -4,13 +4,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-from app.dashboard import *
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 import os
-from app import create_app, db
+
 import cloudinary
+
+from app import create_app
+from app.dashboard import *
 
 app = create_app(config_name=os.getenv("FLASK_CONFIG") or "default")
 

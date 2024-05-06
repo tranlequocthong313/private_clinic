@@ -1,16 +1,16 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    StringField,
-    SubmitField,
-    IntegerField,
-    TextAreaField,
     FieldList,
     FormField,
     HiddenField,
+    IntegerField,
+    StringField,
+    SubmitField,
+    TextAreaField,
 )
 from wtforms.validators import DataRequired
 
-from ..models import MedicineType, Medicine
+from ..models import Medicine, MedicineType
 
 
 class MedicineForm(FlaskForm):

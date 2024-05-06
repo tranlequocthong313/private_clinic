@@ -34,7 +34,8 @@
       </tr>
     </thead>
     <tbody>
-      {% if registrations %} {% for registration in registrations %}
+      {% if registrations %} 
+      {% for registration in registrations %}
       <tr>
         <th scope="row">{{loop.index}}</th>
         {% if current_user.is_nurse %}
@@ -56,8 +57,7 @@
         <td>
           <select id="statusSelect_{{registration.id}}" class="form-select" aria-label="Status"
             onchange="changeStatus('{{ registration.id }}')">
-            {% for status in statuses %} {% if status.value ==
-            registration.status.value %}
+            {% for status in statuses %} {% if status.value == registration.status.value %}
             <option selected value="{{status.value}}">{{status.value}}</option>
             {% else %}
             <option value="{{status.value}}">{{status.value}}</option>

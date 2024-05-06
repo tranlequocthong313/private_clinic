@@ -121,7 +121,7 @@
         <td>{{registration.patient.date_of_birth}}</td>
         <td>{{registration.patient.address}}</td>
         <td>
-          {% if can_edit %}
+          {% if can_edit and registration.can_be_removed_from_schedule %}
           <i class="fa-solid fa-trash" onclick="unSelectRegistration('{{registration.id}}')"></i>
           {% endif %}
         </td>
