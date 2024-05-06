@@ -420,17 +420,17 @@ def create_default_data():
             name="Examination Fee Policy", value=100000, type=PolicyType.EXAMINATION_FEE
         )
 
-        _create_bulk(policy1, policy2, msg="CREATED POLICIES")
+        _create_bulk("CREATED POLICIES", policy1, policy2)
     if not db.session.query(MedicineUnit).count():
         medicine_unit1 = MedicineUnit(name="Vien")
         medicine_unit2 = MedicineUnit(name="Chai")
 
-        _create_bulk(medicine_unit1, medicine_unit2, msg="CREATED MEDICINE UNITS")
+        _create_bulk( "CREATED MEDICINE UNITS", medicine_unit1, medicine_unit2)
     if not db.session.query(MedicineType).count():
         medicine_type1 = MedicineType(name="Cam cum")
         medicine_type2 = MedicineType(name="Khang sinh")
 
-        _create_bulk(medicine_type1, medicine_type2, msg="CREATED MEDICINE TYPES")
+        _create_bulk( "CREATED MEDICINE TYPES", medicine_type1, medicine_type2)
     if not db.session.query(Medicine).count():
         medicine_units = MedicineUnit.query.all()
 
@@ -455,7 +455,7 @@ def create_default_data():
             medicine_unit=medicine_units[1],
         )
 
-        _create_bulk(medicine1, medicine2, msg="CREATED MEDICINES")
+        _create_bulk("CREATED MEDICINES", medicine1, medicine2)
     if not db.session.query(Medicine_MedicineType).count():
         medicine_types = MedicineType.query.all()
         medicines = Medicine.query.all()
@@ -465,7 +465,7 @@ def create_default_data():
         m2 = Medicine_MedicineType(
             medicine_id=medicines[1].id, medicine_type_id=medicine_types[1].id
         )
-        _create_bulk(m1, m2, msg="CREATED MEDICINE_MEDICINETYPES")
+        _create_bulk("CREATED MEDICINE_MEDICINETYPES", m1, m2)
     print("Default data created successfully!")
 
 
