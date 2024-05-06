@@ -1,3 +1,4 @@
+from datetime import date
 import enum
 import hashlib
 
@@ -397,3 +398,170 @@ class Medicine_MedicineType(db.Model):
 
     def __str__(self):
         return self.medicine_type.name
+
+
+def create_default_data():
+    if not db.session.query(User).count():
+        doctor1 = User(
+            email="tranlethong@gmail.com",
+            name="Doctor 1",
+            role=AccountRole.DOCTOR,
+            confirmed=True,
+            password="password",
+        )
+        doctor2 = User(
+            email="school0123456@gmail.com",
+            name="Doctor 2",
+            role=AccountRole.DOCTOR,
+            confirmed=True,
+            password="password",
+        )
+
+        nurse1 = User(
+            email="hadep7a@gmail.com",
+            name="Nurse 1",
+            role=AccountRole.NURSE,
+            confirmed=True,
+            password="password",
+        )
+        nurse2 = User(
+            email="2151050438thong@ou.edu.vn",
+            name="Nurse 2",
+            role=AccountRole.NURSE,
+            confirmed=True,
+            password="password",
+        )
+
+        cashier1 = User(
+            email="2151053013ha@ou.edu.vn",
+            name="Cashier 1",
+            role=AccountRole.CASHIER,
+            confirmed=True,
+            password="password",
+        )
+        cashier2 = User(
+            email="thong@gmail.com",
+            name="Cashier 2",
+            role=AccountRole.CASHIER,
+            confirmed=True,
+            password="password",
+        )
+
+        admin1 = User(
+            email="tranlequocthong313@gmail.com",
+            name="Admin 1",
+            role=AccountRole.ADMIN,
+            confirmed=True,
+            password="password",
+        )
+        admin2 = User(
+            email="admin2@example.com",
+            name="Admin 2",
+            role=AccountRole.ADMIN,
+            confirmed=True,
+            password="password",
+        )
+
+        patient1 = User(
+            email="thongtranlequoc@gmail.com",
+            name="Patient 1",
+            role=AccountRole.PATIENT,
+            confirmed=True,
+            password="password",
+        )
+        patient2 = User(
+            email="patient2@example.com",
+            name="Patient 2",
+            role=AccountRole.PATIENT,
+            confirmed=True,
+            password="password",
+        )
+
+        users = [
+            doctor1,
+            doctor2,
+            nurse1,
+            nurse2,
+            cashier1,
+            cashier2,
+            admin1,
+            admin2,
+            patient1,
+            patient2,
+        ]
+        db.session.add_all(users)
+        db.session.commit()
+        print("CREATED USERS")
+
+    if not db.session.query(Policy).count():
+        policy1 = Policy(
+            name="Number of Patients Policy",
+            value=40,
+            type=PolicyType.NUMBER_OF_PATIENTS,
+        )
+        policy2 = Policy(
+            name="Examination Fee Policy", value=100000, type=PolicyType.EXAMINATION_FEE
+        )
+
+        db.session.add_all([policy1, policy2])
+        db.session.commit()
+        print("CREATED POLICIES")
+
+    if not db.session.query(MedicineUnit).count():
+        medicine_unit1 = MedicineUnit(name="Vien")
+        medicine_unit2 = MedicineUnit(name="Chai")
+
+        db.session.add_all([medicine_unit1, medicine_unit2])
+        db.session.commit()
+        print("CREATED MEDICINE UNITS")
+
+    if not db.session.query(MedicineType).count():
+        medicine_type1 = MedicineType(name="Cam cum")
+        medicine_type2 = MedicineType(name="Khang sinh")
+
+        db.session.add_all([medicine_type1, medicine_type2])
+        db.session.commit()
+        print("CREATED MEDICINE TYPES")
+
+    if not db.session.query(Medicine).count():
+        medicine_units = MedicineUnit.query.all()
+
+        medicine1 = Medicine(
+            id="paracetamol",
+            name="Paracetamol",
+            quantity=100,
+            manufacturing_date=date(2022, 1, 1),
+            expiry_date=date(2023, 1, 1),
+            price=10.0,
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum blandit ultrices velit. In nec mi accumsan, tristique urna at, vestibulum augue. Vivamus finibus ligula et elementum hendrerit. Quisque hendrerit lobortis condimentum. Donec in condimentum risus.",
+            medicine_unit=medicine_units[0],
+        )
+        medicine2 = Medicine(
+            id="panadol",
+            name="Panadol",
+            quantity=200,
+            manufacturing_date=date(2021, 1, 1),
+            expiry_date=date(2023, 1, 1),
+            price=20.0,
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum blandit ultrices velit. In nec mi accumsan, tristique urna at, vestibulum augue. Vivamus finibus ligula et elementum hendrerit. Quisque hendrerit lobortis condimentum. Donec in condimentum risus.",
+            medicine_unit=medicine_units[1],
+        )
+
+        db.session.add_all([medicine1, medicine2])
+        db.session.commit()
+        print("CREATED MEDICINES")
+
+    if not db.session.query(Medicine_MedicineType).count():
+        medicine_types = MedicineType.query.all()
+        medicines = Medicine.query.all()
+        m1 = Medicine_MedicineType(
+            medicine_id=medicines[0].id, medicine_type_id=medicine_types[0].id
+        )
+        m2 = Medicine_MedicineType(
+            medicine_id=medicines[1].id, medicine_type_id=medicine_types[1].id
+        )
+        db.session.add_all([m1, m2])
+        db.session.commit()
+        print("CREATED MEDICINE_MEDICINETYPES")
+
+    print("Default data created successfully!")

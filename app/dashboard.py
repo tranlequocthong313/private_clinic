@@ -19,6 +19,7 @@ from app.models import (
     Policy,
     User,
     AccountRole,
+    Bill,
 )
 
 
@@ -82,6 +83,7 @@ class UserModelView(CustomModelView):
         "role",
         "confirmed",
     ]
+    column_sortable_list = ["id", "name", "email", "phone_number"]
 
 
 class MedicineUnitModelView(CustomModelView):
@@ -152,6 +154,7 @@ class StatsView(DashboardView):
             .order_by("day")
             .all()
         )
+
         return self.render(
             "admin/stats.html",
             stats=stats,
@@ -315,6 +318,7 @@ dashboard = Admin(
     url="/dashboard",
     index_view=HomeView(),
 )
+
 
 dashboard.add_view(
     UserModelView(
