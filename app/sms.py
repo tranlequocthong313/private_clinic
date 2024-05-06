@@ -36,7 +36,7 @@ def send_sms(to, template, **kwargs):
     return thr
 
 
-def send_otp(to, **kwargs):
+def send_otp(to):
     app = current_app._get_current_object()
     thr = Thread(target=send_async_otp, args=[app, to])
     thr.start()

@@ -35,12 +35,12 @@
         </td>
         <div class="modal fade" id="modal{{loop.index}}" tabindex="-1" role="dialog"
              aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content p-4 ">
+            <div class="modal-dialog modal-lg w-100" style="position: absolute !important; transform: translate(-50%, -50%) !important; top: 50% !important; left: 50% !important;">
+                <div class="modal-content px-3 py-4">
                     <h3>THÔNG TIN BỆNH NHÂN</h3>
                     <div class="d-flex">
                         <img class="rounded-circle shadow-4-strong" src="{{ current_user.gravatar(size=100) }}">
-                        <div class=" col-lg-4">
+                        <div class=" col-lg-4 p-0">
                             <strong>Mã Bệnh Nhân:</strong>
                             <span>{{medical_examination.medical_registration.patient.id}}</span>
                             <br>
@@ -51,7 +51,7 @@
                             <span>{{medical_examination.medical_registration.patient.contact}}</span>
                             <br>
                         </div>
-                        <div class=" col-lg-6">
+                        <div class=" col-lg-6 p-0">
                             <strong>Giới tính:</strong>
                             <span>{{medical_examination.medical_registration.patient.gender.value}}</span>
                             <br>
@@ -64,22 +64,22 @@
                         </div>
                     </div>
 
-                    <h3>THÔNG TIN KHÁM BỆNH</h3>
+                    <h3 class='my-3'>THÔNG TIN KHÁM BỆNH</h3>
                     <div class="d-flex ml-4">
                         <div style="col-lg-12; margin-right:25px">
-                            <strong>Ngày khám:</strong>
+                            <strong>Ngày khám: </strong>
                             <span style="font-size:17px">{{medical_examination.created_at}}</span>
                         </div>
                         <div style="col-lg-12; margin-right:75px ">
-                            <strong>Chẩn đoán:</strong><span style=";font-size:17px">{{medical_examination.diagnosis}}</span>
+                            <strong>Chẩn đoán: </strong><span style=";font-size:17px">{{medical_examination.diagnosis}}</span>
                         </div>
                          <div style="col-lg-12">
-                            <strong>Triệu chứng:</strong>
+                            <strong>Triệu chứng: </strong>
                             <span style="font-size:17px">{{medical_examination.medical_registration.symptom}}</span>
                         </div>
                             </div>
                                 <div class="container-fluid tex-center mt-3">
-                                    <div class="row">
+                                    <div class="row my-3">
                                         <div class="col-12">
                                             <div class="card">
                                                 <div class="card-body">
@@ -112,7 +112,7 @@
                                     </div>
                                     <hr>
                                     <div>
-                                        <h4 style="font-style: italic;text-decoration:underline">Lời dặn:</h4><span>{{medical_examination.advice}}</span>
+                                        <h6 class='d-inline mr-2' style="font-style: italic;text-decoration:underline">Lời dặn:</h6><span class='d-inline'>{{medical_examination.advice}}</span>
                                     </div>
                                 </div>
 

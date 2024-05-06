@@ -1,6 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FloatField, IntegerField, RadioField
-from wtforms.validators import DataRequired
+from wtforms import RadioField, StringField, SubmitField
 
 
 class PayBillForm(FlaskForm):

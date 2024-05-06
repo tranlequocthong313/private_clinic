@@ -1,0 +1,16 @@
+#main {
+    height: 100vh;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    font-size: 6em;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.5em;
+    color: #555;
+}
+

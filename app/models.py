@@ -1,8 +1,10 @@
-from datetime import date
 import enum
 import hashlib
+from datetime import date
 
 from flask import current_app, request
+from flask_login import AnonymousUserMixin, UserMixin
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 from sqlalchemy import (
     Boolean,
     Column,
@@ -13,18 +15,15 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    Time,
     Unicode,
     UnicodeText,
-    Time,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from flask_login import UserMixin, AnonymousUserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import db, login_manager
-from . import sms_client
+from . import db, login_manager, sms_client
 
 
 @login_manager.user_loader
@@ -132,7 +131,7 @@ class User(UserMixin, db.Model):
 
     @property
     def contact(self):
-        return self.phone_number if self.phone_number else self.email
+        return self.phone_number or self.email
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -145,7 +144,7 @@ class User(UserMixin, db.Model):
         s = Serializer(current_app.config["SECRET_KEY"])
         try:
             data = s.loads(token, salt=current_app.config["SALT"], max_age=exp)
-        except:
+        except Exception:
             return False
         if int(data) != self.id:
             return False
@@ -273,14 +272,14 @@ class Bill(db.Model):
 
 
 class MedicalRegistrationStatus(enum.Enum):
-    REGISTERED = "Registered"
-    STAGING = "Staging"
-    SCHEDULED = "Scheduled"
-    CANCELED = "Canceled"
-    ARRIVED = "Arrived"
-    IN_PROGRESS = "In progress"
-    UNPAID = "Unpaid"
-    COMPLETED = "Completed"
+    REGISTERED = "Registered"  # Registered successfully
+    STAGING = "Staging"  # Waiting for being scheduled
+    SCHEDULED = "Scheduled"  # Being scheduled by nurses
+    CANCELED = "Canceled"  # Canceled schedule
+    ARRIVED = "Arrived"  # Waiting in the clinic
+    IN_PROGRESS = "In progress"  # Being examined by doctors
+    UNPAID = "Unpaid"  # Finished examining but unpaid
+    COMPLETED = "Completed"  # Paid successfully
 
 
 class MedicalRegistration(db.Model):
@@ -312,6 +311,10 @@ class MedicalRegistration(db.Model):
         return self.status == MedicalRegistrationStatus.STAGING
 
     @property
+    def canceled(self):
+        return self.status == MedicalRegistrationStatus.CANCELED
+
+    @property
     def scheduled(self):
         return self.status == MedicalRegistrationStatus.SCHEDULED
 
@@ -330,6 +333,10 @@ class MedicalRegistration(db.Model):
     @property
     def completed(self):
         return self.status == MedicalRegistrationStatus.COMPLETED
+
+    @property
+    def can_be_removed_from_schedule(self):
+        return self.registered or self.staging or self.canceled or self.scheduled
 
     def __str__(self):
         return str(self.id)
@@ -402,97 +409,7 @@ class Medicine_MedicineType(db.Model):
 
 def create_default_data():
     if not db.session.query(User).count():
-        doctor1 = User(
-            email="tranlethong@gmail.com",
-            name="Doctor 1",
-            role=AccountRole.DOCTOR,
-            confirmed=True,
-            password="password",
-        )
-        doctor2 = User(
-            email="school0123456@gmail.com",
-            name="Doctor 2",
-            role=AccountRole.DOCTOR,
-            confirmed=True,
-            password="password",
-        )
-
-        nurse1 = User(
-            email="hadep7a@gmail.com",
-            name="Nurse 1",
-            role=AccountRole.NURSE,
-            confirmed=True,
-            password="password",
-        )
-        nurse2 = User(
-            email="2151050438thong@ou.edu.vn",
-            name="Nurse 2",
-            role=AccountRole.NURSE,
-            confirmed=True,
-            password="password",
-        )
-
-        cashier1 = User(
-            email="2151053013ha@ou.edu.vn",
-            name="Cashier 1",
-            role=AccountRole.CASHIER,
-            confirmed=True,
-            password="password",
-        )
-        cashier2 = User(
-            email="thong@gmail.com",
-            name="Cashier 2",
-            role=AccountRole.CASHIER,
-            confirmed=True,
-            password="password",
-        )
-
-        admin1 = User(
-            email="tranlequocthong313@gmail.com",
-            name="Admin 1",
-            role=AccountRole.ADMIN,
-            confirmed=True,
-            password="password",
-        )
-        admin2 = User(
-            email="admin2@example.com",
-            name="Admin 2",
-            role=AccountRole.ADMIN,
-            confirmed=True,
-            password="password",
-        )
-
-        patient1 = User(
-            email="thongtranlequoc@gmail.com",
-            name="Patient 1",
-            role=AccountRole.PATIENT,
-            confirmed=True,
-            password="password",
-        )
-        patient2 = User(
-            email="patient2@example.com",
-            name="Patient 2",
-            role=AccountRole.PATIENT,
-            confirmed=True,
-            password="password",
-        )
-
-        users = [
-            doctor1,
-            doctor2,
-            nurse1,
-            nurse2,
-            cashier1,
-            cashier2,
-            admin1,
-            admin2,
-            patient1,
-            patient2,
-        ]
-        db.session.add_all(users)
-        db.session.commit()
-        print("CREATED USERS")
-
+        _create_users()
     if not db.session.query(Policy).count():
         policy1 = Policy(
             name="Number of Patients Policy",
@@ -503,26 +420,17 @@ def create_default_data():
             name="Examination Fee Policy", value=100000, type=PolicyType.EXAMINATION_FEE
         )
 
-        db.session.add_all([policy1, policy2])
-        db.session.commit()
-        print("CREATED POLICIES")
-
+        _create_bulk(policy1, policy2, msg="CREATED POLICIES")
     if not db.session.query(MedicineUnit).count():
         medicine_unit1 = MedicineUnit(name="Vien")
         medicine_unit2 = MedicineUnit(name="Chai")
 
-        db.session.add_all([medicine_unit1, medicine_unit2])
-        db.session.commit()
-        print("CREATED MEDICINE UNITS")
-
+        _create_bulk(medicine_unit1, medicine_unit2, msg="CREATED MEDICINE UNITS")
     if not db.session.query(MedicineType).count():
         medicine_type1 = MedicineType(name="Cam cum")
         medicine_type2 = MedicineType(name="Khang sinh")
 
-        db.session.add_all([medicine_type1, medicine_type2])
-        db.session.commit()
-        print("CREATED MEDICINE TYPES")
-
+        _create_bulk(medicine_type1, medicine_type2, msg="CREATED MEDICINE TYPES")
     if not db.session.query(Medicine).count():
         medicine_units = MedicineUnit.query.all()
 
@@ -547,10 +455,7 @@ def create_default_data():
             medicine_unit=medicine_units[1],
         )
 
-        db.session.add_all([medicine1, medicine2])
-        db.session.commit()
-        print("CREATED MEDICINES")
-
+        _create_bulk(medicine1, medicine2, msg="CREATED MEDICINES")
     if not db.session.query(Medicine_MedicineType).count():
         medicine_types = MedicineType.query.all()
         medicines = Medicine.query.all()
@@ -560,8 +465,105 @@ def create_default_data():
         m2 = Medicine_MedicineType(
             medicine_id=medicines[1].id, medicine_type_id=medicine_types[1].id
         )
-        db.session.add_all([m1, m2])
-        db.session.commit()
-        print("CREATED MEDICINE_MEDICINETYPES")
-
+        _create_bulk(m1, m2, msg="CREATED MEDICINE_MEDICINETYPES")
     print("Default data created successfully!")
+
+
+# TODO Rename this here and in `create_default_data`
+def _create_users():
+    doctor1 = User(
+        email="tranlethong@gmail.com",
+        name="Doctor 1",
+        role=AccountRole.DOCTOR,
+        confirmed=True,
+        password="password",
+    )
+    doctor2 = User(
+        email="school0123456@gmail.com",
+        name="Doctor 2",
+        role=AccountRole.DOCTOR,
+        confirmed=True,
+        password="password",
+    )
+
+    nurse1 = User(
+        email="hadep7a@gmail.com",
+        name="Nurse 1",
+        role=AccountRole.NURSE,
+        confirmed=True,
+        password="password",
+    )
+    nurse2 = User(
+        email="2151050438thong@ou.edu.vn",
+        name="Nurse 2",
+        role=AccountRole.NURSE,
+        confirmed=True,
+        password="password",
+    )
+
+    cashier1 = User(
+        email="2151053013ha@ou.edu.vn",
+        name="Cashier 1",
+        role=AccountRole.CASHIER,
+        confirmed=True,
+        password="password",
+    )
+    cashier2 = User(
+        email="thong@gmail.com",
+        name="Cashier 2",
+        role=AccountRole.CASHIER,
+        confirmed=True,
+        password="password",
+    )
+
+    admin1 = User(
+        email="tranlequocthong313@gmail.com",
+        name="Admin 1",
+        role=AccountRole.ADMIN,
+        confirmed=True,
+        password="password",
+    )
+    admin2 = User(
+        email="admin2@example.com",
+        name="Admin 2",
+        role=AccountRole.ADMIN,
+        confirmed=True,
+        password="password",
+    )
+
+    patient1 = User(
+        email="thongtranlequoc@gmail.com",
+        name="Patient 1",
+        role=AccountRole.PATIENT,
+        confirmed=True,
+        password="password",
+    )
+    patient2 = User(
+        email="patient2@example.com",
+        name="Patient 2",
+        role=AccountRole.PATIENT,
+        confirmed=True,
+        password="password",
+    )
+
+    users = [
+        doctor1,
+        doctor2,
+        nurse1,
+        nurse2,
+        cashier1,
+        cashier2,
+        admin1,
+        admin2,
+        patient1,
+        patient2,
+    ]
+    db.session.add_all(users)
+    db.session.commit()
+    print("CREATED USERS")
+
+
+def _create_bulk(msg, *args):
+    db.session.add_all(args)
+    db.session.commit()
+    print(msg)

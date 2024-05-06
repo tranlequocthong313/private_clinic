@@ -3,7 +3,7 @@ from flask import render_template
 
 
 def make_pdf_from_html(filename, **kwargs):
-    wkhtmltopdf_path = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
+    wkhtmltopdf_path = "/usr/local/bin/wkhtmltopdf"
     pdf = None
     try:
         config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
@@ -14,6 +14,6 @@ def make_pdf_from_html(filename, **kwargs):
             configuration=config,
         )
     except Exception as e:
-        print(str(e))
+        print(e)
 
     return pdf

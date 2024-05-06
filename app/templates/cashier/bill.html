@@ -11,7 +11,7 @@
         <thead>
             <tr>
                 <th scope='col'>Id</th>
-                <th scope='col'>Mã phiếu khám</th>
+                <!-- <th scope='col'>Mã phiếu khám</th> -->
                 <th scope='col'>Mã bệnh nhân</th>
                 <th scope='col'>Tổng tiền</th>
                 <th scope='col'>Người lập</th>
@@ -24,7 +24,7 @@
             {% for b in bills %}
             <tr>
                 <th scope='row'>{{b.id}}</th>
-                <td>{{b.medical_examination_id}}</td>
+                <!-- <td>{{b.medical_examination_id}}</td> -->
                 <td>{{b.patient_id}}</td>
                 <td>{{format_money(b.amount)}} VND</td>
                 <td>{{b.cashier.name}}</td>

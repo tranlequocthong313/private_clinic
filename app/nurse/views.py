@@ -1,29 +1,22 @@
-from flask import render_template, redirect, url_for, flash, request, current_app
-from flask_login import login_required, current_user
-from flask_admin import expose
-from sqlalchemy import func, or_, desc, case, asc
-from datetime import date, datetime
+from datetime import date
 
+from flask import redirect, url_for
+from flask_admin import expose
+from flask_login import current_user
+from sqlalchemy import func
+
+from ..dashboard import DashboardView, dashboard
+from ..main.forms import MedicalRegisterForm
+from ..main.views import register_medical
+from ..models import (
+    AppointmentSchedule,
+    MedicalRegistration,
+    MedicalRegistrationStatus,
+    Policy,
+    PolicyType,
+)
 from ..patient.views import ListPatientView
 from .forms import AppointmentDateForm
-from ..main.forms import MedicalRegisterForm, SearchingMedicalRegistrationForm
-from ..decorators import roles_required
-from ..models import (
-    PolicyType,
-    AccountRole,
-    User,
-    MedicalRegistration,
-    AppointmentSchedule,
-    Policy,
-    MedicalRegistrationStatus,
-)
-from ..dashboard import DashboardView, dashboard
-from ..utils import random_password
-from ..auth.views import register_handler
-from ..sms import send_sms
-from ..email import send_email
-from .. import db
-from ..main.views import register_medical
 
 
 class NurseView(DashboardView):
@@ -36,8 +29,7 @@ class MedicalRegisterView(NurseView):
     def index(self):
         form = MedicalRegisterForm()
         if form.validate_on_submit():
-            success = register_medical(form)
-            if success:
+            if _ := register_medical(form):
                 return redirect(url_for(".index"))
         return self.render("medical_register.html", form=form)
 

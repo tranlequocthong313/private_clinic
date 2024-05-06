@@ -1,6 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, EmailField
-from wtforms.validators import DataRequired, Email
+from wtforms import StringField, SubmitField
 
 
 class SearchingMedicineForm(FlaskForm):
