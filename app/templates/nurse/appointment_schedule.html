@@ -69,14 +69,14 @@
             <br />
             <strong>Triệu chứng:</strong> {{ registration.symptom }}<br />
             {% if can_add %}
-            <button class="registration-btn bg-success" onclick="selectRegistration({
+            <button class="registration-btn bg-success px-4" onclick="selectRegistration({
                 id: '{{ registration.id }}', 
                 date: '{{date}}'
               })">
               Chọn
             </button>
             {% endif %}
-            <button class="registration-btn bg-danger" onclick="deleteRegistration('{{ registration.id }}')">
+            <button class="registration-btn bg-danger px-4" onclick="deleteRegistration('{{ registration.id }}')">
               Xóa
             </button>
           </div>

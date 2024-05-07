@@ -53,5 +53,5 @@ class DevelopmentConfig(Config):
 config = {
     "development": DevelopmentConfig,
     "default": DevelopmentConfig,
-    "production": DevelopmentConfig, # HACK: WTF am I doing?
+    "production": DevelopmentConfig,  # HACK: WTF am I doing?
 }

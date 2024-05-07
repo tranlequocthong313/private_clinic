@@ -23,6 +23,28 @@ from . import db
 
 
 class HomeView(AdminIndexView):
+    def __init__(
+        self,
+        name="Trang chủ",
+        category=None,
+        endpoint=None,
+        url=None,
+        template="admin/index.html",
+        menu_class_name=None,
+        menu_icon_type="fa",
+        menu_icon_value="fa-home",
+    ):
+        super().__init__(
+            name,
+            category,
+            endpoint,
+            url,
+            template,
+            menu_class_name,
+            menu_icon_type,
+            menu_icon_value,
+        )
+
     def is_accessible(self):
         return current_user.is_authenticated
 
@@ -51,10 +73,12 @@ class CustomModelView(DashboardView, ModelView):
     column_hide_backrefs = False
     can_export = True
     can_view_details = True
+    page_size = 10
 
 
 class PolicyModelView(CustomModelView):
     form_columns = ["name", "value", "type"]
+    column_searchable_list = ["name", "type"]
 
 
 class UserModelView(CustomModelView):
@@ -82,12 +106,14 @@ class UserModelView(CustomModelView):
         "role",
         "confirmed",
     ]
+    column_searchable_list = ["name", "email", "phone_number", "role"]
     column_sortable_list = ["id", "name", "email", "phone_number"]
 
 
 class MedicineUnitModelView(CustomModelView):
     column_list = ["id", "name"]
     form_columns = ["name"]
+    column_searchable_list = ["name"]
 
 
 class MedicineModelView(CustomModelView):
@@ -112,16 +138,13 @@ class MedicineModelView(CustomModelView):
         "description",
         "medicine_unit",
     ]
+    column_searchable_list = ["name"]
 
 
 class MedicineTypeModelView(CustomModelView):
-    column_list = [
-        "id",
-        "name",
-    ]
-    form_columns = [
-        "name",
-    ]
+    column_list = ["id", "name"]
+    form_columns = ["name"]
+    column_searchable_list = ["name"]
 
 
 class Medicine_MedicineTypeModelView(CustomModelView):

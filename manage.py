@@ -27,4 +27,9 @@ if __name__ == "__main__":
     with app.app_context():
         create_default_data()
 
-    app.run(port=os.getenv("PORT") or 5555, debug=True, host='0.0.0.0') # set to false after
+    is_development = os.getenv("FLASK_CONFIG") == "development"
+    app.run(
+        port=os.getenv("PORT") or 5555, 
+        debug=is_development, 
+        host='0.0.0.0',
+    )
