@@ -27,3 +27,5 @@ with app.app_context():
 
 if app.config.get("ENVIRONMENT").lower() == "development":
     app.run(port=5555, debug=True)
+
+my_app = app
