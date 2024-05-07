@@ -49,14 +49,14 @@
                 <ul class="dropdown-menu" style='left: -105px'>
                     {% if not current_user.is_patient %}
                     <li class="dropdown-item">
-                        <a href='{{url_for("admin.index")}}'>
+                        <a style='text-decoration: none;' href='{{url_for("admin.index")}}'>
                             <i class="fas fa-plus mr-2"></i>
                             <strong class="hide-nav">Dashboard</strong>
                         </a>
                     </li>
                     {% endif %}
                     <li class="dropdown-item">
-                        <a href='{{url_for("auth.logout")}}'>
+                        <a style='text-decoration: none;' href='{{url_for("auth.logout")}}'>
                             <i class="fas fa-plus mr-2"></i>
                             <strong class="hide-nav">Đăng xuất</strong>
                         </a>
