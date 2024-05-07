@@ -3,6 +3,7 @@ from urllib.parse import quote
 
 
 class Config:
+    ENVIRONMENT = os.getenv("FLASK_CONFIG")
     SECRET_KEY = os.getenv("SECRET_KEY")
     SALT = os.getenv("SALT")
     ITEMS_PER_PAGE = int(os.getenv("ITEMS_PER_PAGE", 10))
