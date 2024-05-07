@@ -32,11 +32,6 @@ if __name__ == "__main__":
         create_default_data()
         print("created default data")
 
-    if app.config.get("ENVIRONMENT").lower() == "development":
-        print("dev")
-        app.run(port=5555, debug=True)
-    else:
-        print("prod")
-
-
-my_app = app
+    app.run(
+        port=10000, debug=app.config.get("ENVIRONMENT").lower() == "development"
+    )
