@@ -20,11 +20,10 @@ cloudinary.config(
 )
 
 from app.dashboard import *
+from app.models import create_default_data
 
-if __name__ == "__main__":
-    from app.models import create_default_data
+with app.app_context():
+    create_default_data()
 
-    with app.app_context():
-        create_default_data()
-
+if app.config.get("ENVIRONMENT").lower() == "development":
     app.run(port=5555, debug=True)
