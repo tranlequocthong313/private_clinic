@@ -50,4 +50,8 @@ class DevelopmentConfig(Config):
     VNPAY_HASH_SECRET_KEY = os.getenv("VNPAY_HASH_SECRET_KEY")
 
 
-config = {"development": DevelopmentConfig, "default": DevelopmentConfig}
+config = {
+    "development": DevelopmentConfig,
+    "default": DevelopmentConfig,
+    "production": DevelopmentConfig, # HACK: WTF am I doing?
+}
