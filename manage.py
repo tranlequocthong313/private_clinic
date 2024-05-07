@@ -9,6 +9,7 @@ import os
 import cloudinary
 
 from app import create_app
+from app.dashboard import *
 
 app = create_app(config_name=os.getenv("FLASK_CONFIG") or "default")
 print("app init")
@@ -20,9 +21,10 @@ cloudinary.config(
 )
 print("clouidnary init")
 
+from app.dashboard import *
+
 if __name__ == "__main__":
     print("importing stuff...")
-    from app.dashboard import *
     from app.models import create_default_data
 
     print("imported stuff")
@@ -32,6 +34,4 @@ if __name__ == "__main__":
         create_default_data()
         print("created default data")
 
-    app.run(
-        port=10000, debug=app.config.get("ENVIRONMENT").lower() == "development"
-    )
+    app.run(port=10000, debug=app.config.get("ENVIRONMENT").lower() == "development")
